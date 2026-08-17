@@ -1,0 +1,316 @@
+/* =========================================
+   GENERAL DETAILS
+   ========================================= */
+
+.general-details {
+  width: 100%;
+  margin-top: 24px;
+
+  background: white;
+
+  border-radius: 12px;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+
+  overflow: hidden;
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.general-details-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 18px 24px;
+
+  background: #f7f9fc;
+
+  border-bottom: 1px solid #dfe6ef;
+}
+
+
+.general-details-header h3 {
+
+  margin: 0;
+
+  color: #173f78;
+
+  font-size: 20px;
+}
+
+
+.general-details-header p {
+
+  margin: 4px 0 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+.general-actions button {
+
+  background: #17458a;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 5px;
+
+  padding: 8px 14px;
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   SCROLL AREA
+   ========================================= */
+
+.details-scroll {
+
+  width: 100%;
+
+  overflow-x: auto;
+
+  overflow-y: hidden;
+
+  padding: 18px 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   ROW
+   ========================================= */
+
+.details-row {
+
+  display: flex;
+
+  align-items: stretch;
+
+  min-width: max-content;
+
+  margin-bottom: 12px;
+}
+
+
+/* =========================================
+   FIELD
+   ========================================= */
+.general-details {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.details-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: max-content;
+  min-width: 100%;
+}
+
+.detail-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.detail-field label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.detail-field input,
+.detail-field select {
+  width: 130px;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   LABEL
+   ========================================= */
+
+.detail-label {
+
+  background: #f0f3f7;
+
+  border-bottom: 1px solid #b7c3d4;
+
+  padding: 7px;
+}
+
+
+.detail-label input {
+
+  width: 100%;
+
+  border: none;
+
+  background: transparent;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  color: #173f78;
+
+  outline: none;
+
+  text-transform: uppercase;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   VALUE
+   ========================================= */
+
+.detail-value {
+
+  padding: 8px;
+}
+
+
+.detail-value input {
+
+  width: 100%;
+
+  border: none;
+
+  outline: none;
+
+  font-size: 14px;
+
+  box-sizing: border-box;
+
+  background: transparent;
+}
+
+
+/* =========================================
+   DELETE FIELD
+   ========================================= */
+
+.delete-field {
+
+  position: absolute;
+
+  top: 3px;
+
+  right: 3px;
+
+  width: 18px;
+
+  height: 18px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #dc3545;
+
+  color: white;
+
+  font-size: 12px;
+
+  line-height: 18px;
+
+  cursor: pointer;
+
+  opacity: 0;
+}
+
+
+.detail-field:hover .delete-field {
+
+  opacity: 1;
+}
+
+
+/* =========================================
+   ADD FIELD
+   ========================================= */
+
+.add-field {
+
+  min-width: 120px;
+
+  margin-left: 10px;
+
+  border: 1px dashed #17458a;
+
+  background: #f7faff;
+
+  color: #17458a;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  padding: 8px 12px;
+}
+
+
+/* =========================================
+   DELETE ROW
+   ========================================= */
+
+.delete-row {
+
+  margin-left: 10px;
+
+  border: 1px solid #dc3545;
+
+  background: white;
+
+  color: #dc3545;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  padding: 8px 12px;
+}
+
+
+/* =========================================
+   SCROLLBAR
+   ========================================= */
+
+.details-scroll::-webkit-scrollbar {
+
+  height: 10px;
+
+}
+
+
+.details-scroll::-webkit-scrollbar-track {
+
+  background: #edf1f6;
+
+}
+
+
+.details-scroll::-webkit-scrollbar-thumb {
+
+  background: #9aa8ba;
+
+  border-radius: 5px;
+
+}

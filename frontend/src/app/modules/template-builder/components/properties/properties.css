@@ -1,0 +1,97 @@
+.properties-panel {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  background: white;
+}
+
+.properties-panel h3 {
+  margin: 0 0 20px;
+  color: #17477e;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.property-group {
+  margin-bottom: 18px;
+}
+
+.property-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.property-group input,
+.property-group select {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+
+  font-size: 14px;
+  background: white;
+}
+
+.property-group input:focus,
+.property-group select:focus {
+  outline: none;
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.1);
+}
+
+.property-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.property-checkbox input {
+  width: 16px;
+  height: 16px;
+}
+
+.property-checkbox label {
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.property-info {
+  margin-top: 20px;
+  padding: 12px;
+
+  border-radius: 6px;
+  background: #f1f5f9;
+
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.no-selection {
+  text-align: center;
+  padding: 50px 15px;
+  color: #64748b;
+}
+
+.no-selection-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.no-selection h4 {
+  margin: 0 0 8px;
+  color: #334155;
+}
+
+.no-selection p {
+  margin: 0;
+  font-size: 13px;
+}

@@ -1,0 +1,181 @@
+<div class="properties-panel">
+
+  <h3>Cell Properties</h3>
+
+  @if (cell) {
+
+    <!-- =============================== -->
+    <!-- CELL VALUE -->
+    <!-- =============================== -->
+
+    <div class="property-group">
+
+      <label>Value</label>
+
+      <input
+        type="text"
+        [(ngModel)]="cell.value"
+        (ngModelChange)="update()"
+        placeholder="Enter cell value"
+      >
+
+    </div>
+
+
+    <!-- =============================== -->
+    <!-- WIDTH -->
+    <!-- =============================== -->
+
+    <div class="property-group">
+
+      <label>Width (px)</label>
+
+      <input
+        type="number"
+        min="30"
+        max="1000"
+        [(ngModel)]="cell.width"
+        (ngModelChange)="update()"
+      >
+
+    </div>
+
+
+    <!-- =============================== -->
+    <!-- HEIGHT -->
+    <!-- =============================== -->
+
+    <div class="property-group">
+
+        <label>Height (px)</label>
+
+        <input
+            type="number"
+            min="30"
+            max="1000"
+            [(ngModel)]="cell.height"
+            (ngModelChange)="manualHeightChange()"
+        >
+
+    </div>
+
+
+    <!-- =============================== -->
+    <!-- OWNER -->
+    <!-- =============================== -->
+
+    <div class="property-group">
+
+      <label>Who fills this cell?</label>
+
+      <select
+        [(ngModel)]="cell.inputMode"
+        (ngModelChange)="update()"
+      >
+
+        <option value="admin">
+          Admin
+        </option>
+
+        <option value="inspector">
+          Inspector
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- =============================== -->
+    <!-- INPUT TYPE -->
+    <!-- =============================== -->
+
+    <div class="property-group">
+
+      <label>Input Type</label>
+
+      <select
+        [(ngModel)]="cell.inputType"
+        (ngModelChange)="update()"
+      >
+
+        <option value="text">
+          Text
+        </option>
+
+        <option value="image">
+          Image
+        </option>
+
+        <option value="checkbox">
+          Checkbox
+        </option>
+
+        <option value="date">
+          Date
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- =============================== -->
+    <!-- REQUIRED -->
+    <!-- =============================== -->
+
+    <div class="property-checkbox">
+
+      <input
+        id="required"
+        type="checkbox"
+        [(ngModel)]="cell.required"
+        (ngModelChange)="update()"
+      >
+
+      <label for="required">
+        Required field
+      </label>
+
+    </div>
+
+
+    <!-- =============================== -->
+    <!-- INFO -->
+    <!-- =============================== -->
+
+    <div class="property-info">
+
+      <strong>Cell mode:</strong>
+
+      @if (cell.inputMode === 'admin') {
+        Admin enters this value while building the checklist.
+      }
+
+      @if (cell.inputMode === 'inspector') {
+        Inspector enters this value after publishing.
+      }
+
+    </div>
+
+  }
+
+  @else {
+
+    <div class="no-selection">
+
+      <div class="no-selection-icon">
+        ⬚
+      </div>
+
+      <h4>No cell selected</h4>
+
+      <p>
+        Select a cell in the table to edit its properties.
+      </p>
+
+    </div>
+
+  }
+
+</div>

@@ -1,0 +1,31 @@
+footer{
+
+    height:70px;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding-right:30px;
+
+    border-top:1px solid #ddd;
+
+}
+
+button{
+
+    padding:10px 25px;
+
+    background:#173F7A;
+
+    color:white;
+
+    border:none;
+
+    border-radius:5px;
+
+}

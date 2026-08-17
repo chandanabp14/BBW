@@ -1,0 +1,54 @@
+.workspace {
+  display: grid;
+
+  grid-template-columns: 260px minmax(0, 1fr) 320px;
+
+  height: calc(100vh - 140px);
+
+  position: relative;
+
+  width: 100%;
+
+  min-width: 0;
+}
+
+
+:host {
+  display: block;
+
+  background: #f4f6fb;
+
+  width: 100%;
+
+  min-width: 0;
+}
+
+
+/* =====================================================
+   CANVAS AREA
+===================================================== */
+
+app-canvas {
+  min-width: 0;
+
+  width: 100%;
+
+  overflow-x: hidden;
+}
+
+
+/* =====================================================
+   PROPERTY PANEL
+===================================================== */
+
+.properties-container {
+  position: absolute;
+
+  right: 0;
+
+  width: 320px;
+
+  min-width: 320px;
+
+  z-index: 10;
+}
