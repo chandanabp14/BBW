@@ -1,4 +1,9 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Output
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -22,6 +27,10 @@ import {
   styleUrls: ['./general-details.css']
 })
 export class GeneralDetailsComponent {
+
+  @Output()
+  detailsChanged =
+    new EventEmitter<GeneralDetailsRow[]>();
 
   rows: GeneralDetailsRow[] = [
 
@@ -71,6 +80,15 @@ export class GeneralDetailsComponent {
 
   ];
 
+  // ==========================================
+  // EMIT DETAILS
+  // ==========================================
+
+  emitDetails(): void {
+
+    this.detailsChanged.emit(this.rows);
+
+  }
 
   // ==========================================
   // ADD FIELD
@@ -92,8 +110,9 @@ export class GeneralDetailsComponent {
 
     row.fields.push(newField);
 
-  }
+    this.emitDetails();
 
+  }
 
   // ==========================================
   // DELETE FIELD
@@ -106,8 +125,9 @@ export class GeneralDetailsComponent {
 
     row.fields.splice(fieldIndex, 1);
 
-  }
+    this.emitDetails();
 
+  }
 
   // ==========================================
   // ADD ROW
@@ -132,8 +152,9 @@ export class GeneralDetailsComponent {
 
     });
 
-  }
+    this.emitDetails();
 
+  }
 
   // ==========================================
   // DELETE ROW
@@ -146,6 +167,8 @@ export class GeneralDetailsComponent {
     }
 
     this.rows.splice(rowIndex, 1);
+
+    this.emitDetails();
 
   }
 

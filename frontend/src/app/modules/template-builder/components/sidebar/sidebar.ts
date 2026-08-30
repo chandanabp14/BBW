@@ -25,11 +25,7 @@ export class SidebarComponent {
 
   }
 
-  addHeading(): void {
-
-    this.tableService.addHeading();
-
-  }
+  
 
   addDate(): void {
 

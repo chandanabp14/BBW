@@ -1,21 +1,35 @@
-const templateModel = require("../models/template.model");
+const templateModel =
+    require("../models/template.model");
 
-// Create Template
+
+// =====================================================
+// CREATE TEMPLATE
+// =====================================================
+
 exports.createTemplate = async (req, res) => {
 
     try {
 
-        const template = await templateModel.createTemplate(req.body);
+        const template =
+            await templateModel.createTemplate(
+                req.body
+            );
 
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
-            message: "Template created successfully.",
+            message:
+                "Template created successfully.",
             data: template
         });
 
     } catch (error) {
 
-        res.status(500).json({
+        console.error(
+            "Create Template Error:",
+            error
+        );
+
+        return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -24,21 +38,31 @@ exports.createTemplate = async (req, res) => {
 
 };
 
-// Get All Templates
+
+// =====================================================
+// GET ALL TEMPLATES
+// =====================================================
+
 exports.getAllTemplates = async (req, res) => {
 
     try {
 
-        const templates = await templateModel.getAllTemplates();
+        const templates =
+            await templateModel.getAllTemplates();
 
-        res.json({
+        return res.json({
             success: true,
             data: templates
         });
 
     } catch (error) {
 
-        res.status(500).json({
+        console.error(
+            "Get Templates Error:",
+            error
+        );
+
+        return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -47,180 +71,369 @@ exports.getAllTemplates = async (req, res) => {
 
 };
 
-// Get Template By ID
+
+// =====================================================
+// GET TEMPLATE BY ID
+// =====================================================
+
 exports.getTemplateById = async (req, res) => {
 
     try {
 
         const template =
-            await templateModel.getTemplateById(req.params.id);
+            await templateModel.getTemplateById(
+                req.params.id
+            );
 
         if (!template) {
 
             return res.status(404).json({
-
                 success: false,
-
-                message: "Template not found."
-
+                message:
+                    "Template not found."
             });
 
         }
 
-        res.json({
-
+        return res.json({
             success: true,
-
             data: template
-
         });
 
     } catch (error) {
 
-        res.status(500).json({
+        console.error(
+            "Get Template Error:",
+            error
+        );
 
+        return res.status(500).json({
             success: false,
-
             message: error.message
-
         });
 
     }
 
 };
 
-// Publish Template
+
+// =====================================================
+// UPDATE TEMPLATE
+// =====================================================
+
+exports.updateTemplate = async (req, res) => {
+
+    try {
+
+        const template =
+            await templateModel.updateTemplate(
+                req.params.id,
+                req.body
+            );
+
+        if (!template) {
+
+            return res.status(404).json({
+                success: false,
+                message:
+                    "Template not found."
+            });
+
+        }
+
+        return res.json({
+            success: true,
+            message:
+                "Template updated successfully.",
+            data: template
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Update Template Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+
+// =====================================================
+// PUBLISH TEMPLATE
+// =====================================================
+
 exports.publishTemplate = async (req, res) => {
 
     try {
 
         const template =
-            await templateModel.publishTemplate(req.params.id);
+            await templateModel.publishTemplate(
+                req.params.id
+            );
 
-        res.json({
+        if (!template) {
+
+            return res.status(404).json({
+                success: false,
+                message:
+                    "Template not found."
+            });
+
+        }
+
+        return res.json({
+            success: true,
+            message:
+                "Template Published",
+            data: template
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Publish Template Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+
+// =====================================================
+// SAVE TEMPLATE VERSION
+// =====================================================
+
+exports.saveTemplateVersion = async (req, res) => {
+
+    try {
+
+        const version =
+            await templateModel.saveTemplateVersion(
+                req.params.id,
+                req.body
+            );
+
+        return res.status(201).json({
+            success: true,
+            message:
+                "Version saved.",
+            data: version
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Save Version Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+
+// =====================================================
+// GET LATEST VERSION
+// =====================================================
+
+exports.getLatestVersion = async (req, res) => {
+
+    try {
+
+        const version =
+            await templateModel.getLatestVersion(
+                req.params.id
+            );
+
+        return res.json({
+            success: true,
+            data: version
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Get Latest Version Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+
+// =====================================================
+// GET ALL VERSIONS
+// =====================================================
+
+exports.getVersions = async (req, res) => {
+
+    try {
+
+        const versions =
+            await templateModel.getVersions(
+                req.params.id
+            );
+
+        return res.json({
+            success: true,
+            data: versions
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Get Versions Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+
+// =====================================================
+// DELETE TEMPLATE
+// =====================================================
+
+exports.deleteTemplate = async (req, res) => {
+
+    try {
+
+        const template =
+            await templateModel.deleteTemplate(
+                req.params.id
+            );
+
+        if (!template) {
+
+            return res.status(404).json({
+                success: false,
+                message:
+                    "Template not found."
+            });
+
+        }
+
+        return res.json({
+            success: true,
+            message:
+                "Template deleted successfully.",
+            data: template
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Delete Template Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+
+// =====================================================
+// UPLOAD IMAGE
+// =====================================================
+
+exports.uploadImage = async (req, res) => {
+
+    try {
+
+        if (!req.file) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "No image was uploaded."
+            });
+
+        }
+
+
+        // =================================================
+        // CREATE PUBLIC IMAGE URL
+        // =================================================
+
+        const imageUrl =
+            `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+
+        console.log(
+            "Image uploaded:",
+            imageUrl
+        );
+
+
+        return res.status(201).json({
 
             success: true,
 
-            message: "Template Published",
+            message:
+                "Image uploaded successfully.",
 
-            data: template
+            data: {
+
+                filename:
+                    req.file.filename,
+
+                imageUrl:
+                    imageUrl
+
+            }
 
         });
 
     } catch (error) {
 
-        res.status(500).json({
+        console.error(
+            "Image Upload Error:",
+            error
+        );
+
+
+        return res.status(500).json({
 
             success: false,
 
-            message: error.message
-
-        });
-
-    }
-
-};
-// Save Template Version
-exports.saveTemplateVersion = async (req,res)=>{
-
-    try{
-
-        const version =
-        await templateModel.saveTemplateVersion(
-
-            req.params.id,
-
-            req.body
-
-        );
-
-        res.status(201).json({
-
-            success:true,
-
-            message:"Version saved.",
-
-            data:version
-
-        });
-
-    }
-
-    catch(error){
-
-        res.status(500).json({
-
-            success:false,
-
-            message:error.message
-
-        });
-
-    }
-
-};
-
-// Latest Version
-exports.getLatestVersion=async(req,res)=>{
-
-    try{
-
-        const version=
-        await templateModel.getLatestVersion(
-            req.params.id
-        );
-
-        res.json({
-
-            success:true,
-
-            data:version
-
-        });
-
-    }
-
-    catch(error){
-
-        res.status(500).json({
-
-            success:false,
-
-            message:error.message
-
-        });
-
-    }
-
-};
-
-// All Versions
-exports.getVersions=async(req,res)=>{
-
-    try{
-
-        const versions=
-        await templateModel.getVersions(
-            req.params.id
-        );
-
-        res.json({
-
-            success:true,
-
-            data:versions
-
-        });
-
-    }
-
-    catch(error){
-
-        res.status(500).json({
-
-            success:false,
-
-            message:error.message
+            message:
+                error.message ||
+                "Unable to upload image."
 
         });
 

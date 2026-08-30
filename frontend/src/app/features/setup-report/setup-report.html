@@ -1,0 +1,463 @@
+<div class="preview-page">
+
+  <!-- ================================================= -->
+  <!-- TOP TOOLBAR -->
+  <!-- ================================================= -->
+
+  <div class="preview-toolbar">
+
+    <h2>
+      {{
+        isPublished
+          ? 'Published Checklist'
+          : 'Checklist Preview'
+      }}
+    </h2>
+
+
+    <div class="preview-actions">
+
+      <button
+        type="button"
+        class="edit-button"
+        (click)="editTemplate()"
+      >
+        Edit
+      </button>
+
+
+      <button
+        type="button"
+        class="delete-button"
+        (click)="deleteTemplate()"
+      >
+        Delete
+      </button>
+
+
+      <button
+        type="button"
+        class="publish-button"
+        [disabled]="
+          publishing ||
+          isPublished
+        "
+        (click)="publishTemplate()"
+      >
+        {{
+          publishing
+            ? 'Publishing...'
+            : (
+                isPublished
+                  ? 'Published'
+                  : 'Publish'
+              )
+        }}
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================================= -->
+  <!-- MAIN TEMPLATE -->
+  <!-- ================================================= -->
+
+  <div class="builder-card">
+
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <div class="bbw-header">
+
+      <img
+        src="bbw.png"
+        alt="BBW Logo"
+      >
+
+
+      <div class="brand-text">
+
+        <h2>
+          BBW GLOBAL Tek Pvt Ltd
+        </h2>
+
+
+        <p>
+          {{
+            isPublished
+              ? 'Published Setup Checklist'
+              : 'Setup Checklist Preview'
+          }}
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- TEMPLATE DETAILS -->
+    <!-- ================================================= -->
+
+    <div class="details">
+
+      <div class="detail-field">
+
+        <label>
+          Template Name
+        </label>
+
+
+        <div class="readonly-field">
+
+          {{ templateName || '-' }}
+
+        </div>
+
+      </div>
+
+
+      <div class="detail-field">
+
+        <label>
+          Checklist Type
+        </label>
+
+
+        <div class="readonly-field">
+
+          {{ checklistType || 'Setup' }}
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- GENERAL DETAILS -->
+    <!-- ================================================= -->
+
+    <div
+      class="general-details"
+      *ngIf="
+        generalDetails.length > 0
+      "
+    >
+
+      <!--
+        Show the heading while previewing.
+        Hide only this heading after Publish.
+      -->
+
+      <div
+        class="general-details-header"
+        *ngIf="!isPublished"
+      >
+
+        <h3>
+          General Details
+        </h3>
+
+      </div>
+
+
+      <div class="details-scroll">
+
+        <div
+          class="details-row"
+          *ngFor="
+            let row of generalDetails
+          "
+        >
+
+          <div
+            class="general-preview-field"
+            *ngFor="
+              let field of row.fields
+            "
+          >
+
+            <!-- LABEL -->
+
+            <div class="detail-label">
+
+              <div class="preview-label">
+
+                {{
+                  field.label ||
+                  'NEW FIELD'
+                }}
+
+              </div>
+
+            </div>
+
+
+            <!-- VALUE -->
+
+            <div class="detail-value">
+
+              <div class="preview-value">
+
+                {{
+                  field.value ||
+                  '-'
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- BUILDER ITEMS -->
+    <!-- ================================================= -->
+
+    <ng-container
+      *ngFor="let item of builderItems"
+    >
+
+
+      <!-- DATE -->
+
+      <div
+        class="date-card"
+        *ngIf="
+          item.type === 'date'
+        "
+      >
+
+        <label>
+
+          {{
+            item.label ||
+            'Date'
+          }}
+
+        </label>
+
+
+        <div class="readonly-date">
+
+          {{ item.text || '-' }}
+
+        </div>
+
+      </div>
+
+
+      <!-- TEXTBOX -->
+
+      <div
+        class="textbox-card"
+        *ngIf="
+          item.type === 'textbox'
+        "
+      >
+
+        <div class="textbox-header">
+
+          <span
+            class="textbox-title-preview"
+          >
+
+            {{
+              item.label ||
+              'Text / Instruction'
+            }}
+
+          </span>
+
+        </div>
+
+
+        <div
+          class="textbox-content-preview"
+        >
+
+          {{ item.text || '-' }}
+
+        </div>
+
+      </div>
+
+
+      <!-- TABLE -->
+
+      <div
+        class="table-card"
+        *ngIf="
+          item.type === 'table' &&
+          item.table
+        "
+      >
+
+        <div class="table-toolbar">
+
+          <h3>
+
+            {{ item.table.title }}
+
+          </h3>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table
+            class="inspection-table"
+          >
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let row of item.table.rows;
+                  let r = index
+                "
+              >
+
+                <ng-container
+                  *ngFor="
+                    let cell of row.cells
+                  "
+                >
+
+                  <td
+                    *ngIf="!cell.hidden"
+
+                    [attr.colspan]="
+                      cell.colspan
+                    "
+
+                    [attr.rowspan]="
+                      cell.rowspan
+                    "
+
+                    [style.width.px]="
+                      cell.width
+                    "
+
+                    [style.min-width.px]="
+                      cell.width
+                    "
+
+                    [style.height.px]="
+                      cell.height
+                    "
+                  >
+
+
+                    <!-- IMAGE -->
+
+                    <div
+                      class="preview-image-cell"
+                      *ngIf="
+                        cell.inputType ===
+                        'image'
+                      "
+                    >
+
+                      <img
+                        *ngIf="cell.value"
+
+                        [src]="cell.value"
+
+                        class="uploaded-image"
+
+                        alt="Checklist image"
+                      >
+
+
+                      <div
+                        class="empty-image"
+                        *ngIf="!cell.value"
+                      >
+
+                        No image
+
+                      </div>
+
+                    </div>
+
+
+                    <!-- NORMAL VALUE -->
+
+                    <div
+                      class="readonly-cell"
+
+                      *ngIf="
+                        cell.inputType !==
+                        'image'
+                      "
+                    >
+
+                      {{ cell.value || '-' }}
+
+                    </div>
+
+
+                  </td>
+
+                </ng-container>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+    </ng-container>
+
+
+    <!-- ================================================= -->
+    <!-- EMPTY TEMPLATE -->
+    <!-- ================================================= -->
+
+    <div
+      class="empty-state"
+      *ngIf="
+        builderItems.length === 0
+      "
+    >
+
+      <div class="empty-icon">
+        📋
+      </div>
+
+
+      <h3>
+        No checklist items available
+      </h3>
+
+
+      <p>
+        Return to the builder and add checklist items.
+      </p>
+
+    </div>
+
+
+  </div>
+
+</div>

@@ -4,7 +4,6 @@
 
     <div>
       <h3>General Details</h3>
-
     </div>
 
     <div class="general-actions">
@@ -20,7 +19,6 @@
     </div>
 
   </div>
-
 
   <!-- ========================================= -->
   <!-- DETAILS -->
@@ -43,10 +41,10 @@
           <input
             type="text"
             [(ngModel)]="field.label"
+            (ngModelChange)="emitDetails()"
             placeholder="FIELD NAME">
 
         </div>
-
 
         <!-- VALUE -->
 
@@ -55,10 +53,10 @@
           <input
             [type]="field.inputType"
             [(ngModel)]="field.value"
+            (ngModelChange)="emitDetails()"
             placeholder="Enter value">
 
         </div>
-
 
         <!-- DELETE -->
 
@@ -73,7 +71,6 @@
 
       </div>
 
-
       <!-- ADD FIELD -->
 
       <button
@@ -84,7 +81,6 @@
         + Add Field
 
       </button>
-
 
       <!-- DELETE ROW -->
 

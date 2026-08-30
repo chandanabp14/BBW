@@ -28,20 +28,11 @@
 
 }
 
-.logo{
-
-    width:65px;
-
-    height:65px;
-
-    object-fit:contain;
-
-    background:white;
-
-    border-radius:8px;
-
-    padding:4px;
-
+.company-logo {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  margin-right: 15px;
 }
 
 .company-text h2{

@@ -10,3 +10,6 @@ build/
 .vscode/
 .idea/
 *.log
+backend/.env
+backend/uploads/*
+!backend/uploads/.gitkeep

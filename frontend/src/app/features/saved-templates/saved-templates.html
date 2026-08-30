@@ -1,0 +1,209 @@
+<div class="saved-page">
+
+  <div class="saved-header">
+
+    <div>
+
+      <h2>
+        Saved Templates
+      </h2>
+
+      <p>
+        Templates saved in MongoDB
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="backToBuilder()"
+    >
+      Back to Builder
+    </button>
+
+  </div>
+
+
+  <!-- LOADING -->
+
+  <div
+    class="message-card"
+    *ngIf="loading"
+  >
+
+    Loading templates...
+
+  </div>
+
+
+  <!-- ERROR -->
+
+  <div
+    class="message-card error-message"
+    *ngIf="!loading && errorMessage"
+  >
+
+    {{ errorMessage }}
+
+  </div>
+
+
+  <!-- EMPTY -->
+
+  <div
+    class="message-card"
+    *ngIf="
+      !loading &&
+      !errorMessage &&
+      templates.length === 0
+    "
+  >
+
+    No saved templates found.
+
+  </div>
+
+
+  <!-- TEMPLATE LIST -->
+
+  <div
+    class="templates-card"
+    *ngIf="
+      !loading &&
+      templates.length > 0
+    "
+  >
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>
+            ID
+          </th>
+
+          <th>
+            Template Name
+          </th>
+
+          <th>
+            Checklist Type
+          </th>
+
+          <th>
+            Status
+          </th>
+
+          <th>
+            Created
+          </th>
+
+          <th>
+            Actions
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <tr
+          *ngFor="let template of templates"
+        >
+
+          <td>
+
+            {{ template._id }}
+
+          </td>
+
+
+          <td class="template-name">
+
+            {{ template.template_name }}
+
+          </td>
+
+
+          <td>
+
+            {{ template.checklist_type }}
+
+          </td>
+
+
+          <td>
+
+            <span
+              class="status-badge"
+              [class.published]="
+                template.status === 'Published'
+              "
+            >
+
+              {{ template.status }}
+
+            </span>
+
+          </td>
+
+
+          <td>
+
+            {{
+              template.created_at
+                | date:'medium'
+            }}
+
+          </td>
+
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                type="button"
+                class="preview-button"
+                (click)="previewTemplate(template)"
+              >
+                Preview
+              </button>
+
+
+              <button
+                type="button"
+                class="edit-button"
+                (click)="editTemplate(template)"
+              >
+                Edit
+              </button>
+
+
+              <button
+                type="button"
+                class="delete-button"
+                (click)="deleteTemplate(template)"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

@@ -1,31 +1,22 @@
 <div class="builder-card">
 
-  <!-- ================================================= -->
   <!-- HEADER -->
-  <!-- ================================================= -->
-
   <div class="bbw-header">
 
     <img
-      src="logo.png"
+      src="bbw.png"
       alt="BBW Logo"
     >
 
     <div class="brand-text">
-
       <h2>BBW GLOBAL Tek Pvt Ltd</h2>
-
       <p>Checklist Builder</p>
-
     </div>
 
   </div>
 
 
-  <!-- ================================================= -->
-  <!-- DETAILS -->
-  <!-- ================================================= -->
-
+  <!-- TEMPLATE DETAILS -->
   <div class="details">
 
     <div class="detail-field">
@@ -34,6 +25,7 @@
 
       <input
         type="text"
+        [(ngModel)]="templateName"
         placeholder="Enter template name"
       >
 
@@ -44,116 +36,116 @@
 
       <label>Checklist Type</label>
 
-      <select>
+      <select [(ngModel)]="checklistType">
 
-        <option>Inspection</option>
+        <option value="Inspection">
+          Inspection
+        </option>
 
-        <option>Setup</option>
+        <option value="Setup">
+          Setup
+        </option>
 
       </select>
 
     </div>
 
   </div>
-  <app-general-details></app-general-details>
 
 
-  <!-- ================================================= -->
+  <!-- GENERAL DETAILS -->
+  <app-general-details
+    (detailsChanged)="onGeneralDetailsChanged($event)">
+  </app-general-details>
+
+
   <!-- BUILDER TOOLBAR -->
-  <!-- ================================================= -->
-
   <div class="builder-toolbar">
 
     <button
       class="primary-button"
       (click)="addTable()"
     >
-
       + Add Table
-
     </button>
-
 
     <button
       class="secondary-button"
       (click)="addTextbox()"
     >
-
       + Add Textbox
-
     </button>
 
   </div>
-  
 
-  <!-- ================================================= -->
+
   <!-- BUILDER ITEMS -->
-  <!-- ================================================= -->
+  @for(
+    item of tableService.builderItems;
+    track item.id
+  ) {
 
-  @for(item of tableService.builderItems; track item.id) {
 
-    
-    @if(item.type === 'heading') {
-
-    <div class="heading-card">
-
-        <h2>
-            {{ item.text }}
-        </h2>
-
-    </div>
-
-    }
+    <!-- DATE -->
     @if(item.type === 'date') {
 
-    <div class="date-card">
+      <div class="date-card">
 
         <label>
-            {{ item.label }}
+          {{ item.label }}
         </label>
 
         <input
-            type="date">
+          type="date"
+          [(ngModel)]="item.text"
+        >
 
-    </div>
+      </div>
 
     }
-    @if(item.type === 'table' && item.table) {
+
+
+    <!-- TABLE -->
+    @if(
+      item.type === 'table' &&
+      item.table
+    ) {
 
       <div class="table-card">
 
 
-        <!-- TABLE HEADER -->
-
+        <!-- TABLE TOOLBAR -->
         <div class="table-toolbar">
 
-          <h3>{{ item.table.title }}</h3>
+          <h3>
+            {{ item.table.title }}
+          </h3>
 
-          <div>
+
+          <div class="table-top-controls">
+
             <button
-              (click)="addRow(item.table.id)">
+              (click)="addRow(item.table.id)"
+            >
               + Row
             </button>
 
             <button
-              (click)="addColumn(item.table.id)">
+              (click)="addColumn(item.table.id)"
+            >
               + Column
             </button>
 
             <button
-              (click)="deleteRow(item.table.id)">
+              (click)="deleteRow(item.table.id)"
+            >
               − Row
             </button>
 
             <button
-              (click)="deleteColumn(item.table.id)">
+              (click)="deleteColumn(item.table.id)"
+            >
               − Column
-            </button>
-
-            <button
-              class="merge-button"
-              (click)="mergeSelected(item.table.id)">
-              Merge Selected
             </button>
 
           </div>
@@ -165,30 +157,22 @@
               title="Move Up"
               (click)="moveUp(item.id)"
             >
-
               ↑
-
             </button>
-
 
             <button
               title="Move Down"
               (click)="moveDown(item.id)"
             >
-
               ↓
-
             </button>
-
 
             <button
               class="danger-button"
               title="Delete Table"
               (click)="deleteItem(item.id)"
             >
-
               Delete
-
             </button>
 
           </div>
@@ -197,49 +181,36 @@
 
 
         <!-- TABLE CONTROLS -->
-
         <div class="table-controls">
 
           <button
             (click)="addRow(item.table.id)"
           >
-
             + Row
-
           </button>
-
 
           <button
             (click)="addColumn(item.table.id)"
           >
-
             + Column
-
           </button>
-
 
           <button
             (click)="deleteRow(item.table.id)"
           >
-
             − Row
-
           </button>
-
 
           <button
             (click)="deleteColumn(item.table.id)"
           >
-
             − Column
-
           </button>
 
         </div>
 
 
-        <!-- INSPECTION TABLE -->
-
+        <!-- TABLE -->
         <div class="table-wrapper">
 
           <table class="inspection-table">
@@ -260,7 +231,6 @@
                     let c = $index
                   ) {
 
-
                     @if(!cell.hidden) {
 
                       <td
@@ -273,37 +243,39 @@
 
                         [class.selected]="cell.selected"
 
-                        (click)="selectCell(
-                          item.table.id,
-                          r,
-                          c,
-                          $event
-                        )"
+                        (click)="
+                          selectCell(
+                            item.table.id,
+                            r,
+                            c,
+                            $event
+                          )
+                        "
                       >
 
 
                         <!-- HEADER CELL -->
-
                         @if(r === 0) {
 
                           <textarea
                             class="header-input"
                             [(ngModel)]="cell.value"
                             (input)="autoResizeCell($event, cell)"
-                            (click)="$event.stopPropagation()"
                             rows="1"
                           ></textarea>
 
                         }
 
-                        <!-- NORMAL CELL -->
 
+                        <!-- NORMAL CELL -->
                         @else {
 
-                          @if(cell.inputType === 'image') {
+                          @if(
+                            cell.inputType === 'image'
+                          ) {
 
-                            <!-- IMAGE UPLOAD -->
 
+                            <!-- IMAGE EXISTS -->
                             @if(cell.value) {
 
                               <div class="image-cell">
@@ -314,26 +286,51 @@
                                   alt="Uploaded image"
                                 >
 
-                                <button
-                                  type="button"
-                                  class="change-image-button"
-                                  (click)="$event.stopPropagation(); imageInput.click()"
-                                >
-                                  Change Image
-                                </button>
+                                <div class="image-actions">
+
+                                  <button
+                                    type="button"
+                                    class="view-image-button"
+                                    (click)="
+                                      $event.stopPropagation();
+                                      viewImage(cell.value)
+                                    "
+                                  >
+                                    View
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    class="change-image-button"
+                                    (click)="
+                                      $event.stopPropagation();
+                                      imageInput.click()
+                                    "
+                                  >
+                                    Change Image
+                                  </button>
+
+                                </div>
 
                               </div>
 
                             }
 
+
+                            <!-- NO IMAGE -->
                             @else {
 
                               <div
                                 class="image-upload"
-                                (click)="$event.stopPropagation(); imageInput.click()"
+                                (click)="
+                                  $event.stopPropagation();
+                                  imageInput.click()
+                                "
                               >
 
-                                <span class="upload-icon">📷</span>
+                                <span class="upload-icon">
+                                  📷
+                                </span>
 
                                 <span>
                                   Upload Image
@@ -343,56 +340,76 @@
 
                             }
 
+
                             <input
                               #imageInput
                               type="file"
                               accept="image/*"
                               hidden
-                              (change)="onImageUpload($event, cell)"
+                              (change)="
+                                onImageUpload(
+                                  $event,
+                                  cell
+                                )
+                              "
                             >
 
                           }
 
+
+                          <!-- NORMAL TEXT -->
                           @else {
 
-                          <textarea
-                            class="cell-input"
-                            [(ngModel)]="cell.value"
-                            placeholder="Enter value"
-                            (input)="autoResizeCell($event, cell)"
-                            (click)="$event.stopPropagation()"
-                            rows="1"
-                          ></textarea>
+                            <textarea
+                              class="cell-input"
+                              [(ngModel)]="cell.value"
+                              placeholder="Enter value"
+                              (input)="autoResizeCell($event, cell)"
+                              rows="1"
+                            ></textarea>
 
                           }
 
                         }
 
 
-                        <!-- CELL ACTIONS -->
+                        <!-- MERGE + SPLIT -->
+                        @if(cell.selected) {
 
-                        <div class="cell-buttons">
+                          <div class="cell-buttons">
 
-                          
+                            <button
+                              type="button"
+                              class="cell-merge-button"
+                              (click)="
+                                mergeSelected(
+                                  item.table!.id
+                                );
+                                $event.stopPropagation()
+                              "
+                            >
+                              Merge
+                            </button>
 
 
-                          <button
+                            <button
+                              type="button"
+                              class="split-button"
+                              (click)="
+                                unmerge(
+                                  item.table!.id,
+                                  r,
+                                  c
+                                );
+                                $event.stopPropagation()
+                              "
+                            >
+                              Split
+                            </button>
 
-                            class="split-button"
-                            (click)="
-                              unmerge(
-                                item.table!.id,
-                                r,
-                                c
-                              );
-                              $event.stopPropagation()
-                            "
-                          >
-                            Split
-                          </button>
+                          </div>
 
-                        </div>
-
+                        }
 
                       </td>
 
@@ -410,21 +427,15 @@
 
         </div>
 
-
-
       </div>
 
     }
 
 
-    <!-- ================================================= -->
-    <!-- TEXTBOX ITEM -->
-    <!-- ================================================= -->
-
+    <!-- TEXTBOX -->
     @if(item.type === 'textbox') {
 
       <div class="textbox-card">
-
 
         <div class="textbox-header">
 
@@ -432,36 +443,31 @@
             type="text"
             class="textbox-title"
             [(ngModel)]="item.label"
-            placeholder="Enter title">
+            placeholder="Enter title"
+          >
 
 
           <div>
 
             <button
               title="Move Up"
-              (click)="moveUp(item.id)">
-
+              (click)="moveUp(item.id)"
+            >
               ↑
-
             </button>
-
 
             <button
               title="Move Down"
-              (click)="moveDown(item.id)">
-
+              (click)="moveDown(item.id)"
+            >
               ↓
-
             </button>
-
 
             <button
               class="danger-button"
               (click)="deleteItem(item.id)"
             >
-
               Delete
-
             </button>
 
           </div>
@@ -470,13 +476,9 @@
 
 
         <textarea
-
           [(ngModel)]="item.text"
-
           placeholder="Enter instructions, notes or checklist information..."
-
         ></textarea>
-
 
       </div>
 
@@ -485,32 +487,24 @@
   }
 
 
-  <!-- ================================================= -->
-  <!-- EMPTY STATE -->
-  <!-- ================================================= -->
-
-  @if(tableService.builderItems.length === 0) {
+  <!-- EMPTY -->
+  @if(
+    tableService.builderItems.length === 0
+  ) {
 
     <div class="empty-state">
 
       <div class="empty-icon">
-
         📋
-
       </div>
 
       <h3>
-
         Your checklist is empty
-
       </h3>
 
       <p>
-
         Add a table or textbox to start building your checklist.
-
       </p>
-
 
       <div>
 
@@ -518,19 +512,14 @@
           class="primary-button"
           (click)="addTable()"
         >
-
           + Add Table
-
         </button>
-
 
         <button
           class="secondary-button"
           (click)="addTextbox()"
         >
-
           + Add Textbox
-
         </button>
 
       </div>
@@ -540,32 +529,103 @@
   }
 
 
-  <!-- ================================================= -->
   <!-- FOOTER -->
-  <!-- ================================================= -->
-
   <div class="builder-footer">
 
-    <button class="save-button">
+    <button
+      type="button"
+      class="saved-templates-button"
+      (click)="openSavedTemplates()"
+    >
+      Saved Templates
+    </button>
 
+    <button
+      class="save-button"
+      (click)="saveDraft()"
+    >
       Save Draft
-
     </button>
 
-
-    <button class="preview-button">
-
+    <button
+      class="preview-button"
+      (click)="previewChecklist()"
+    >
       Preview
-
     </button>
 
-
-    <button class="publish-button">
-
+    <button
+      class="publish-button"
+      (click)="publishChecklist()"
+    >
       Publish
-
     </button>
 
   </div>
 
 </div>
+
+
+
+<!-- ================================================= -->
+<!-- IMAGE PREVIEW MODAL -->
+<!-- ================================================= -->
+
+@if(selectedImage) {
+
+  <div
+    class="image-modal-overlay"
+    (click)="closeImageModal()"
+  >
+
+    <div
+      class="image-modal"
+      (click)="$event.stopPropagation()"
+    >
+
+      <div class="image-modal-header">
+
+        <h3>
+          Image Preview
+        </h3>
+
+        <button
+          type="button"
+          class="image-modal-close"
+          (click)="closeImageModal()"
+          aria-label="Close image preview"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="image-modal-body">
+
+        <img
+          [src]="selectedImage"
+          class="image-modal-preview"
+          alt="Checklist image preview"
+        >
+
+      </div>
+
+
+      <div class="image-modal-footer">
+
+        <button
+          type="button"
+          class="image-modal-close-button"
+          (click)="closeImageModal()"
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}

@@ -48,25 +48,6 @@ export class TableService {
 
 
   // =====================================================
-  // ADD HEADING
-  // =====================================================
-
-  addHeading(): void {
-
-    this.builderItems.push({
-
-      id: this.generateId(),
-
-      type: 'heading',
-
-      text: 'Section Heading'
-
-    });
-
-  }
-
-
-  // =====================================================
   // ADD DATE
   // =====================================================
 
@@ -397,23 +378,18 @@ export class TableService {
       return;
     }
 
-
     this.clearSelectionForTable(table);
-
 
     const cell =
       table.rows[row]?.cells[column];
 
-
-    if (!cell) {
+    if (!cell || cell.hidden) {
       return;
     }
-
 
     cell.selected = true;
 
   }
-
 
   // =====================================================
   // SELECT RANGE
@@ -435,34 +411,19 @@ export class TableService {
       return;
     }
 
-
     this.clearSelectionForTable(table);
 
-
     const minRow =
-      Math.min(
-        startRow,
-        endRow
-      );
+      Math.min(startRow, endRow);
 
     const maxRow =
-      Math.max(
-        startRow,
-        endRow
-      );
+      Math.max(startRow, endRow);
 
     const minColumn =
-      Math.min(
-        startColumn,
-        endColumn
-      );
+      Math.min(startColumn, endColumn);
 
     const maxColumn =
-      Math.max(
-        startColumn,
-        endColumn
-      );
-
+      Math.max(startColumn, endColumn);
 
     for (
       let r = minRow;
@@ -479,8 +440,10 @@ export class TableService {
         const cell =
           table.rows[r]?.cells[c];
 
-
-        if (cell) {
+        if (
+          cell &&
+          !cell.hidden
+        ) {
 
           cell.selected = true;
 
@@ -491,7 +454,6 @@ export class TableService {
     }
 
   }
-
 
   // =====================================================
   // CLEAR SELECTION
@@ -539,17 +501,15 @@ export class TableService {
       return;
     }
 
-
     const selected: {
       row: number;
       column: number;
       cell: TableCell;
     }[] = [];
 
-
-    // ---------------------------------------------
-    // FIND SELECTED CELLS
-    // ---------------------------------------------
+    // =====================================================
+    // FIND ALL SELECTED CELLS
+    // =====================================================
 
     for (
       let r = 0;
@@ -566,20 +526,15 @@ export class TableService {
         const cell =
           table.rows[r].cells[c];
 
-
         if (
           cell.selected &&
           !cell.hidden
         ) {
 
           selected.push({
-
             row: r,
-
             column: c,
-
-            cell: cell
-
+            cell
           });
 
         }
@@ -588,144 +543,55 @@ export class TableService {
 
     }
 
-
-    // Need at least 2 cells
+    // =====================================================
+    // NEED AT LEAST TWO CELLS
+    // =====================================================
 
     if (selected.length < 2) {
 
       alert(
-        'Select two or more adjacent cells to merge.'
+        'Select two or more cells to merge.'
       );
 
       return;
 
     }
 
-
-    // ---------------------------------------------
+    // =====================================================
     // FIND RECTANGLE
-    // ---------------------------------------------
+    // =====================================================
 
     const minRow =
       Math.min(
         ...selected.map(
-          x => x.row
+          item => item.row
         )
       );
 
     const maxRow =
       Math.max(
         ...selected.map(
-          x => x.row
+          item => item.row
         )
       );
 
     const minColumn =
       Math.min(
         ...selected.map(
-          x => x.column
+          item => item.column
         )
       );
 
     const maxColumn =
       Math.max(
         ...selected.map(
-          x => x.column
+          item => item.column
         )
       );
 
-
-    const requiredCellCount =
-      (maxRow - minRow + 1) *
-      (maxColumn - minColumn + 1);
-
-
-    // ---------------------------------------------
-    // MUST BE A COMPLETE RECTANGLE
-    // ---------------------------------------------
-
-    if (
-      selected.length !==
-      requiredCellCount
-    ) {
-
-      alert(
-        'Please select a complete rectangular area.'
-      );
-
-      return;
-
-    }
-
-
-    // ---------------------------------------------
-    // DO NOT MERGE ALREADY MERGED CELLS
-    // ---------------------------------------------
-
-    for (const item of selected) {
-
-      if (
-        item.cell.rowspan !== 1 ||
-        item.cell.colspan !== 1
-      ) {
-
-        alert(
-          'Select only normal cells when creating a new merge.'
-        );
-
-        return;
-
-      }
-
-    }
-
-
-    // ---------------------------------------------
-    // TOP-LEFT CELL
-    // ---------------------------------------------
-
-    const mainCell =
-      table.rows[minRow]
-        .cells[minColumn];
-
-
-    // ---------------------------------------------
-    // COMBINE TEXT
-    // ---------------------------------------------
-
-    const values =
-      selected
-        .map(x => x.cell.value)
-        .filter(
-          value =>
-            value &&
-            value.trim() !== ''
-        );
-
-
-    mainCell.value =
-      values.join(' ');
-
-
-    // ---------------------------------------------
-    // ROWSPAN
-    // ---------------------------------------------
-
-    mainCell.rowspan =
-      maxRow - minRow + 1;
-
-
-    // ---------------------------------------------
-    // COLSPAN
-    // ---------------------------------------------
-
-    mainCell.colspan =
-      maxColumn - minColumn + 1;
-
-
-    // ---------------------------------------------
-    // HIDE OTHER CELLS
-    // ---------------------------------------------
+    // =====================================================
+    // VALIDATE COMPLETE RECTANGLE
+    // =====================================================
 
     for (
       let r = minRow;
@@ -739,34 +605,138 @@ export class TableService {
         c++
       ) {
 
+        const cell =
+          table.rows[r]?.cells[c];
+
+        if (
+          !cell ||
+          cell.hidden ||
+          !cell.selected
+        ) {
+
+          alert(
+            'Please select one complete rectangular area.'
+          );
+
+          return;
+
+        }
+
+        if (
+          cell.rowspan !== 1 ||
+          cell.colspan !== 1
+        ) {
+
+          alert(
+            'Split the existing merged cell first.'
+          );
+
+          return;
+
+        }
+
+      }
+
+    }
+
+    // =====================================================
+    // TOP-LEFT CELL BECOMES MAIN CELL
+    // =====================================================
+
+    const mainCell =
+      table.rows[minRow]
+        .cells[minColumn];
+
+    // =====================================================
+    // COMBINE VALUES IN READING ORDER
+    // =====================================================
+
+    const values: string[] = [];
+
+    for (
+      let r = minRow;
+      r <= maxRow;
+      r++
+    ) {
+
+      for (
+        let c = minColumn;
+        c <= maxColumn;
+        c++
+      ) {
+
+        const value =
+          table.rows[r]
+            .cells[c]
+            .value;
+
+        if (
+          typeof value === 'string' &&
+          value.trim() !== ''
+        ) {
+
+          values.push(
+            value.trim()
+          );
+
+        }
+
+      }
+
+    }
+
+    mainCell.value =
+      values.join(' ');
+
+    // =====================================================
+    // SUPPORT VERTICAL + HORIZONTAL + RECTANGLE MERGE
+    // =====================================================
+
+    mainCell.rowspan =
+      maxRow - minRow + 1;
+
+    mainCell.colspan =
+      maxColumn - minColumn + 1;
+
+    // =====================================================
+    // HIDE ALL COVERED CELLS EXCEPT MAIN CELL
+    // =====================================================
+
+    for (
+      let r = minRow;
+      r <= maxRow;
+      r++
+    ) {
+
+      for (
+        let c = minColumn;
+        c <= maxColumn;
+        c++
+      ) {
+
+        const cell =
+          table.rows[r].cells[c];
+
         if (
           r === minRow &&
           c === minColumn
         ) {
 
+          cell.hidden = false;
+          cell.selected = false;
+
           continue;
 
         }
 
-
-        const cell =
-          table.rows[r]
-            .cells[c];
-
-
         cell.hidden = true;
-
         cell.selected = false;
 
       }
 
     }
 
-
-    mainCell.selected = false;
-
   }
-
 
   // =====================================================
   // MERGE RIGHT
@@ -866,33 +836,28 @@ export class TableService {
     column: number
   ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
       return;
     }
 
-
     const mainCell =
       table.rows[row]
         ?.cells[column];
-
 
     if (!mainCell) {
       return;
     }
 
-
     const rowspan =
-      mainCell.rowspan;
-
+      mainCell.rowspan || 1;
 
     const colspan =
-      mainCell.colspan;
-
+      mainCell.colspan || 1;
 
     // Nothing to split
-
     if (
       rowspan === 1 &&
       colspan === 1
@@ -902,10 +867,9 @@ export class TableService {
 
     }
 
-
-    // ---------------------------------------------
-    // RESTORE CELLS
-    // ---------------------------------------------
+    // =====================================================
+    // RESTORE ALL CELLS COVERED BY MERGE
+    // =====================================================
 
     for (
       let r = row;
@@ -923,11 +887,12 @@ export class TableService {
           table.rows[r]
             ?.cells[c];
 
-
         if (!cell) {
           continue;
         }
 
+        cell.hidden = false;
+        cell.selected = false;
 
         if (
           r === row &&
@@ -938,39 +903,22 @@ export class TableService {
 
         }
 
-
-        cell.hidden = false;
-
         cell.rowspan = 1;
-
         cell.colspan = 1;
-
-        cell.selected = false;
-
-        cell.value = '';
-
-        cell.inputMode =
-          mainCell.inputMode;
-
-        cell.inputType =
-          mainCell.inputType;
-
-        cell.required =
-          mainCell.required;
 
       }
 
     }
 
+    // =====================================================
+    // RESET MAIN CELL
+    // =====================================================
 
     mainCell.rowspan = 1;
-
     mainCell.colspan = 1;
-
     mainCell.selected = false;
 
   }
-
 
   // =====================================================
   // DELETE BUILDER ITEM

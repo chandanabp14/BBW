@@ -1,153 +1,263 @@
-const pool = require("../config/db");
+const Template =
+  require("./template.schema");
 
-// Create Template
-const createTemplate = async (template) => {
-    const { template_name, checklist_type, created_by } = template;
+const TemplateVersion =
+  require("./templateVersion.schema");
 
-    const query = `
-        INSERT INTO templates
-        (template_name, checklist_type, status, created_by)
-        VALUES ($1, $2, 'Draft', $3)
-        RETURNING *;
-    `;
 
-    const values = [
-        template_name,
-        checklist_type,
-        created_by
-    ];
+// =====================================================
+// CREATE TEMPLATE
+// =====================================================
 
-    const result = await pool.query(query, values);
-    return result.rows[0];
+const createTemplate = async (data) => {
+
+  const template = await Template.create({
+
+    template_name:
+      data.template_name,
+
+    checklist_type:
+      data.checklist_type,
+
+    status:
+      data.status || "Draft",
+
+    created_by:
+      data.created_by || 1
+
+  });
+
+  return template;
+
 };
 
-// Get All Templates
+
+// =====================================================
+// GET ALL TEMPLATES
+// =====================================================
+
 const getAllTemplates = async () => {
 
-    const result = await pool.query(`
-        SELECT *
-        FROM templates
-        ORDER BY id DESC;
-    `);
+  const templates =
+    await Template
+      .find()
+      .sort({
+        created_at: -1
+      });
 
-    return result.rows;
+  return templates;
+
 };
 
-// Get Template By ID
+
+// =====================================================
+// GET TEMPLATE BY ID
+// =====================================================
+
 const getTemplateById = async (id) => {
 
-    const result = await pool.query(
-        `SELECT * FROM templates WHERE id=$1`,
-        [id]
-    );
+  const template =
+    await Template.findById(id);
 
-    return result.rows[0];
+  return template;
+
 };
 
-// Publish Template
-const publishTemplate = async (id) => {
 
-    const result = await pool.query(
-        `
-        UPDATE templates
-        SET status='Published'
-        WHERE id=$1
-        RETURNING *;
-        `,
-        [id]
-    );
+// =====================================================
+// UPDATE TEMPLATE DETAILS
+// =====================================================
 
-    return result.rows[0];
-};
-
-// Save Template Version
-const saveTemplateVersion = async (
-    templateId,
-    templateJson
+const updateTemplate = async (
+  id,
+  data
 ) => {
 
-    const versionResult = await pool.query(
-        `
-        SELECT COALESCE(MAX(version_number),0)+1 AS version
-        FROM template_versions
-        WHERE template_id=$1
-        `,
-        [templateId]
+  const template =
+    await Template.findByIdAndUpdate(
+      id,
+      {
+        template_name:
+          data.template_name,
+
+        checklist_type:
+          data.checklist_type
+      },
+      {
+        new: true,
+        runValidators: true
+      }
     );
 
-    const version = versionResult.rows[0].version;
-
-    const result = await pool.query(
-        `
-        INSERT INTO template_versions
-        (
-            template_id,
-            version_number,
-            template_json
-        )
-        VALUES($1,$2,$3)
-        RETURNING *;
-        `,
-        [
-            templateId,
-            version,
-            templateJson
-        ]
-    );
-
-    return result.rows[0];
+  return template;
 
 };
 
-// Latest Version
-const getLatestVersion = async (templateId) => {
 
-    const result = await pool.query(
-        `
-        SELECT *
-        FROM template_versions
-        WHERE template_id=$1
-        ORDER BY version_number DESC
-        LIMIT 1
-        `,
-        [templateId]
+// =====================================================
+// PUBLISH TEMPLATE
+// =====================================================
+
+const publishTemplate = async (id) => {
+
+  const template =
+    await Template.findByIdAndUpdate(
+
+      id,
+
+      {
+        status: "Published"
+      },
+
+      {
+        new: true
+      }
+
     );
 
-    return result.rows[0];
+  return template;
 
 };
 
-// All Versions
-const getVersions = async (templateId) => {
 
-    const result = await pool.query(
-        `
-        SELECT *
-        FROM template_versions
-        WHERE template_id=$1
-        ORDER BY version_number DESC
-        `,
-        [templateId]
-    );
+// =====================================================
+// SAVE TEMPLATE VERSION
+// =====================================================
 
-    return result.rows;
+const saveTemplateVersion = async (
+  templateId,
+  data
+) => {
+
+  const latestVersion =
+    await TemplateVersion
+      .findOne({
+        template_id: templateId
+      })
+      .sort({
+        version_number: -1
+      });
+
+
+  const nextVersionNumber =
+    latestVersion
+      ? latestVersion.version_number + 1
+      : 1;
+
+
+  const version =
+    await TemplateVersion.create({
+
+      template_id:
+        templateId,
+
+      version_number:
+        nextVersionNumber,
+
+      template_json:
+        data
+
+    });
+
+
+  return version;
 
 };
+
+
+// =====================================================
+// GET LATEST VERSION
+// =====================================================
+
+const getLatestVersion = async (
+  templateId
+) => {
+
+  const version =
+    await TemplateVersion
+      .findOne({
+        template_id: templateId
+      })
+      .sort({
+        version_number: -1
+      });
+
+  return version;
+
+};
+
+
+// =====================================================
+// GET ALL VERSIONS
+// =====================================================
+
+const getVersions = async (
+  templateId
+) => {
+
+  const versions =
+    await TemplateVersion
+      .find({
+        template_id: templateId
+      })
+      .sort({
+        version_number: -1
+      });
+
+  return versions;
+
+};
+
+
+// =====================================================
+// DELETE TEMPLATE
+// =====================================================
+
+const deleteTemplate = async (id) => {
+
+  const template =
+    await Template.findByIdAndDelete(id);
+
+
+  if (!template) {
+
+    return null;
+
+  }
+
+
+  await TemplateVersion.deleteMany({
+    template_id: id
+  });
+
+
+  return template;
+
+};
+
+
+// =====================================================
+// EXPORTS
+// =====================================================
 
 module.exports = {
 
-    createTemplate,
+  createTemplate,
 
-    getAllTemplates,
+  getAllTemplates,
 
-    getTemplateById,
+  getTemplateById,
 
-    publishTemplate,
+  updateTemplate,
 
-    saveTemplateVersion,
+  publishTemplate,
 
-    getLatestVersion,
+  saveTemplateVersion,
 
-    getVersions
+  getLatestVersion,
+
+  getVersions,
+
+  deleteTemplate
 
 };
