@@ -1,23 +1,33 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: #eef4fb;
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background: #dfe3e8;
 }
 
 
 /* =====================================================
-   PREVIEW PAGE
+   PAGE
 ===================================================== */
 
 .preview-page {
   min-height: 100vh;
-  background:
-    linear-gradient(
-      135deg,
-      #eef4fb,
-      #f8fafc
-    );
+
+  padding:
+    4px
+    24px
+    30px;
+
+  box-sizing: border-box;
+
+  background: #dfe3e8;
+
+  overflow-x: auto;
 }
 
 
@@ -26,312 +36,418 @@
 ===================================================== */
 
 .preview-toolbar {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+
+  min-width: 1250px;
+
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
 
-  padding: 16px 40px;
+  padding:
+    12px
+    18px;
+
+  margin-bottom: 14px;
 
   background: white;
 
-  border-bottom: 1px solid #dbe3ee;
+  border-radius: 6px;
 
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.06);
-
-  position: sticky;
-  top: 0;
-  z-index: 20;
+    0 2px 8px
+    rgba(0, 0, 0, 0.12);
 }
+
 
 .preview-toolbar h2 {
   margin: 0;
-  color: #174a8b;
+
+  color: #183a63;
+
   font-size: 20px;
 }
 
+
 .preview-actions {
   display: flex;
-  gap: 10px;
-}
 
-.preview-actions button {
-  padding: 9px 18px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.edit-button {
-  background: white;
-  color: #1d4ed8;
-  border: 1px solid #2563eb;
-}
-
-.edit-button:hover {
-  background: #eff6ff;
-}
-
-.delete-button {
-  background: white;
-  color: #dc2626;
-  border: 1px solid #dc2626;
-}
-
-.delete-button:hover {
-  background: #fef2f2;
-}
-
-
-/* =====================================================
-   SAME BUILDER CONTAINER
-===================================================== */
-
-.builder-card {
-  min-height: 100vh;
-
-  width: 100%;
-  min-width: 0;
-
-  padding: 30px 40px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #eef4fb,
-      #f8fafc
-    );
-
-  box-sizing: border-box;
-
-  overflow-x: hidden;
-}
-
-
-/* =====================================================
-   HEADER
-===================================================== */
-
-.bbw-header {
-  display: flex;
-  align-items: center;
-
-  gap: 18px;
-
-  background: white;
-
-  padding: 20px 25px;
-
-  border-radius: 12px;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.08);
-
-  margin-bottom: 25px;
-}
-
-.bbw-header img {
-  width: 70px;
-  height: 70px;
-  object-fit: contain;
-}
-
-.brand-text h2 {
-  margin: 0;
-
-  font-size: 24px;
-
-  color: #174a8b;
-}
-
-.brand-text p {
-  margin: 5px 0 0;
-
-  color: #64748b;
-}
-
-
-/* =====================================================
-   TEMPLATE DETAILS
-===================================================== */
-
-.details {
-  display: grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap: 20px;
-
-  background: white;
-
-  padding: 25px;
-
-  border-radius: 12px;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.06);
-
-  margin-bottom: 20px;
-}
-
-.detail-field {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
-.detail-field label {
-  font-size: 14px;
+
+.preview-actions button {
+  min-width: 70px;
+
+  height: 34px;
+
+  padding:
+    0
+    15px;
+
+  font-size: 13px;
+
   font-weight: 600;
-  color: #334155;
+
+  cursor: pointer;
+
+  background: white;
+
+  border-radius: 4px;
 }
 
-.readonly-field {
-  min-height: 42px;
 
-  display: flex;
-  align-items: center;
+.edit-button {
+  color: #1d4ed8;
 
-  border: 1px solid #cbd5e1;
+  border:
+    1px solid
+    #2563eb;
+}
 
-  border-radius: 7px;
 
-  padding: 0 12px;
+.delete-button {
+  color: #dc2626;
 
-  font-size: 14px;
+  border:
+    1px solid
+    #dc2626;
+}
+
+
+.publish-button {
+  color: white;
+
+  background: #047857 !important;
+
+  border:
+    1px solid
+    #047857;
+}
+
+
+.publish-button:disabled {
+  opacity: 0.6;
+
+  cursor: default;
+}
+
+
+/* =====================================================
+   MAIN PAPER
+===================================================== */
+
+.inspection-sheet {
+  width: 1450px;
+
+  margin: 0 auto;
+
+  background: white;
+
+  border:
+    1px solid
+    #68798b;
+
+  box-sizing: border-box;
 
   color: #111827;
+}
 
-  background: #f8fafc;
+
+/* =====================================================
+   DOCUMENT HEADER
+===================================================== */
+
+.document-header {
+  display: grid;
+
+  grid-template-columns:
+    160px
+    1fr
+    440px;
+
+  height: 58px;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.document-logo,
+.document-company,
+.document-title {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
 
   box-sizing: border-box;
 }
 
 
+.document-logo,
+.document-company {
+  border-right:
+    1px solid
+    #68798b;
+}
+
+
+.document-logo img {
+  width: 100px;
+
+  max-height: 46px;
+
+  object-fit: contain;
+}
+
+
+.document-company {
+  color: #12497d;
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+
+.document-title {
+  padding:
+    4px
+    10px;
+
+  color: #335c84;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+
+  text-align: center;
+}
+
+
 /* =====================================================
-   GENERAL DETAILS
+   GENERAL INFORMATION
 ===================================================== */
 
-.general-details-preview {
-  background: white;
-
-  border-radius: 12px;
-
-  margin-bottom: 20px;
-
-  overflow: hidden;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.06);
-}
-
-.general-details-header {
-  padding: 18px 22px;
-
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.general-details-header h3 {
-  margin: 0;
-  color: #174a8b;
-}
-
-.general-details-body {
-  padding: 16px 18px;
-}
-
-.general-details-row {
-  display: flex;
-  gap: 20px;
-
-  margin-bottom: 12px;
-
-  flex-wrap: wrap;
-}
-
-.general-details-row:last-child {
-  margin-bottom: 0;
-}
-
-.general-detail-field {
-  flex: 1 1 280px;
-
+.information-grid {
   display: grid;
 
   grid-template-columns:
-    minmax(120px, 45%)
+    145px
+    1fr
+    145px
+    1fr
+    145px
     1fr;
 
-  min-height: 44px;
-}
-
-.general-detail-label {
-  display: flex;
-  align-items: center;
-
-  padding: 10px;
-
-  background: #eef2f7;
+  width: 100%;
 
   border-bottom:
-    1px solid #9db2d3;
-
-  font-size: 12px;
-
-  font-weight: 600;
-
-  color: #163f73;
-}
-
-.general-detail-value {
-  display: flex;
-  align-items: center;
-
-  padding: 10px 15px;
-
-  color: #334155;
+    1px solid
+    #68798b;
 }
 
 
-/* =====================================================
-   TABLE CARD
-===================================================== */
+.info-label,
+.info-value {
+  min-height: 29px;
 
-.table-card {
-  background: white;
-
-  border-radius: 12px;
-
-  padding: 20px;
-
-  margin-bottom: 22px;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.07);
-
-  min-width: 0;
-}
-
-
-/* =====================================================
-   TABLE TITLE
-===================================================== */
-
-.table-toolbar {
   display: flex;
 
   align-items: center;
 
-  justify-content: space-between;
+  box-sizing: border-box;
 
-  margin-bottom: 15px;
+  border-right:
+    1px solid
+    #9aa8b6;
+
+  border-bottom:
+    1px solid
+    #9aa8b6;
 }
 
-.table-toolbar h3 {
-  margin: 0;
 
-  color: #1e3a5f;
+.info-label {
+  padding:
+    4px
+    7px;
+
+  color: #2d4d6c;
+
+  font-size: 8px;
+
+  line-height: 1.25;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  background: #f9fbfd;
+}
+
+
+.info-value {
+  padding:
+    4px
+    8px;
+
+  color: #111827;
+
+  font-size: 10px;
+
+  line-height: 1.25;
+
+  word-break: break-word;
+}
+
+
+.information-grid > *:nth-child(6n) {
+  border-right: none;
+}
+
+
+/* =====================================================
+   ADDITIONAL GENERAL DETAILS
+===================================================== */
+
+/*
+  Existing builder fields that are not part of the fixed
+  PDC top section are kept here so no builder data is lost.
+*/
+
+.additional-details {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.additional-field {
+  display: grid;
+
+  grid-template-columns:
+    45%
+    55%;
+
+  min-height: 28px;
+
+  border-right:
+    1px solid
+    #9aa8b6;
+
+  border-bottom:
+    1px solid
+    #9aa8b6;
+}
+
+
+.additional-label {
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px
+    6px;
+
+  border-right:
+    1px solid
+    #9aa8b6;
+
+  background: #f9fbfd;
+
+  color: #2d4d6c;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.additional-value {
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px
+    6px;
+
+  font-size: 10px;
+
+  word-break: break-word;
+}
+
+
+/* =====================================================
+   INSPECTION SECTION
+===================================================== */
+
+.inspection-section {
+  width: 100%;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+/* =====================================================
+   SECTION TITLE
+===================================================== */
+
+.section-title {
+  min-height: 36px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  padding:
+    4px
+    10px;
+
+  box-sizing: border-box;
+
+  border-bottom:
+    1px solid
+    #68798b;
+
+  background: #eaf2f8;
+
+  color: #164d7f;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.4px;
+
+  text-transform: uppercase;
 }
 
 
@@ -343,21 +459,15 @@
   display: block;
 
   width: 100%;
-  max-width: 100%;
-
-  min-width: 0;
-
-  box-sizing: border-box;
 
   overflow-x: auto;
-  overflow-y: visible;
 
-  padding-bottom: 10px;
+  overflow-y: visible;
 }
 
 
 /* =====================================================
-   SAME TABLE
+   INSPECTION TABLE
 ===================================================== */
 
 .inspection-table {
@@ -367,71 +477,64 @@
 
   width: max-content;
 
-  min-width: max-content;
+  min-width: 100%;
 }
 
+
 .inspection-table td {
-  width: 30px;
-
-  min-width: 30px;
-
-  height: 30px;
-
-  border: 1px solid #9db2d3;
-
-  padding: 6px;
+  padding:
+    2px
+    3px;
 
   box-sizing: border-box;
 
+  border-right:
+    1px solid
+    #7f8e9d;
+
+  border-bottom:
+    1px solid
+    #7f8e9d;
+
   vertical-align: middle;
 
-  overflow: visible;
+  text-align: center;
+
+  color: #111827;
+
+  font-size: 9px;
+
+  line-height: 1.15;
 
   white-space: normal;
 
   overflow-wrap: anywhere;
 
   word-break: break-word;
-
-  text-align: center;
 }
 
 
-/* IMPORTANT:
-   Preview cells are NOT clickable
-*/
-
-.inspection-table td {
-  cursor: default;
-}
-
-.inspection-table td:hover {
-  background: white;
+.inspection-table tr:last-child td {
+  border-bottom: none;
 }
 
 
-/* =====================================================
-   READ ONLY CELL
-===================================================== */
-
-.readonly-cell {
+.cell-value {
   width: 100%;
 
-  box-sizing: border-box;
+  min-height: 20px;
 
-  text-align: center;
+  display: flex;
 
-  font-size: 15px;
+  justify-content: center;
 
-  line-height: 1.4;
+  align-items: center;
 
   white-space: pre-wrap;
 
   overflow-wrap: anywhere;
 
   word-break: break-word;
-
-  color: #111827;
 }
 
 
@@ -440,91 +543,76 @@
 ===================================================== */
 
 .uploaded-image {
+  display: block;
+
   max-width: 100%;
 
-  max-height: 120px;
+  max-height: 100px;
+
+  margin: auto;
 
   object-fit: contain;
-
-  border-radius: 5px;
 }
 
 
 /* =====================================================
-   TEXTBOX
+   REMARKS
 ===================================================== */
 
-.textbox-card {
-  background: white;
+.remarks-section {
+  display: grid;
 
-  border-radius: 12px;
+  grid-template-columns:
+    150px
+    1fr;
 
-  padding: 18px;
+  min-height: 80px;
 
-  margin-bottom: 22px;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.07);
+  border-bottom:
+    1px solid
+    #68798b;
 }
 
-.textbox-header {
-  margin-bottom: 10px;
 
-  font-weight: 600;
+.remarks-heading {
+  display: flex;
 
-  color: #334155;
-}
+  align-items: center;
 
-.textbox-title-preview {
-  font-size: 14px;
+  justify-content: center;
 
-  font-weight: 600;
-
-  color: #163f73;
-}
-
-.textbox-content-preview {
-  width: 100%;
-
-  min-height: 70px;
+  padding: 6px;
 
   box-sizing: border-box;
 
-  border: 1px solid #cbd5e1;
+  border-right:
+    1px solid
+    #68798b;
 
-  border-radius: 7px;
+  background: #f4f7fa;
 
-  padding: 12px;
+  color: #284e72;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.remarks-value {
+  padding:
+    8px
+    10px;
+
+  box-sizing: border-box;
+
+  font-size: 10px;
 
   white-space: pre-wrap;
 
-  overflow-wrap: anywhere;
-
-  color: #334155;
-}
-
-
-/* =====================================================
-   HEADING
-===================================================== */
-
-.heading-card {
-  background: white;
-
-  border-radius: 12px;
-
-  padding: 18px 20px;
-
-  margin-bottom: 22px;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.07);
-}
-
-.heading-card h2 {
-  margin: 0;
-
-  color: #174a8b;
+  word-break: break-word;
 }
 
 
@@ -532,37 +620,58 @@
    DATE
 ===================================================== */
 
-.date-card {
-  background: white;
+.date-section {
+  display: grid;
 
-  border-radius: 12px;
+  grid-template-columns:
+    150px
+    1fr;
 
-  padding: 18px;
+  min-height: 30px;
 
-  margin-bottom: 22px;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.07);
+  border-bottom:
+    1px solid
+    #68798b;
 }
 
-.date-card label {
-  display: block;
 
-  margin-bottom: 8px;
+.date-label {
+  display: flex;
 
-  font-weight: 600;
+  align-items: center;
 
-  color: #334155;
+  padding:
+    4px
+    7px;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    #68798b;
+
+  background: #f4f7fa;
+
+  color: #284e72;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
 }
 
-.readonly-date {
-  padding: 10px 12px;
 
-  border: 1px solid #cbd5e1;
+.date-value {
+  display: flex;
 
-  border-radius: 7px;
+  align-items: center;
 
-  background: #f8fafc;
+  padding:
+    4px
+    8px;
+
+  font-size: 10px;
 }
 
 
@@ -570,31 +679,16 @@
    EMPTY
 ===================================================== */
 
-.empty-state {
-  background: white;
-
-  padding: 60px 20px;
+.empty-report {
+  padding:
+    50px
+    20px;
 
   text-align: center;
 
-  border-radius: 12px;
+  color: #6b7280;
 
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.06);
-}
-
-.empty-icon {
-  font-size: 50px;
-
-  margin-bottom: 10px;
-}
-
-.empty-state h3 {
-  color: #1e3a5f;
-}
-
-.empty-state p {
-  color: #64748b;
+  font-size: 13px;
 }
 
 
@@ -603,42 +697,85 @@
 ===================================================== */
 
 .table-wrapper::-webkit-scrollbar {
-  height: 12px;
+  height: 10px;
 }
+
 
 .table-wrapper::-webkit-scrollbar-track {
-  background: #edf1f6;
-
-  border-radius: 6px;
+  background: #e5e7eb;
 }
 
-.table-wrapper::-webkit-scrollbar-thumb {
-  background: #9aa8ba;
 
-  border-radius: 6px;
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #8d99a6;
+
+  border-radius: 5px;
 }
 
 
 /* =====================================================
-   RESPONSIVE
+   PRINT
 ===================================================== */
 
-@media (max-width: 800px) {
+@media print {
+
+  @page {
+    size: A4 landscape;
+    margin: 5mm;
+  }
+
+
+  :host {
+    background: white;
+  }
+
+
+  .preview-page {
+    padding: 0;
+
+    background: white;
+
+    overflow: visible;
+  }
+
 
   .preview-toolbar {
-    padding: 12px 15px;
+    display: none;
   }
 
-  .builder-card {
-    padding: 15px;
+
+  .inspection-sheet {
+    width: 100%;
+
+    margin: 0;
+
+    border:
+      1px solid
+      #555;
   }
 
-  .details {
-    grid-template-columns: 1fr;
+
+  .table-wrapper {
+    overflow: visible;
   }
 
-  .general-detail-field {
-    grid-template-columns: 1fr;
+
+  .inspection-table {
+    width: 100%;
+  }
+
+}
+
+
+/* =====================================================
+   SCREEN
+===================================================== */
+
+@media
+  (max-width: 1500px) {
+
+  .inspection-sheet {
+    margin-left: 0;
   }
 
 }

@@ -3,72 +3,55 @@ import { Routes } from '@angular/router';
 import { BuilderComponent }
   from './modules/template-builder/pages/builder/builder';
 
-import { SetupReport }
-  from './features/setup-report/setup-report';
-
 import { InspectionReport }
   from './features/inspection-report/inspection-report';
+
+import { SetupReport }
+  from './features/setup-report/setup-report';
 
 import { SavedTemplates }
   from './features/saved-templates/saved-templates';
 
+import { PublishedInspectionReport }
+  from './features/published-inspection-report/published-inspection-report';
+
+import { PublishedSetupReport }
+  from './features/published-setup-report/published-setup-report';
+
 
 export const routes: Routes = [
 
-  // =====================================================
   // BUILDER
-  // =====================================================
-
   {
     path: '',
     component: BuilderComponent
   },
 
-
-  // =====================================================
-  // INSPECTION PREVIEW
-  // =====================================================
-
+  // NORMAL INSPECTION PREVIEW
   {
     path: 'inspection-report',
     component: InspectionReport
   },
 
-
-  // =====================================================
-  // SETUP PREVIEW
-  // =====================================================
-
+  // NORMAL SETUP PREVIEW
   {
     path: 'setup-report',
     component: SetupReport
   },
 
-
-  // =====================================================
-  // PUBLISHED INSPECTION PREVIEW
-  // =====================================================
-
+  // PUBLISHED INSPECTION
   {
     path: 'published-inspection-report',
-    component: InspectionReport
+    component: PublishedInspectionReport
   },
 
-
-  // =====================================================
-  // PUBLISHED SETUP PREVIEW
-  // =====================================================
-
+  // PUBLISHED SETUP
   {
     path: 'published-setup-report',
-    component: SetupReport
+    component: PublishedSetupReport
   },
 
-
-  // =====================================================
   // SAVED TEMPLATES
-  // =====================================================
-
   {
     path: 'saved-templates',
     component: SavedTemplates

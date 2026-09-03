@@ -1,19 +1,14 @@
 <div class="preview-page">
 
-  <!-- ================================================= -->
-  <!-- TOP TOOLBAR -->
-  <!-- ================================================= -->
+  <!-- =====================================================
+       PREVIEW TOOLBAR
+  ====================================================== -->
 
   <div class="preview-toolbar">
 
     <h2>
-      {{
-        isPublished
-          ? 'Published Checklist'
-          : 'Checklist Preview'
-      }}
+      Checklist Preview
     </h2>
-
 
     <div class="preview-actions">
 
@@ -25,7 +20,6 @@
         Edit
       </button>
 
-
       <button
         type="button"
         class="delete-button"
@@ -34,14 +28,10 @@
         Delete
       </button>
 
-
       <button
         type="button"
         class="publish-button"
-        [disabled]="
-          publishing ||
-          isPublished
-        "
+        [disabled]="publishing || isPublished"
         (click)="publishTemplate()"
       >
         {{
@@ -60,275 +50,204 @@
   </div>
 
 
-  <!-- ================================================= -->
-  <!-- MAIN TEMPLATE -->
-  <!-- ================================================= -->
+  <!-- =====================================================
+       PDC SETUP REPORT
+  ====================================================== -->
 
-  <div class="builder-card">
-
-
-    <!-- ================================================= -->
-    <!-- HEADER -->
-    <!-- ================================================= -->
-
-    <div class="bbw-header">
-
-      <img
-        src="bbw.png"
-        alt="BBW Logo"
-      >
+  <div class="setup-sheet">
 
 
-      <div class="brand-text">
+    <!-- ===================================================
+         HEADER
+    ==================================================== -->
 
-        <h2>
-          BBW GLOBAL Tek Pvt Ltd
-        </h2>
+    <div class="document-header">
 
+      <div class="document-logo">
 
-        <p>
-          {{
-            isPublished
-              ? 'Published Setup Checklist'
-              : 'Setup Checklist Preview'
-          }}
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <!-- ================================================= -->
-    <!-- TEMPLATE DETAILS -->
-    <!-- ================================================= -->
-
-    <div class="details">
-
-      <div class="detail-field">
-
-        <label>
-          Template Name
-        </label>
-
-
-        <div class="readonly-field">
-
-          {{ templateName || '-' }}
-
-        </div>
-
-      </div>
-
-
-      <div class="detail-field">
-
-        <label>
-          Checklist Type
-        </label>
-
-
-        <div class="readonly-field">
-
-          {{ checklistType || 'Setup' }}
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- ================================================= -->
-    <!-- GENERAL DETAILS -->
-    <!-- ================================================= -->
-
-    <div
-      class="general-details"
-      *ngIf="
-        generalDetails.length > 0
-      "
-    >
-
-      <!--
-        Show the heading while previewing.
-        Hide only this heading after Publish.
-      -->
-
-      <div
-        class="general-details-header"
-        *ngIf="!isPublished"
-      >
-
-        <h3>
-          General Details
-        </h3>
-
-      </div>
-
-
-      <div class="details-scroll">
-
-        <div
-          class="details-row"
-          *ngFor="
-            let row of generalDetails
-          "
+        <img
+          src="bbw.png"
+          alt="BBW Global"
         >
 
-          <div
-            class="general-preview-field"
-            *ngFor="
-              let field of row.fields
-            "
-          >
-
-            <!-- LABEL -->
-
-            <div class="detail-label">
-
-              <div class="preview-label">
-
-                {{
-                  field.label ||
-                  'NEW FIELD'
-                }}
-
-              </div>
-
-            </div>
+      </div>
 
 
-            <!-- VALUE -->
+      <div class="document-company">
 
-            <div class="detail-value">
+        <strong>
+          BBW GLOBAL Tek Pvt Ltd
+        </strong>
 
-              <div class="preview-value">
+      </div>
 
-                {{
-                  field.value ||
-                  '-'
-                }}
 
-              </div>
+      <div class="document-title">
 
-            </div>
-
-          </div>
-
-        </div>
+        PDC SETUP CUM START UP CHECK SHEET
 
       </div>
 
     </div>
 
 
-    <!-- ================================================= -->
-    <!-- BUILDER ITEMS -->
-    <!-- ================================================= -->
+    <!-- ===================================================
+         TOP DETAILS
+    ==================================================== -->
+
+    <div class="information-grid">
+
+      <div class="info-label">
+        ERP PART NUMBER
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'ERP PART NUMBER',
+            'ERP PART NO',
+            'ERP NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        PART DESCRIPTION
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'PART DESCRIPTION',
+            'DESCRIPTION'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        M/C NO
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'M/C NO',
+            'MC NO',
+            'MACHINE NO',
+            'MACHINE NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        SUPERVISOR
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'SUPERVISOR',
+            'SUPERVISOR NAME'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        OPERATOR
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'OPERATOR',
+            'OPERATOR NAME'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        DATE
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'DATE'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        SHIFT
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'SHIFT'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        QUALITY
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'QUALITY',
+            'QUALITY PERSON',
+            'QUALITY NAME'
+          ) || '-'
+        }}
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         BUILDER ITEMS
+    ==================================================== -->
 
     <ng-container
       *ngFor="let item of builderItems"
     >
 
 
-      <!-- DATE -->
+      <!-- =================================================
+           TABLE
+      ================================================== -->
 
-      <div
-        class="date-card"
-        *ngIf="
-          item.type === 'date'
-        "
-      >
-
-        <label>
-
-          {{
-            item.label ||
-            'Date'
-          }}
-
-        </label>
-
-
-        <div class="readonly-date">
-
-          {{ item.text || '-' }}
-
-        </div>
-
-      </div>
-
-
-      <!-- TEXTBOX -->
-
-      <div
-        class="textbox-card"
-        *ngIf="
-          item.type === 'textbox'
-        "
-      >
-
-        <div class="textbox-header">
-
-          <span
-            class="textbox-title-preview"
-          >
-
-            {{
-              item.label ||
-              'Text / Instruction'
-            }}
-
-          </span>
-
-        </div>
-
-
-        <div
-          class="textbox-content-preview"
-        >
-
-          {{ item.text || '-' }}
-
-        </div>
-
-      </div>
-
-
-      <!-- TABLE -->
-
-      <div
-        class="table-card"
+      <section
+        class="setup-section"
         *ngIf="
           item.type === 'table' &&
           item.table
         "
       >
 
-        <div class="table-toolbar">
-
-          <h3>
-
-            {{ item.table.title }}
-
-          </h3>
-
+        <div class="section-heading">
+          SHIFT DETAILS
         </div>
 
 
         <div class="table-wrapper">
 
-          <table
-            class="inspection-table"
-          >
+          <table class="setup-report-table">
 
             <tbody>
 
               <tr
                 *ngFor="
-                  let row of item.table.rows;
-                  let r = index
+                  let row of item.table.rows
                 "
               >
 
@@ -340,77 +259,42 @@
 
                   <td
                     *ngIf="!cell.hidden"
-
-                    [attr.colspan]="
-                      cell.colspan
-                    "
-
-                    [attr.rowspan]="
-                      cell.rowspan
-                    "
-
-                    [style.width.px]="
-                      cell.width
-                    "
-
-                    [style.min-width.px]="
-                      cell.width
-                    "
-
-                    [style.height.px]="
-                      cell.height
-                    "
+                    [attr.colspan]="cell.colspan || 1"
+                    [attr.rowspan]="cell.rowspan || 1"
                   >
-
 
                     <!-- IMAGE -->
 
-                    <div
-                      class="preview-image-cell"
+                    <img
                       *ngIf="
-                        cell.inputType ===
-                        'image'
+                        cell.inputType === 'image' &&
+                        cell.value
                       "
+                      [src]="cell.value"
+                      class="uploaded-image"
+                      alt="Setup image"
                     >
-
-                      <img
-                        *ngIf="cell.value"
-
-                        [src]="cell.value"
-
-                        class="uploaded-image"
-
-                        alt="Checklist image"
-                      >
-
-
-                      <div
-                        class="empty-image"
-                        *ngIf="!cell.value"
-                      >
-
-                        No image
-
-                      </div>
-
-                    </div>
 
 
                     <!-- NORMAL VALUE -->
 
                     <div
-                      class="readonly-cell"
-
+                      class="cell-value"
                       *ngIf="
-                        cell.inputType !==
-                        'image'
+                        cell.inputType !== 'image' ||
+                        !cell.value
                       "
                     >
 
-                      {{ cell.value || '-' }}
+                      {{
+                        cell.inputType === 'image'
+                          ? 'No image'
+                          : (
+                              cell.value || ''
+                            )
+                      }}
 
                     </div>
-
 
                   </td>
 
@@ -424,39 +308,85 @@
 
         </div>
 
-      </div>
+      </section>
 
+
+      <!-- =================================================
+           TEXTBOX / REMARKS
+      ================================================== -->
+
+      <section
+        class="remarks-section"
+        *ngIf="
+          item.type === 'textbox'
+        "
+      >
+
+        <div class="remarks-heading">
+
+          {{
+            item.label ||
+            'REMARKS'
+          }}
+
+        </div>
+
+
+        <div class="remarks-value">
+
+          {{ item.text || '' }}
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           DATE
+      ================================================== -->
+
+      <section
+        class="date-section"
+        *ngIf="
+          item.type === 'date'
+        "
+      >
+
+        <div class="date-label">
+
+          {{
+            item.label ||
+            'DATE'
+          }}
+
+        </div>
+
+
+        <div class="date-value">
+
+          {{ item.text || '-' }}
+
+        </div>
+
+      </section>
 
     </ng-container>
 
 
-    <!-- ================================================= -->
-    <!-- EMPTY TEMPLATE -->
-    <!-- ================================================= -->
+    <!-- ===================================================
+         EMPTY STATE
+    ==================================================== -->
 
     <div
-      class="empty-state"
+      class="empty-report"
       *ngIf="
         builderItems.length === 0
       "
     >
 
-      <div class="empty-icon">
-        📋
-      </div>
-
-
-      <h3>
-        No checklist items available
-      </h3>
-
-
-      <p>
-        Return to the builder and add checklist items.
-      </p>
+      No setup checklist items available.
 
     </div>
-
 
   </div>
 

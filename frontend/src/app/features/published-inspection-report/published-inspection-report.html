@@ -1,0 +1,398 @@
+<div class="preview-page">
+
+  <div class="preview-toolbar">
+
+    <h2>
+      Published Checklist
+    </h2>
+
+    <div class="preview-actions">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="backToSavedTemplates()"
+      >
+        Back to Saved Templates
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="inspection-sheet">
+
+    <div class="document-header">
+
+      <div class="document-logo">
+
+        <img
+          src="bbw.png"
+          alt="BBW Global"
+        >
+
+      </div>
+
+
+      <div class="document-company">
+
+        <strong>
+          BBW GLOBAL Tek Pvt Ltd
+        </strong>
+
+      </div>
+
+
+      <div class="document-title">
+
+        PDC INPROCESS INSPECTION REPORT
+
+      </div>
+
+    </div>
+
+
+    <div class="information-grid">
+
+      <div class="info-label">
+        ERP PART NUMBER
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'ERP PART NUMBER',
+            'ERP PART NO',
+            'ERP NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        PART DESCRIPTION
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'PART DESCRIPTION',
+            'DESCRIPTION'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        CAVITY NO
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'CAVITY NO',
+            'CAVITY NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        BACKING NO
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'BACKING NO',
+            'BACKJAW NUMBER',
+            'BACK JAW NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        SETTING TIME
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'SETTING TIME'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        SETTING BY
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'SETTING BY'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        RM LEAD / END BATCH NUMBER
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'RM LEAD END BATCH NUMBER',
+            'RM LEAD BATCH NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        RM CLIP BATCH NUMBER
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'RM CLIP BATCH NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        PART BATCH NO
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'PART BATCH NO',
+            'PART BATCH NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        DATE
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'DATE'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        SHIFT
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'SHIFT'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        OPERATOR
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'OPERATOR',
+            'OPERATOR NAME'
+          ) || '-'
+        }}
+      </div>
+
+    </div>
+
+
+    <div
+      class="additional-details"
+      *ngIf="generalDetails.length > 0"
+    >
+
+      <ng-container
+        *ngFor="let row of generalDetails"
+      >
+
+        <div
+          class="additional-field"
+          *ngFor="let field of row.fields"
+        >
+
+          <div class="additional-label">
+            {{ field.label }}
+          </div>
+
+          <div class="additional-value">
+            {{ field.value || '-' }}
+          </div>
+
+        </div>
+
+      </ng-container>
+
+    </div>
+
+
+    <ng-container
+      *ngFor="let item of builderItems"
+    >
+
+      <section
+        class="inspection-section"
+        *ngIf="
+          item.type === 'table' &&
+          item.table
+        "
+      >
+
+        <div class="section-title">
+          {{
+            item.table.title ||
+            'INSPECTION TABLE'
+          }}
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table class="inspection-table">
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let row of item.table.rows
+                "
+              >
+
+                <ng-container
+                  *ngFor="
+                    let cell of row.cells
+                  "
+                >
+
+                  <td
+                    *ngIf="!cell.hidden"
+                    [attr.colspan]="cell.colspan"
+                    [attr.rowspan]="cell.rowspan"
+                    [style.width.px]="cell.width"
+                    [style.min-width.px]="cell.width"
+                    [style.height.px]="cell.height"
+                  >
+
+                    <img
+                      *ngIf="
+                        cell.inputType === 'image' &&
+                        cell.value
+                      "
+                      [src]="cell.value"
+                      class="uploaded-image"
+                      alt="Inspection image"
+                    >
+
+
+                    <div
+                      class="cell-value"
+                      *ngIf="
+                        cell.inputType !== 'image' ||
+                        !cell.value
+                      "
+                    >
+                      {{
+                        cell.inputType === 'image'
+                          ? 'No image'
+                          : (
+                              cell.value || ''
+                            )
+                      }}
+                    </div>
+
+                  </td>
+
+                </ng-container>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+      <section
+        class="remarks-section"
+        *ngIf="
+          item.type === 'textbox'
+        "
+      >
+
+        <div class="remarks-heading">
+          {{
+            item.label ||
+            'REMARKS'
+          }}
+        </div>
+
+        <div class="remarks-value">
+          {{ item.text || '' }}
+        </div>
+
+      </section>
+
+
+      <section
+        class="date-section"
+        *ngIf="
+          item.type === 'date'
+        "
+      >
+
+        <div class="date-label">
+          {{
+            item.label ||
+            'DATE'
+          }}
+        </div>
+
+        <div class="date-value">
+          {{ item.text || '-' }}
+        </div>
+
+      </section>
+
+    </ng-container>
+
+
+    <div
+      class="empty-report"
+      *ngIf="
+        builderItems.length === 0
+      "
+    >
+      No inspection items available.
+    </div>
+
+  </div>
+
+</div>

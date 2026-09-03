@@ -44,7 +44,7 @@ export class SavedTemplates implements OnInit {
 
 
   // =====================================================
-  // LOAD ON PAGE OPEN
+  // LOAD PAGE
   // =====================================================
 
   ngOnInit(): void {
@@ -55,7 +55,35 @@ export class SavedTemplates implements OnInit {
 
 
   // =====================================================
-  // LOAD ALL TEMPLATES FROM MONGODB
+  // DRAFT TEMPLATES
+  // =====================================================
+
+  get draftTemplates(): any[] {
+
+    return this.templates.filter(
+      (template) =>
+        template.status !== 'Published'
+    );
+
+  }
+
+
+  // =====================================================
+  // PUBLISHED TEMPLATES
+  // =====================================================
+
+  get publishedTemplates(): any[] {
+
+    return this.templates.filter(
+      (template) =>
+        template.status === 'Published'
+    );
+
+  }
+
+
+  // =====================================================
+  // LOAD ALL TEMPLATES
   // =====================================================
 
   async loadTemplates(): Promise<void> {
@@ -124,7 +152,7 @@ export class SavedTemplates implements OnInit {
 
 
   // =====================================================
-  // PREVIEW TEMPLATE
+  // DRAFT PREVIEW
   // =====================================================
 
   async previewTemplate(
@@ -147,6 +175,10 @@ export class SavedTemplates implements OnInit {
 
       }
 
+
+      // -------------------------------------------------
+      // LOAD LATEST VERSION
+      // -------------------------------------------------
 
       const response = await fetch(
         `http://localhost:3000/api/templates/${templateId}/version/latest`
@@ -186,6 +218,10 @@ export class SavedTemplates implements OnInit {
         version.template_json ?? {};
 
 
+      // -------------------------------------------------
+      // PREVIEW DATA
+      // -------------------------------------------------
+
       const previewData = {
 
         templateId:
@@ -201,7 +237,10 @@ export class SavedTemplates implements OnInit {
           templateJson.generalDetails ?? [],
 
         builderItems:
-          templateJson.builderItems ?? []
+          templateJson.builderItems ?? [],
+
+        status:
+          template.status ?? 'Draft'
 
       };
 
@@ -212,11 +251,15 @@ export class SavedTemplates implements OnInit {
       );
 
 
+      // -------------------------------------------------
+      // DRAFT ROUTING
+      // -------------------------------------------------
+
       if (
         template.checklist_type === 'Setup'
       ) {
 
-        this.router.navigate([
+        await this.router.navigate([
           '/setup-report'
         ]);
 
@@ -225,7 +268,7 @@ export class SavedTemplates implements OnInit {
       }
 
 
-      this.router.navigate([
+      await this.router.navigate([
         '/inspection-report'
       ]);
 
@@ -249,7 +292,178 @@ export class SavedTemplates implements OnInit {
 
 
   // =====================================================
-  // EDIT TEMPLATE
+  // OPEN PUBLISHED CHECKLIST
+  // =====================================================
+
+  async openPublishedChecklist(
+    template: any
+  ): Promise<void> {
+
+    try {
+
+      const templateId =
+        template._id;
+
+
+      if (!templateId) {
+
+        alert(
+          'Template ID not found.'
+        );
+
+        return;
+
+      }
+
+
+      // -------------------------------------------------
+      // SAFETY CHECK
+      // -------------------------------------------------
+
+      if (
+        template.status !== 'Published'
+      ) {
+
+        alert(
+          'This template is not published.'
+        );
+
+        return;
+
+      }
+
+
+      // -------------------------------------------------
+      // LOAD LATEST VERSION
+      // -------------------------------------------------
+
+      const response = await fetch(
+        `http://localhost:3000/api/templates/${templateId}/version/latest`
+      );
+
+
+      const result =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          result.message ||
+          'Unable to load published checklist.'
+        );
+
+      }
+
+
+      const version =
+        result.data;
+
+
+      if (!version) {
+
+        alert(
+          'No saved version found for this template.'
+        );
+
+        return;
+
+      }
+
+
+      const templateJson =
+        version.template_json ?? {};
+
+
+      // -------------------------------------------------
+      // PUBLISHED CHECKLIST DATA
+      // -------------------------------------------------
+
+      const publishedData = {
+
+        templateId:
+          templateId,
+
+        templateName:
+          template.template_name ?? '',
+
+        checklistType:
+          template.checklist_type ?? 'Inspection',
+
+        generalDetails:
+          templateJson.generalDetails ?? [],
+
+        builderItems:
+          templateJson.builderItems ?? [],
+
+        status:
+          'Published',
+
+        isPublished:
+          true
+
+      };
+
+
+      // Published page can use this
+
+      localStorage.setItem(
+        'publishedChecklist',
+        JSON.stringify(publishedData)
+      );
+
+
+      // Keep this also because your existing
+      // report components may currently read previewChecklist
+
+      localStorage.setItem(
+        'previewChecklist',
+        JSON.stringify(publishedData)
+      );
+
+
+      // -------------------------------------------------
+      // PUBLISHED ROUTING
+      // -------------------------------------------------
+
+      if (
+        template.checklist_type === 'Setup'
+      ) {
+
+        await this.router.navigate([
+          '/published-setup-report'
+        ]);
+
+        return;
+
+      }
+
+
+      await this.router.navigate([
+        '/published-inspection-report'
+      ]);
+
+    }
+
+    catch (error) {
+
+      console.error(
+        'Published Checklist Error:',
+        error
+      );
+
+
+      alert(
+        'Unable to open published checklist.'
+      );
+
+    }
+
+  }
+
+
+  // =====================================================
+  // EDIT DRAFT TEMPLATE
   // =====================================================
 
   async editTemplate(
@@ -337,7 +551,7 @@ export class SavedTemplates implements OnInit {
       );
 
 
-      this.router.navigate([
+      await this.router.navigate([
         '/'
       ]);
 
@@ -361,7 +575,7 @@ export class SavedTemplates implements OnInit {
 
 
   // =====================================================
-  // DELETE TEMPLATE
+  // DELETE DRAFT TEMPLATE
   // =====================================================
 
   async deleteTemplate(
@@ -450,9 +664,9 @@ export class SavedTemplates implements OnInit {
   // BACK TO BUILDER
   // =====================================================
 
-  backToBuilder(): void {
+  async backToBuilder(): Promise<void> {
 
-    this.router.navigate([
+    await this.router.navigate([
       '/'
     ]);
 

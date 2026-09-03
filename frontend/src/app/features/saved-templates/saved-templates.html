@@ -1,5 +1,9 @@
 <div class="saved-page">
 
+  <!-- ========================================= -->
+  <!-- HEADER -->
+  <!-- ========================================= -->
+
   <div class="saved-header">
 
     <div>
@@ -26,31 +30,36 @@
   </div>
 
 
+  <!-- ========================================= -->
   <!-- LOADING -->
+  <!-- ========================================= -->
 
   <div
     class="message-card"
     *ngIf="loading"
   >
-
     Loading templates...
-
   </div>
 
 
+  <!-- ========================================= -->
   <!-- ERROR -->
+  <!-- ========================================= -->
 
   <div
     class="message-card error-message"
-    *ngIf="!loading && errorMessage"
+    *ngIf="
+      !loading &&
+      errorMessage
+    "
   >
-
     {{ errorMessage }}
-
   </div>
 
 
-  <!-- EMPTY -->
+  <!-- ========================================= -->
+  <!-- NO TEMPLATES -->
+  <!-- ========================================= -->
 
   <div
     class="message-card"
@@ -60,150 +69,313 @@
       templates.length === 0
     "
   >
-
     No saved templates found.
-
   </div>
 
 
-  <!-- TEMPLATE LIST -->
+  <!-- ========================================= -->
+  <!-- TEMPLATE SECTIONS -->
+  <!-- ========================================= -->
 
-  <div
-    class="templates-card"
+  <ng-container
     *ngIf="
       !loading &&
+      !errorMessage &&
       templates.length > 0
     "
   >
 
-    <table>
+    <!-- ========================================= -->
+    <!-- DRAFT TEMPLATES -->
+    <!-- ========================================= -->
 
-      <thead>
-
-        <tr>
-
-          <th>
-            ID
-          </th>
-
-          <th>
-            Template Name
-          </th>
-
-          <th>
-            Checklist Type
-          </th>
-
-          <th>
-            Status
-          </th>
-
-          <th>
-            Created
-          </th>
-
-          <th>
-            Actions
-          </th>
-
-        </tr>
-
-      </thead>
+    <h3 class="section-title">
+      Draft Templates
+    </h3>
 
 
-      <tbody>
-
-        <tr
-          *ngFor="let template of templates"
-        >
-
-          <td>
-
-            {{ template._id }}
-
-          </td>
+    <div
+      class="message-card"
+      *ngIf="
+        draftTemplates.length === 0
+      "
+    >
+      No draft templates found.
+    </div>
 
 
-          <td class="template-name">
+    <div
+      class="templates-card"
+      *ngIf="
+        draftTemplates.length > 0
+      "
+    >
 
-            {{ template.template_name }}
+      <table>
 
-          </td>
+        <thead>
 
+          <tr>
 
-          <td>
+            <th>
+              ID
+            </th>
 
-            {{ template.checklist_type }}
+            <th>
+              Template Name
+            </th>
 
-          </td>
+            <th>
+              Checklist Type
+            </th>
 
+            <th>
+              Status
+            </th>
 
-          <td>
+            <th>
+              Created
+            </th>
 
-            <span
-              class="status-badge"
-              [class.published]="
-                template.status === 'Published'
-              "
-            >
+            <th>
+              Actions
+            </th>
 
-              {{ template.status }}
+          </tr>
 
-            </span>
-
-          </td>
-
-
-          <td>
-
-            {{
-              template.created_at
-                | date:'medium'
-            }}
-
-          </td>
+        </thead>
 
 
-          <td>
+        <tbody>
 
-            <div class="actions">
+          <tr
+            *ngFor="
+              let template
+              of draftTemplates
+            "
+          >
 
-              <button
-                type="button"
-                class="preview-button"
-                (click)="previewTemplate(template)"
+            <td>
+              {{ template._id }}
+            </td>
+
+
+            <td class="template-name">
+              {{ template.template_name }}
+            </td>
+
+
+            <td>
+              {{ template.checklist_type }}
+            </td>
+
+
+            <td>
+
+              <span
+                class="status-badge"
               >
-                Preview
-              </button>
+                {{ template.status }}
+              </span>
+
+            </td>
 
 
-              <button
-                type="button"
-                class="edit-button"
-                (click)="editTemplate(template)"
+            <td>
+
+              {{
+                template.created_at
+                  | date:'medium'
+              }}
+
+            </td>
+
+
+            <td>
+
+              <div class="actions">
+
+                <!-- DRAFT PREVIEW -->
+
+                <button
+                  type="button"
+                  class="preview-button"
+                  (click)="previewTemplate(template)"
+                >
+                  Preview
+                </button>
+
+
+                <!-- DRAFT EDIT -->
+
+                <button
+                  type="button"
+                  class="edit-button"
+                  (click)="editTemplate(template)"
+                >
+                  Edit
+                </button>
+
+
+                <!-- DRAFT DELETE -->
+
+                <button
+                  type="button"
+                  class="delete-button"
+                  (click)="deleteTemplate(template)"
+                >
+                  Delete
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- PUBLISHED TEMPLATES -->
+    <!-- ========================================= -->
+
+    <h3
+      class="section-title published-title"
+    >
+      Published Templates
+    </h3>
+
+
+    <div
+      class="message-card"
+      *ngIf="
+        publishedTemplates.length === 0
+      "
+    >
+      No published templates found.
+    </div>
+
+
+    <div
+      class="templates-card"
+      *ngIf="
+        publishedTemplates.length > 0
+      "
+    >
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              ID
+            </th>
+
+            <th>
+              Template Name
+            </th>
+
+            <th>
+              Checklist Type
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Created
+            </th>
+
+            <th>
+              Actions
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          <tr
+            *ngFor="
+              let template
+              of publishedTemplates
+            "
+          >
+
+            <td>
+              {{ template._id }}
+            </td>
+
+
+            <td class="template-name">
+              {{ template.template_name }}
+            </td>
+
+
+            <td>
+              {{ template.checklist_type }}
+            </td>
+
+
+            <td>
+
+              <span
+                class="status-badge published"
               >
-                Edit
-              </button>
+                {{ template.status }}
+              </span>
+
+            </td>
 
 
-              <button
-                type="button"
-                class="delete-button"
-                (click)="deleteTemplate(template)"
-              >
-                Delete
-              </button>
+            <td>
 
-            </div>
+              {{
+                template.created_at
+                  | date:'medium'
+              }}
 
-          </td>
+            </td>
 
-        </tr>
 
-      </tbody>
+            <td>
 
-    </table>
+              <div class="actions">
 
-  </div>
+                <!-- ================================= -->
+                <!-- PUBLISHED CHECKLIST ONLY -->
+                <!-- ================================= -->
+
+                <button
+                  type="button"
+                  class="preview-button"
+                  (click)="openPublishedChecklist(template)"
+                >
+                  Published Checklist
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </ng-container>
 
 </div>

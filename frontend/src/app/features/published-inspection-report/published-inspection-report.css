@@ -1,0 +1,805 @@
+:host {
+  display: block;
+  min-height: 100vh;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background: #dfe3e8;
+}
+
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+.preview-page {
+  min-height: 100vh;
+
+  padding:
+    4px
+    24px
+    30px;
+
+  box-sizing: border-box;
+
+  background: #dfe3e8;
+
+  overflow-x: auto;
+}
+
+
+/* =====================================================
+   PREVIEW TOOLBAR
+===================================================== */
+
+.preview-toolbar {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+
+  min-width: 1250px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding:
+    12px
+    18px;
+
+  margin-bottom: 14px;
+
+  background: white;
+
+  border-radius: 6px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(0, 0, 0, 0.12);
+}
+
+
+.preview-toolbar h2 {
+  margin: 0;
+
+  color: #183a63;
+
+  font-size: 20px;
+}
+
+
+.preview-actions {
+  display: flex;
+
+  gap: 8px;
+}
+
+
+.preview-actions button {
+  min-width: 70px;
+
+  height: 34px;
+
+  padding:
+    0
+    15px;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  background: white;
+
+  border-radius: 4px;
+}
+
+
+.edit-button {
+  color: #1d4ed8;
+
+  border:
+    1px solid
+    #2563eb;
+}
+
+
+.delete-button {
+  color: #dc2626;
+
+  border:
+    1px solid
+    #dc2626;
+}
+
+
+.publish-button {
+  color: white;
+
+  background: #047857 !important;
+
+  border:
+    1px solid
+    #047857;
+}
+
+
+.publish-button:disabled {
+  opacity: 0.6;
+
+  cursor: default;
+}
+
+
+/* =====================================================
+   MAIN PAPER
+===================================================== */
+
+.inspection-sheet {
+  width: 1450px;
+
+  margin: 0 auto;
+
+  background: white;
+
+  border:
+    1px solid
+    #68798b;
+
+  box-sizing: border-box;
+
+  color: #111827;
+}
+
+
+/* =====================================================
+   DOCUMENT HEADER
+===================================================== */
+
+.document-header {
+  display: grid;
+
+  grid-template-columns:
+    160px
+    1fr
+    440px;
+
+  height: 58px;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.document-logo,
+.document-company,
+.document-title {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  box-sizing: border-box;
+}
+
+
+.document-logo,
+.document-company {
+  border-right:
+    1px solid
+    #68798b;
+}
+
+
+.document-logo img {
+  width: 100px;
+
+  max-height: 46px;
+
+  object-fit: contain;
+}
+
+
+.document-company {
+  color: #12497d;
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+
+.document-title {
+  padding:
+    4px
+    10px;
+
+  color: #335c84;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+
+  text-align: center;
+}
+
+
+/* =====================================================
+   GENERAL INFORMATION
+===================================================== */
+
+.information-grid {
+  display: grid;
+
+  grid-template-columns:
+    145px
+    1fr
+    145px
+    1fr
+    145px
+    1fr;
+
+  width: 100%;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.info-label,
+.info-value {
+  min-height: 29px;
+
+  display: flex;
+
+  align-items: center;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    #9aa8b6;
+
+  border-bottom:
+    1px solid
+    #9aa8b6;
+}
+
+
+.info-label {
+  padding:
+    4px
+    7px;
+
+  color: #2d4d6c;
+
+  font-size: 8px;
+
+  line-height: 1.25;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  background: #f9fbfd;
+}
+
+
+.info-value {
+  padding:
+    4px
+    8px;
+
+  color: #111827;
+
+  font-size: 10px;
+
+  line-height: 1.25;
+
+  word-break: break-word;
+}
+
+
+.information-grid > *:nth-child(6n) {
+  border-right: none;
+}
+
+
+/* =====================================================
+   ADDITIONAL GENERAL DETAILS
+===================================================== */
+
+/*
+  Existing builder fields that are not part of the fixed
+  PDC top section are kept here so no builder data is lost.
+*/
+
+.additional-details {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.additional-field {
+  display: grid;
+
+  grid-template-columns:
+    45%
+    55%;
+
+  min-height: 28px;
+
+  border-right:
+    1px solid
+    #9aa8b6;
+
+  border-bottom:
+    1px solid
+    #9aa8b6;
+}
+
+
+.additional-label {
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px
+    6px;
+
+  border-right:
+    1px solid
+    #9aa8b6;
+
+  background: #f9fbfd;
+
+  color: #2d4d6c;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.additional-value {
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px
+    6px;
+
+  font-size: 10px;
+
+  word-break: break-word;
+}
+
+
+/* =====================================================
+   INSPECTION SECTION
+===================================================== */
+
+.inspection-section {
+  width: 100%;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+/* =====================================================
+   SECTION TITLE
+===================================================== */
+
+.section-title {
+  min-height: 36px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  padding:
+    4px
+    10px;
+
+  box-sizing: border-box;
+
+  border-bottom:
+    1px solid
+    #68798b;
+
+  background: #eaf2f8;
+
+  color: #164d7f;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.4px;
+
+  text-transform: uppercase;
+}
+
+
+/* =====================================================
+   TABLE WRAPPER
+===================================================== */
+
+.table-wrapper {
+  display: block;
+
+  width: 100%;
+
+  overflow-x: auto;
+
+  overflow-y: visible;
+}
+
+
+/* =====================================================
+   INSPECTION TABLE
+===================================================== */
+
+.inspection-table {
+  border-collapse: collapse;
+
+  table-layout: fixed;
+
+  width: max-content;
+
+  min-width: 100%;
+}
+
+
+.inspection-table td {
+  padding:
+    2px
+    3px;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    #7f8e9d;
+
+  border-bottom:
+    1px solid
+    #7f8e9d;
+
+  vertical-align: middle;
+
+  text-align: center;
+
+  color: #111827;
+
+  font-size: 9px;
+
+  line-height: 1.15;
+
+  white-space: normal;
+
+  overflow-wrap: anywhere;
+
+  word-break: break-word;
+}
+
+
+.inspection-table tr:last-child td {
+  border-bottom: none;
+}
+
+
+.cell-value {
+  width: 100%;
+
+  min-height: 20px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  white-space: pre-wrap;
+
+  overflow-wrap: anywhere;
+
+  word-break: break-word;
+}
+
+
+/* =====================================================
+   IMAGE
+===================================================== */
+
+.uploaded-image {
+  display: block;
+
+  max-width: 100%;
+
+  max-height: 100px;
+
+  margin: auto;
+
+  object-fit: contain;
+}
+
+
+/* =====================================================
+   REMARKS
+===================================================== */
+
+.remarks-section {
+  display: grid;
+
+  grid-template-columns:
+    150px
+    1fr;
+
+  min-height: 80px;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.remarks-heading {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 6px;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    #68798b;
+
+  background: #f4f7fa;
+
+  color: #284e72;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.remarks-value {
+  padding:
+    8px
+    10px;
+
+  box-sizing: border-box;
+
+  font-size: 10px;
+
+  white-space: pre-wrap;
+
+  word-break: break-word;
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+.date-section {
+  display: grid;
+
+  grid-template-columns:
+    150px
+    1fr;
+
+  min-height: 30px;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.date-label {
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px
+    7px;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    #68798b;
+
+  background: #f4f7fa;
+
+  color: #284e72;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.date-value {
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px
+    8px;
+
+  font-size: 10px;
+}
+
+
+/* =====================================================
+   EMPTY
+===================================================== */
+
+.empty-report {
+  padding:
+    50px
+    20px;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+.table-wrapper::-webkit-scrollbar {
+  height: 10px;
+}
+
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #8d99a6;
+
+  border-radius: 5px;
+}
+
+
+/* =====================================================
+   PRINT
+===================================================== */
+
+@media print {
+
+  @page {
+    size: A4 landscape;
+    margin: 5mm;
+  }
+
+
+  :host {
+    background: white;
+  }
+
+
+  .preview-page {
+    padding: 0;
+
+    background: white;
+
+    overflow: visible;
+  }
+
+
+  .preview-toolbar {
+    display: none;
+  }
+
+
+  .inspection-sheet {
+    width: 100%;
+
+    margin: 0;
+
+    border:
+      1px solid
+      #555;
+  }
+
+
+  .table-wrapper {
+    overflow: visible;
+  }
+
+
+  .inspection-table {
+    width: 100%;
+  }
+
+}
+
+
+/* =====================================================
+   SCREEN
+===================================================== */
+
+@media
+  (max-width: 1500px) {
+
+  .inspection-sheet {
+    margin-left: 0;
+  }
+
+  /* =====================================================
+   PUBLISHED BACK BUTTON
+===================================================== */
+
+.back-button {
+  min-width: 160px;
+  height: 34px;
+  padding: 0 15px;
+
+  background: white;
+  color: #1d4ed8;
+
+  border: 1px solid #2563eb;
+  border-radius: 4px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background: #eff6ff;
+}
+}

@@ -1,0 +1,766 @@
+:host {
+  display: block;
+
+  min-height: 100vh;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background: #dfe3e8;
+}
+
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+.preview-page {
+  min-height: 100vh;
+
+  padding:
+    4px
+    24px
+    30px;
+
+  box-sizing: border-box;
+
+  background: #dfe3e8;
+
+  overflow-x: auto;
+}
+
+
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
+.preview-toolbar {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+
+  min-width: 1250px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding:
+    12px
+    18px;
+
+  margin-bottom: 14px;
+
+  background: white;
+
+  border-radius: 6px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(0, 0, 0, 0.12);
+}
+
+
+.preview-toolbar h2 {
+  margin: 0;
+
+  color: #183a63;
+
+  font-size: 20px;
+}
+
+
+.preview-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+/* =====================================================
+   BACK BUTTON
+===================================================== */
+
+.back-button {
+  min-width: 160px;
+
+  height: 34px;
+
+  padding:
+    0
+    15px;
+
+  background: white;
+
+  color: #1d4ed8;
+
+  border:
+    1px solid
+    #2563eb;
+
+  border-radius: 4px;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.back-button:hover {
+  background: #eff6ff;
+}
+
+
+/* =====================================================
+   MAIN REPORT PAPER
+===================================================== */
+
+.setup-sheet {
+  width: 1320px;
+
+  margin: 0 auto;
+
+  background: white;
+
+  border:
+    1px solid
+    #68798b;
+
+  box-sizing: border-box;
+
+  color: #111827;
+
+  overflow: hidden;
+}
+
+
+/* =====================================================
+   DOCUMENT HEADER
+===================================================== */
+
+.document-header {
+  display: grid;
+
+  grid-template-columns:
+    160px
+    1fr
+    390px;
+
+  min-height: 58px;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.document-logo,
+.document-company,
+.document-title {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  box-sizing: border-box;
+}
+
+
+.document-logo,
+.document-company {
+  border-right:
+    1px solid
+    #68798b;
+}
+
+
+.document-logo img {
+  display: block;
+
+  width: 100px;
+
+  max-height: 46px;
+
+  object-fit: contain;
+}
+
+
+.document-company {
+  color: #12497d;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  text-align: center;
+}
+
+
+.document-title {
+  padding:
+    4px
+    10px;
+
+  color: #335c84;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+
+  text-align: center;
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   GENERAL INFORMATION
+===================================================== */
+
+.information-grid {
+  display: grid;
+
+  grid-template-columns:
+    145px
+    1fr
+    145px
+    1fr;
+
+  width: 100%;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.info-label,
+.info-value {
+  min-height: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    #9aa8b6;
+
+  border-bottom:
+    1px solid
+    #9aa8b6;
+}
+
+
+.info-label {
+  padding:
+    4px
+    7px;
+
+  background: #f9fbfd;
+
+  color: #2d4d6c;
+
+  font-size: 8px;
+
+  line-height: 1.25;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.info-value {
+  padding:
+    4px
+    8px;
+
+  color: #111827;
+
+  font-size: 10px;
+
+  line-height: 1.25;
+
+  word-break: normal;
+
+  overflow-wrap: normal;
+}
+
+
+.information-grid > *:nth-child(4n) {
+  border-right: none;
+}
+
+
+/* =====================================================
+   SETUP SECTION
+===================================================== */
+
+.setup-section {
+  width: 100%;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+/* =====================================================
+   SECTION HEADING
+===================================================== */
+
+.section-heading {
+  min-height: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    4px
+    10px;
+
+  box-sizing: border-box;
+
+  border-bottom:
+    1px solid
+    #68798b;
+
+  background: #eaf2f8;
+
+  color: #164d7f;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.3px;
+
+  text-transform: uppercase;
+
+  text-align: center;
+}
+
+
+/* =====================================================
+   TABLE WRAPPER
+===================================================== */
+
+.table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+
+  overflow-y: visible;
+}
+
+
+/* =====================================================
+   SETUP REPORT TABLE
+===================================================== */
+
+.setup-report-table {
+  width: 100%;
+
+  min-width: 1320px;
+
+  border-collapse: collapse;
+
+  table-layout: auto;
+
+  background: white;
+}
+
+
+.setup-report-table tr {
+  height: auto !important;
+}
+
+
+.setup-report-table td {
+  min-width: 62px;
+
+  height: 44px !important;
+
+  padding:
+    4px
+    5px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    #64748b !important;
+
+  vertical-align: middle;
+
+  text-align: center;
+
+  background: white;
+
+  color: #111827;
+
+  font-size: 8px;
+
+  font-weight: 500;
+
+  line-height: 1.15;
+
+  white-space: normal;
+
+  overflow: hidden;
+
+  word-break: normal;
+
+  overflow-wrap: normal;
+}
+
+
+/* =====================================================
+   FIRST TABLE ROW
+===================================================== */
+
+.setup-report-table tr:first-child td {
+  background: #eaf2f8;
+
+  color: #164d7f;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+/* =====================================================
+   CELL CONTENT
+===================================================== */
+
+.cell-value {
+  width: 100%;
+
+  min-height: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    2px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+
+  white-space: normal;
+
+  word-break: normal;
+
+  overflow-wrap: normal;
+}
+
+
+/* =====================================================
+   IMAGE
+===================================================== */
+
+.uploaded-image {
+  display: block;
+
+  width: auto;
+
+  max-width: 100%;
+
+  height: auto;
+
+  max-height: 85px;
+
+  margin:
+    3px
+    auto;
+
+  object-fit: contain;
+}
+
+
+/* =====================================================
+   REMARKS / TEXTBOX
+===================================================== */
+
+.remarks-section {
+  display: grid;
+
+  grid-template-columns:
+    180px
+    1fr;
+
+  min-height: 70px;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.remarks-heading {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    6px;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    #68798b;
+
+  background: #f4f7fa;
+
+  color: #284e72;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  text-align: center;
+}
+
+
+.remarks-value {
+  padding:
+    8px
+    10px;
+
+  box-sizing: border-box;
+
+  color: #111827;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+
+  white-space: pre-wrap;
+
+  word-break: normal;
+
+  overflow-wrap: normal;
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+.date-section {
+  display: grid;
+
+  grid-template-columns:
+    180px
+    1fr;
+
+  min-height: 30px;
+
+  border-bottom:
+    1px solid
+    #68798b;
+}
+
+
+.date-label {
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px
+    7px;
+
+  box-sizing: border-box;
+
+  border-right:
+    1px solid
+    #68798b;
+
+  background: #f4f7fa;
+
+  color: #284e72;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.date-value {
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px
+    8px;
+
+  box-sizing: border-box;
+
+  color: #111827;
+
+  font-size: 10px;
+}
+
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.empty-report {
+  padding:
+    50px
+    20px;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   TABLE SCROLLBAR
+===================================================== */
+
+.table-wrapper::-webkit-scrollbar {
+  height: 10px;
+}
+
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #8d99a6;
+
+  border-radius: 5px;
+}
+
+
+/* =====================================================
+   PRINT
+===================================================== */
+
+@media print {
+
+  @page {
+    size: A4 landscape;
+
+    margin: 5mm;
+  }
+
+
+  :host {
+    background: white;
+  }
+
+
+  .preview-page {
+    padding: 0;
+
+    background: white;
+
+    overflow: visible;
+  }
+
+
+  .preview-toolbar {
+    display: none;
+  }
+
+
+  .setup-sheet {
+    width: 100%;
+
+    margin: 0;
+
+    border:
+      1px solid
+      #555;
+
+    overflow: visible;
+  }
+
+
+  .document-header {
+    grid-template-columns:
+      140px
+      1fr
+      340px;
+  }
+
+
+  .table-wrapper {
+    overflow: visible;
+  }
+
+
+  .setup-report-table {
+    width: 100%;
+
+    min-width: 100%;
+
+    font-size: 7px;
+  }
+
+
+  .setup-report-table td {
+    min-width: 0;
+
+    font-size: 7px;
+
+    padding:
+      2px
+      3px;
+  }
+
+}
+
+
+/* =====================================================
+   SMALLER SCREEN
+===================================================== */
+
+@media (max-width: 1400px) {
+
+  .setup-sheet {
+    margin-left: 0;
+  }
+
+}

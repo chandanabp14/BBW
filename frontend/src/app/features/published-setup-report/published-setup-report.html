@@ -1,0 +1,356 @@
+<div class="preview-page">
+
+  <div class="preview-toolbar">
+
+    <h2>
+      Published Checklist
+    </h2>
+
+    <div class="preview-actions">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="backToSavedTemplates()"
+      >
+        Back to Saved Templates
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="setup-sheet">
+
+
+    <!-- =====================================================
+         DOCUMENT HEADER
+    ====================================================== -->
+
+    <div class="document-header">
+
+      <div class="document-logo">
+
+        <img
+          src="bbw.png"
+          alt="BBW Global"
+        >
+
+      </div>
+
+
+      <div class="document-company">
+
+        <strong>
+          BBW GLOBAL Tek Pvt Ltd
+        </strong>
+
+      </div>
+
+
+      <div class="document-title">
+
+        PDC SETUP CUM START UP CHECK SHEET
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOP GENERAL DETAILS
+    ====================================================== -->
+
+    <div class="information-grid">
+
+      <div class="info-label">
+        ERP PART NUMBER
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'ERP PART NUMBER',
+            'ERP PART NO',
+            'ERP NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        PART DESCRIPTION
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'PART DESCRIPTION',
+            'DESCRIPTION'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        M/C NO
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'M/C NO',
+            'MC NO',
+            'MACHINE NO',
+            'MACHINE NUMBER'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        SUPERVISOR
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'SUPERVISOR',
+            'SUPERVISOR NAME'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        OPERATOR
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'OPERATOR',
+            'OPERATOR NAME'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        DATE
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'DATE'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        SHIFT
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'SHIFT'
+          ) || '-'
+        }}
+      </div>
+
+
+      <div class="info-label">
+        QUALITY
+      </div>
+
+      <div class="info-value">
+        {{
+          getGeneralValue(
+            'QUALITY',
+            'QUALITY PERSON',
+            'QUALITY NAME'
+          ) || '-'
+        }}
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BUILDER ITEMS
+    ====================================================== -->
+
+    <ng-container
+      *ngFor="let item of builderItems"
+    >
+
+
+      <!-- ===================================================
+           TABLE
+      ==================================================== -->
+
+      <section
+        class="setup-section"
+        *ngIf="
+          item.type === 'table' &&
+          item.table
+        "
+      >
+
+        <div class="section-heading">
+  SHIFT DETAILS
+</div>
+
+
+        <div class="table-wrapper">
+
+          <table class="setup-report-table">
+
+            <tbody>
+
+              <tr
+                *ngFor="let row of item.table.rows"
+              >
+
+                <ng-container
+                  *ngFor="let cell of row.cells"
+                >
+
+                  <td
+                    *ngIf="!cell.hidden"
+                    [attr.colspan]="cell.colspan || 1"
+                    [attr.rowspan]="cell.rowspan || 1"
+                  >
+
+                    <!-- IMAGE CELL -->
+
+                    <img
+                      *ngIf="
+                        cell.inputType === 'image' &&
+                        cell.value
+                      "
+                      [src]="cell.value"
+                      class="uploaded-image"
+                      alt="Setup image"
+                    >
+
+
+                    <!-- NORMAL CELL -->
+
+                    <div
+                      class="cell-value"
+                      *ngIf="
+                        cell.inputType !== 'image' ||
+                        !cell.value
+                      "
+                    >
+
+                      {{
+                        cell.inputType === 'image'
+                          ? 'No image'
+                          : (
+                              cell.value || ''
+                            )
+                      }}
+
+                    </div>
+
+                  </td>
+
+                </ng-container>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+      <!-- ===================================================
+           TEXTBOX / REMARKS
+      ==================================================== -->
+
+      <section
+        class="remarks-section"
+        *ngIf="
+          item.type === 'textbox'
+        "
+      >
+
+        <div class="remarks-heading">
+
+          {{
+            item.label ||
+            'REMARKS'
+          }}
+
+        </div>
+
+
+        <div class="remarks-value">
+
+          {{ item.text || '' }}
+
+        </div>
+
+      </section>
+
+
+      <!-- ===================================================
+           DATE
+      ==================================================== -->
+
+      <section
+        class="date-section"
+        *ngIf="
+          item.type === 'date'
+        "
+      >
+
+        <div class="date-label">
+
+          {{
+            item.label ||
+            'DATE'
+          }}
+
+        </div>
+
+
+        <div class="date-value">
+
+          {{ item.text || '-' }}
+
+        </div>
+
+      </section>
+
+    </ng-container>
+
+
+    <!-- =====================================================
+         EMPTY STATE
+    ====================================================== -->
+
+    <div
+      class="empty-report"
+      *ngIf="
+        builderItems.length === 0
+      "
+    >
+
+      No setup checklist items available.
+
+    </div>
+
+  </div>
+
+</div>

@@ -4,22 +4,12 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inspection-report',
-
   standalone: true,
-
-  imports: [
-    CommonModule
-  ],
-
+  imports: [CommonModule],
   templateUrl: './inspection-report.html',
-
   styleUrls: ['./inspection-report.css']
 })
 export class InspectionReport implements OnInit {
-
-  // =====================================================
-  // TEMPLATE DATA
-  // =====================================================
 
   templateId: string | null = null;
 
@@ -36,31 +26,18 @@ export class InspectionReport implements OnInit {
   publishing = false;
 
 
-  // =====================================================
-  // CONSTRUCTOR
-  // =====================================================
-
   constructor(
     private router: Router
   ) {}
 
 
-  // =====================================================
-  // LOAD PREVIEW
-  // =====================================================
-
   ngOnInit(): void {
 
     const savedData =
-      localStorage.getItem(
-        'previewChecklist'
-      );
-
+      localStorage.getItem('previewChecklist');
 
     if (!savedData) {
-
       return;
-
     }
 
 
@@ -92,9 +69,7 @@ export class InspectionReport implements OnInit {
 
 
       if (this.templateId) {
-
         this.loadTemplateStatus();
-
       }
 
     }
@@ -125,24 +100,98 @@ export class InspectionReport implements OnInit {
   }
 
 
-  // =====================================================
-  // LOAD TEMPLATE STATUS
-  // =====================================================
+  /* =====================================================
+     GENERAL DETAILS VALUE FINDER
+  ===================================================== */
 
-  async loadTemplateStatus(): Promise<void> {
+  getGeneralValue(
+    ...names: string[]
+  ): string {
+
+    const wantedNames =
+      names.map(
+        name =>
+          this.normalizeLabel(name)
+      );
+
+
+    for (
+      const row
+      of this.generalDetails
+    ) {
+
+      const fields =
+        row?.fields ?? [];
+
+
+      for (
+        const field
+        of fields
+      ) {
+
+        const fieldLabel =
+          this.normalizeLabel(
+            field?.label ?? ''
+          );
+
+
+        if (
+          wantedNames.includes(
+            fieldLabel
+          )
+        ) {
+
+          return (
+            field?.value ??
+            ''
+          );
+
+        }
+
+      }
+
+    }
+
+
+    return '';
+
+  }
+
+
+  private normalizeLabel(
+    value: string
+  ): string {
+
+    return String(value)
+
+      .toLowerCase()
+
+      .replace(
+        /[^a-z0-9]/g,
+        ''
+      );
+
+  }
+
+
+  /* =====================================================
+     LOAD STATUS
+  ===================================================== */
+
+  async loadTemplateStatus():
+    Promise<void> {
 
     if (!this.templateId) {
-
       return;
-
     }
 
 
     try {
 
-      const response = await fetch(
-        `http://localhost:3000/api/templates/${this.templateId}`
-      );
+      const response =
+        await fetch(
+          `http://localhost:3000/api/templates/${this.templateId}`
+        );
 
 
       const result =
@@ -177,9 +226,9 @@ export class InspectionReport implements OnInit {
   }
 
 
-  // =====================================================
-  // EDIT TEMPLATE
-  // =====================================================
+  /* =====================================================
+     EDIT
+  ===================================================== */
 
   editTemplate(): void {
 
@@ -216,11 +265,12 @@ export class InspectionReport implements OnInit {
   }
 
 
-  // =====================================================
-  // PUBLISH TEMPLATE
-  // =====================================================
+  /* =====================================================
+     PUBLISH
+  ===================================================== */
 
-  async publishTemplate(): Promise<void> {
+  async publishTemplate():
+    Promise<void> {
 
     if (!this.templateId) {
 
@@ -249,12 +299,16 @@ export class InspectionReport implements OnInit {
 
     try {
 
-      const response = await fetch(
-        `http://localhost:3000/api/templates/publish/${this.templateId}`,
-        {
-          method: 'PUT'
-        }
-      );
+      const response =
+        await fetch(
+
+          `http://localhost:3000/api/templates/publish/${this.templateId}`,
+
+          {
+            method: 'PUT'
+          }
+
+        );
 
 
       const result =
@@ -273,10 +327,6 @@ export class InspectionReport implements OnInit {
 
       this.isPublished = true;
 
-
-      // =====================================================
-      // SAVE FINAL PUBLISHED DATA
-      // =====================================================
 
       const publishedData = {
 
@@ -314,10 +364,6 @@ export class InspectionReport implements OnInit {
       );
 
 
-      // =====================================================
-      // GO TO PUBLISHED CHECKLIST PAGE
-      // =====================================================
-
       this.router.navigate([
         '/published-inspection-report'
       ]);
@@ -347,11 +393,12 @@ export class InspectionReport implements OnInit {
   }
 
 
-  // =====================================================
-  // DELETE TEMPLATE
-  // =====================================================
+  /* =====================================================
+     DELETE
+  ===================================================== */
 
-  async deleteTemplate(): Promise<void> {
+  async deleteTemplate():
+    Promise<void> {
 
     if (!this.templateId) {
 
@@ -371,20 +418,22 @@ export class InspectionReport implements OnInit {
 
 
     if (!confirmed) {
-
       return;
-
     }
 
 
     try {
 
-      const response = await fetch(
-        `http://localhost:3000/api/templates/${this.templateId}`,
-        {
-          method: 'DELETE'
-        }
-      );
+      const response =
+        await fetch(
+
+          `http://localhost:3000/api/templates/${this.templateId}`,
+
+          {
+            method: 'DELETE'
+          }
+
+        );
 
 
       const result =
@@ -405,9 +454,11 @@ export class InspectionReport implements OnInit {
         'previewChecklist'
       );
 
+
       localStorage.removeItem(
         'editChecklist'
       );
+
 
       localStorage.removeItem(
         'publishedChecklist'

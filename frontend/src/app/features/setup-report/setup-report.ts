@@ -4,15 +4,11 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-setup-report',
-
   standalone: true,
-
   imports: [
     CommonModule
   ],
-
   templateUrl: './setup-report.html',
-
   styleUrls: ['./setup-report.css']
 })
 export class SetupReport implements OnInit {
@@ -58,9 +54,7 @@ export class SetupReport implements OnInit {
 
 
     if (!savedData) {
-
       return;
-
     }
 
 
@@ -92,9 +86,7 @@ export class SetupReport implements OnInit {
 
 
       if (this.templateId) {
-
         this.loadTemplateStatus();
-
       }
 
     }
@@ -131,9 +123,7 @@ export class SetupReport implements OnInit {
   async loadTemplateStatus(): Promise<void> {
 
     if (!this.templateId) {
-
       return;
-
     }
 
 
@@ -172,6 +162,84 @@ export class SetupReport implements OnInit {
       );
 
     }
+
+  }
+
+
+  // =====================================================
+  // FIND GENERAL DETAIL VALUE
+  // =====================================================
+
+  getGeneralValue(
+    ...names: string[]
+  ): string {
+
+    const wantedNames =
+      names.map(
+        name =>
+          this.normalizeLabel(name)
+      );
+
+
+    for (
+      const row
+      of this.generalDetails
+    ) {
+
+      const fields =
+        row?.fields ?? [];
+
+
+      for (
+        const field
+        of fields
+      ) {
+
+        const fieldLabel =
+          this.normalizeLabel(
+            field?.label ?? ''
+          );
+
+
+        if (
+          wantedNames.includes(
+            fieldLabel
+          )
+        ) {
+
+          return (
+            field?.value ??
+            ''
+          );
+
+        }
+
+      }
+
+    }
+
+
+    return '';
+
+  }
+
+
+  // =====================================================
+  // NORMALIZE GENERAL DETAIL LABEL
+  // =====================================================
+
+  private normalizeLabel(
+    value: string
+  ): string {
+
+    return String(value)
+
+      .toLowerCase()
+
+      .replace(
+        /[^a-z0-9]/g,
+        ''
+      );
 
   }
 
@@ -248,11 +316,6 @@ export class SetupReport implements OnInit {
 
     try {
 
-      // ===============================================
-      // CHANGE STATUS IN MONGODB
-      // Draft -> Published
-      // ===============================================
-
       const response = await fetch(
         `http://localhost:3000/api/templates/publish/${this.templateId}`,
         {
@@ -277,10 +340,6 @@ export class SetupReport implements OnInit {
 
       this.isPublished = true;
 
-
-      // ===============================================
-      // SAVE FINAL PUBLISHED CHECKLIST DATA
-      // ===============================================
 
       const publishedData = {
 
@@ -317,10 +376,6 @@ export class SetupReport implements OnInit {
         'Template published successfully!'
       );
 
-
-      // ===============================================
-      // GO TO PUBLISHED SETUP CHECKLIST
-      // ===============================================
 
       this.router.navigate([
         '/published-setup-report'
@@ -375,9 +430,7 @@ export class SetupReport implements OnInit {
 
 
     if (!confirmed) {
-
       return;
-
     }
 
 

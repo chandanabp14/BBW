@@ -22,11 +22,8 @@
 ===================================================== */
 
 .saved-page {
-
   padding: 30px 40px;
-
   box-sizing: border-box;
-
 }
 
 
@@ -35,7 +32,6 @@
 ===================================================== */
 
 .saved-header {
-
   display: flex;
 
   justify-content: space-between;
@@ -54,32 +50,30 @@
 
   box-shadow:
     0 4px 15px rgba(0,0,0,.07);
-
 }
 
 
 .saved-header h2 {
-
   margin: 0;
 
   color: #174a8b;
 
   font-size: 24px;
-
 }
 
 
 .saved-header p {
-
   margin: 5px 0 0;
 
   color: #64748b;
-
 }
 
 
-.back-button {
+/* =====================================================
+   BACK BUTTON
+===================================================== */
 
+.back-button {
   padding: 10px 18px;
 
   border-radius: 6px;
@@ -94,14 +88,35 @@
   cursor: pointer;
 
   font-weight: 600;
-
 }
 
 
 .back-button:hover {
-
   background: #eff6ff;
+}
 
+
+/* =====================================================
+   SECTION TITLES
+===================================================== */
+
+.section-title {
+  margin: 28px 0 12px;
+
+  padding-left: 4px;
+
+  color: #1e293b;
+
+  font-size: 19px;
+
+  font-weight: 700;
+}
+
+
+.published-title {
+  margin-top: 38px;
+
+  color: #047857;
 }
 
 
@@ -111,7 +126,6 @@
 
 .templates-card,
 .message-card {
-
   background: white;
 
   border-radius: 12px;
@@ -120,7 +134,11 @@
 
   box-shadow:
     0 4px 15px rgba(0,0,0,.07);
+}
 
+
+.message-card {
+  color: #475569;
 }
 
 
@@ -129,16 +147,13 @@
 ===================================================== */
 
 table {
-
   width: 100%;
 
   border-collapse: collapse;
-
 }
 
 
 th {
-
   text-align: left;
 
   padding: 12px 14px;
@@ -151,12 +166,10 @@ th {
 
   border-bottom:
     1px solid #cbd5e1;
-
 }
 
 
 td {
-
   padding: 14px;
 
   border-bottom:
@@ -165,23 +178,23 @@ td {
   color: #334155;
 
   font-size: 14px;
+}
 
+
+tbody tr:last-child td {
+  border-bottom: none;
 }
 
 
 tbody tr:hover {
-
   background: #f8fafc;
-
 }
 
 
 .template-name {
-
   font-weight: 600;
 
   color: #163f73;
-
 }
 
 
@@ -190,7 +203,6 @@ tbody tr:hover {
 ===================================================== */
 
 .status-badge {
-
   display: inline-block;
 
   padding: 5px 10px;
@@ -204,16 +216,13 @@ tbody tr:hover {
   font-size: 12px;
 
   font-weight: 600;
-
 }
 
 
 .status-badge.published {
-
   background: #ecfdf5;
 
   color: #047857;
-
 }
 
 
@@ -222,18 +231,15 @@ tbody tr:hover {
 ===================================================== */
 
 .actions {
-
   display: flex;
 
   gap: 7px;
 
   flex-wrap: wrap;
-
 }
 
 
 .actions button {
-
   padding: 7px 12px;
 
   border-radius: 5px;
@@ -244,49 +250,75 @@ tbody tr:hover {
 
   font-weight: 600;
 
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 
-.preview-button {
+/* =====================================================
+   PREVIEW BUTTON
+===================================================== */
 
+.preview-button {
   background: #f1f5f9;
 
   border:
     1px solid #cbd5e1;
 
   color: #334155;
-
 }
 
 
-.edit-button {
+.preview-button:hover {
+  background: #e2e8f0;
+}
 
+
+/* =====================================================
+   EDIT BUTTON
+===================================================== */
+
+.edit-button {
   background: white;
 
   border:
     1px solid #2563eb;
 
   color: #1d4ed8;
-
 }
 
 
-.delete-button {
+.edit-button:hover {
+  background: #eff6ff;
+}
 
+
+/* =====================================================
+   DELETE BUTTON
+===================================================== */
+
+.delete-button {
   background: white;
 
   border:
     1px solid #dc2626;
 
   color: #dc2626;
-
 }
 
 
+.delete-button:hover {
+  background: #fef2f2;
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
 .error-message {
-
   color: #dc2626;
-
 }
 
 
@@ -297,32 +329,34 @@ tbody tr:hover {
 @media (max-width: 800px) {
 
   .saved-page {
-
     padding: 15px;
-
   }
 
 
   .saved-header {
-
     align-items: flex-start;
 
     flex-direction: column;
+  }
 
+
+  .section-title {
+    margin-top: 22px;
+  }
+
+
+  .published-title {
+    margin-top: 30px;
   }
 
 
   .templates-card {
-
     overflow-x: auto;
-
   }
 
 
   table {
-
     min-width: 850px;
-
   }
 
 }
