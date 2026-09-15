@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -18,36 +18,44 @@ export class InspectionComponent implements OnInit {
   template?: Template;
   saved = false;
   submitted = false;
+  loadError = '';
 
   constructor(
     private templateService: TemplateService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   async ngOnInit(): Promise<void> {
     const id = Number(this.route.snapshot.queryParamMap.get('id'));
 
     if (Number.isFinite(id) && id > 0) {
-      const savedInspection = this.templateService.getInspectionTemplate(id);
-
-      // Retain an inspector's locally saved work when it exists. Otherwise,
-      // fetch the exact template from the API so a fresh browser tab does not
-      // depend on a previously populated in-memory template list.
+      // Always use the current server version. An old locally saved inspector
+      // copy may still be a draft even after the administrator publishes it.
       try {
-        this.template = savedInspection
-          ?? await this.templateService.loadTemplateById(id);
+        this.template = await this.templateService.loadTemplateById(id);
       } catch (error) {
         console.error('Unable to load the inspection checklist.', error);
+        this.loadError = 'Unable to load this checklist from the server. Confirm the backend is running on port 3001.';
+        this.changeDetector.detectChanges();
         return;
       }
 
       if (this.template?.status !== 'published') {
         this.template = undefined;
+        this.loadError = 'This checklist is still a draft and must be published before inspection.';
+        this.changeDetector.detectChanges();
         return;
       }
 
       this.ensureGeneralDetailOwnership();
       this.submitted = Boolean(this.template?.inspectionSubmittedAt);
+      // This app uses zoneless change detection. Awaiting the API call and
+      // assigning ordinary class properties does not schedule a redraw, so
+      // explicitly render the loaded inspection template.
+      this.changeDetector.detectChanges();
+    } else {
+      this.loadError = 'The inspection link does not contain a valid checklist ID.';
     }
   }
 

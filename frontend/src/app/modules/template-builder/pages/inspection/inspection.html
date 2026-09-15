@@ -120,6 +120,6 @@
 <ng-template #unavailable>
   <main class="unavailable">
     <h1>Checklist unavailable</h1>
-    <p>Use the inspection link provided by your administrator.</p>
+    <p>{{ loadError || 'Use the inspection link provided by your administrator.' }}</p>
   </main>
 </ng-template>
