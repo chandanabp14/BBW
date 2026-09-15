@@ -1,7 +1,6 @@
 export type ComponentType =
   | 'textbox'
   | 'heading'
-  | 'checkbox'
   | 'date'
   | 'table';
 
@@ -49,4 +48,23 @@ export interface ChecklistComponent{
 
   placeholder?:string;
 
+}
+
+import { BuilderItem } from './builder-item.model';
+import { GeneralDetailsRow } from './general-details.model';
+import { DynamicTable } from './table.model';
+
+export type TemplateStatus = 'draft' | 'published';
+
+export interface Template {
+  id: number;
+  name: string;
+  checklistType?: string;
+  generalDetailsRows?: GeneralDetailsRow[];
+  tables?: DynamicTable[];
+  status: TemplateStatus;
+  items: BuilderItem[];
+  createdAt: string;
+  updatedAt: string;
+  inspectionSubmittedAt?: string;
 }

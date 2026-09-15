@@ -7,6 +7,8 @@ import {
 } from '../models/table.model';
 
 import { BuilderItem } from '../models/builder-item.model';
+import { GeneralDetailsRow, GeneralDetail } from '../models/general-details.model';
+import { Template } from '../models/template.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +25,115 @@ export class TableService {
 
   private idCounter = 1;
 
+  public currentTemplateId?: number;
+
+  public templateName = '';
+
+  public checklistType = 'Inspection';
+
+  public generalDetailsRows: GeneralDetailsRow[] = [
+    {
+      id: 1,
+      fields: [
+        { id: 1, label: '', value: '', inputType: 'text' },
+        { id: 2, label: '', value: '', inputType: 'text' }
+      ]
+    },
+    {
+      id: 2,
+      fields: [
+        { id: 3, label: '', value: '', inputType: 'text' },
+        { id: 4, label: '', value: '', inputType: 'text' }
+      ]
+    }
+  ];
+
+  // =====================================================
+  // TEMPLATE MANAGEMENT
+  // =====================================================
+
+  public loadTemplate(template: Template): void {
+    this.currentTemplateId = template.id;
+    this.templateName = template.name || '';
+    this.checklistType = template.checklistType || 'Inspection';
+    if (template.generalDetailsRows && template.generalDetailsRows.length > 0) {
+      this.generalDetailsRows = structuredClone(template.generalDetailsRows);
+    }
+    this.tables = structuredClone(template.tables || []);
+    this.builderItems = structuredClone(template.items || []);
+    this.saveForPreview();
+  }
+
+  public resetBuilder(): void {
+    this.currentTemplateId = undefined;
+    this.templateName = '';
+    this.checklistType = 'Inspection';
+    this.generalDetailsRows = [
+      {
+        id: 1,
+        fields: [
+          { id: 1, label: '', value: '', inputType: 'text' },
+          { id: 2, label: '', value: '', inputType: 'text' }
+        ]
+      },
+      {
+        id: 2,
+        fields: [
+          { id: 3, label: '', value: '', inputType: 'text' },
+          { id: 4, label: '', value: '', inputType: 'text' }
+        ]
+      }
+    ];
+    this.tables = [];
+    this.builderItems = [];
+    this.saveForPreview();
+  }
+
+  // =====================================================
+  // PREVIEW PERSISTENCE
+  // =====================================================
+
+  public saveForPreview(): void {
+    const previewData = {
+      currentTemplateId: this.currentTemplateId,
+      templateName: this.templateName,
+      checklistType: this.checklistType,
+      generalDetailsRows: this.generalDetailsRows,
+      builderItems: this.builderItems,
+      tables: this.tables
+    };
+    try {
+      localStorage.setItem('bbw_preview_state', JSON.stringify(previewData));
+      sessionStorage.setItem('bbw_preview_state', JSON.stringify(previewData));
+    } catch (e) {
+      console.warn('Failed to save preview state:', e);
+    }
+  }
+
+  public loadPreviewData(): boolean {
+    try {
+      const data = localStorage.getItem('bbw_preview_state') || sessionStorage.getItem('bbw_preview_state');
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed.currentTemplateId !== undefined) this.currentTemplateId = parsed.currentTemplateId;
+        if (parsed.templateName !== undefined) this.templateName = parsed.templateName;
+        if (parsed.checklistType !== undefined) this.checklistType = parsed.checklistType;
+        if (parsed.generalDetailsRows && Array.isArray(parsed.generalDetailsRows)) {
+          this.generalDetailsRows = parsed.generalDetailsRows;
+        }
+        if (parsed.builderItems && Array.isArray(parsed.builderItems)) {
+          this.builderItems = parsed.builderItems;
+        }
+        if (parsed.tables && Array.isArray(parsed.tables)) {
+          this.tables = parsed.tables;
+        }
+        return true;
+      }
+    } catch (e) {
+      console.warn('Failed to load preview state:', e);
+    }
+    return false;
+  }
 
   // =====================================================
   // ID

@@ -1,49 +1,15 @@
 const express = require("express");
+const templateController = require("../controllers/template.controller");
 
 const router = express.Router();
 
-const templateController =
-require("../controllers/template.controller");
+router.route("/")
+    .get(templateController.getAllTemplates)
+    .post(templateController.createTemplate);
 
-// Create Template
-router.post(
-    "/",
-    templateController.createTemplate
-);
-
-// Get All Templates
-router.get(
-    "/",
-    templateController.getAllTemplates
-);
-
-// Get Template By ID
-router.get(
-    "/:id",
-    templateController.getTemplateById
-);
-
-// Publish Template
-router.put(
-    "/publish/:id",
-    templateController.publishTemplate
-);
-// Save Version
-router.post(
-    "/:id/version",
-    templateController.saveTemplateVersion
-);
-
-// Latest Version
-router.get(
-    "/:id/version/latest",
-    templateController.getLatestVersion
-);
-
-// All Versions
-router.get(
-    "/:id/versions",
-    templateController.getVersions
-);
+router.route("/:id")
+    .get(templateController.getTemplateById)
+    .put(templateController.updateTemplate)
+    .delete(templateController.deleteTemplate);
 
 module.exports = router;

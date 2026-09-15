@@ -9,5 +9,5 @@ export interface BuilderItem {
   
   label?: string;
 
-  table?: any;
+  table?: DynamicTable;
 }

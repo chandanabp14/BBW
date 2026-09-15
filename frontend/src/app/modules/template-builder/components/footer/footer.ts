@@ -1,10 +1,41 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Output
+} from '@angular/core';
 
 @Component({
   selector: 'app-footer',
-  standalone:true,
-  imports: [],
+
+  standalone: true,
+
   templateUrl: './footer.html',
-  styleUrl: './footer.css',
+
+  styleUrl: './footer.css'
 })
-export class FooterComponent {}
+export class FooterComponent {
+
+  @Output()
+  saveDraft =
+    new EventEmitter<void>();
+
+
+  @Output()
+  publish =
+    new EventEmitter<void>();
+
+
+  onSaveDraft(): void {
+
+    this.saveDraft.emit();
+
+  }
+
+
+  onPublish(): void {
+
+    this.publish.emit();
+
+  }
+
+}

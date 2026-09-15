@@ -6,6 +6,7 @@ import {
   GeneralDetail,
   GeneralDetailsRow
 } from '../../models/general-details.model';
+import { TableService } from '../../services/table.service';
 
 @Component({
   selector: 'app-general-details',
@@ -22,54 +23,11 @@ import {
   styleUrls: ['./general-details.css']
 })
 export class GeneralDetailsComponent {
+  constructor(private tableService: TableService) {}
 
-  rows: GeneralDetailsRow[] = [
-
-    {
-      id: 1,
-
-      fields: [
-
-        {
-          id: 1,
-          label: 'NEW FIELD',
-          value: '',
-          inputType: 'text'
-        },
-
-        {
-          id: 2,
-          label: 'NEW FIELD',
-          value: '',
-          inputType: 'text'
-        }
-
-      ]
-    },
-
-    {
-      id: 2,
-
-      fields: [
-
-        {
-          id: 3,
-          label: 'NEW FIELD',
-          value: '',
-          inputType: 'text'
-        },
-
-        {
-          id: 4,
-          label: 'NEW FIELD',
-          value: '',
-          inputType: 'text'
-        }
-
-      ]
-    }
-
-  ];
+  get rows(): GeneralDetailsRow[] {
+    return this.tableService.generalDetailsRows;
+  }
 
 
   // ==========================================

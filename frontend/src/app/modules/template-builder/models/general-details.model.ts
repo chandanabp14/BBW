@@ -3,6 +3,7 @@ export interface GeneralDetail {
   label: string;
   value: string;
   inputType: 'text' | 'date' | 'number';
+  inputMode?: 'admin' | 'inspector';
 }
 
 export interface GeneralDetailsRow {

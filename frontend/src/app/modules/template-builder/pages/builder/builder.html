@@ -2,22 +2,20 @@
 
 <div class="workspace">
 
-    <app-sidebar></app-sidebar>
+  <app-sidebar></app-sidebar>
 
-    <app-canvas
-        (cellSelected)="movePropertyPanel($event)">
-    </app-canvas>
+  <app-canvas
+    (cellSelected)="movePropertyPanel($event)">
+  </app-canvas>
 
-    <div
-        class="properties-container"
-        [style.top.px]="propertyPanelTop">
+  <div
+    class="properties-container"
+    [style.top.px]="propertyPanelTop">
 
-        <app-properties
-            [cell]="selectedCell">
-        </app-properties>
+    <app-properties
+      [cell]="selectedCell">
+    </app-properties>
 
-    </div>
+  </div>
 
 </div>
-
-<app-footer></app-footer>

@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { TableService } from '../../services/table.service';
+import { TemplateService } from '../../services/template.service';
 import { BuilderItem } from '../../models/builder-item.model';
 import { GeneralDetailsComponent } from '../general-details/general-details';
 import { TableCell } from '../../models/table.model';
@@ -32,10 +34,15 @@ export class CanvasComponent {
     cell: TableCell | null;
   }>();
 
+  showPublishModal = false;
+  showDraftModal = false;
+  modalTemplateName = '';
+  isSaving = false;
+
   constructor(
-
-    public tableService: TableService
-
+    public tableService: TableService,
+    public templateService: TemplateService,
+    public router: Router
   ) {}
 
   selectedCell: TableCell | null = null;
@@ -401,6 +408,89 @@ mergeRight(
 
     this.tableService.moveItemDown(itemId);
 
+  }
+
+  preview(): void {
+    this.tableService.saveForPreview();
+    window.open(
+      '/preview',
+      '_blank'
+    );
+  }
+
+  // =====================================================
+  // SAVE DRAFT
+  // =====================================================
+
+  async saveDraft(): Promise<void> {
+    if (this.isSaving) return;
+
+    this.isSaving = true;
+    try {
+      const templateName = this.tableService.templateName.trim() || 'Untitled Checklist';
+      const template = await this.templateService.saveDraft(
+        templateName,
+        this.tableService.builderItems,
+        this.tableService.currentTemplateId,
+        this.tableService.checklistType,
+        this.tableService.generalDetailsRows,
+        this.tableService.tables
+      );
+      this.tableService.currentTemplateId = template.id;
+      this.tableService.saveForPreview();
+      this.modalTemplateName = template.name;
+      this.showDraftModal = true;
+    } catch (error) {
+      this.showSaveError(error);
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  // =====================================================
+  // PUBLISH
+  // =====================================================
+
+  async publish(): Promise<void> {
+    if (this.isSaving) return;
+
+    this.isSaving = true;
+    try {
+      const templateName = this.tableService.templateName.trim() || 'Untitled Checklist';
+      const template = await this.templateService.publish(
+        templateName,
+        this.tableService.builderItems,
+        this.tableService.currentTemplateId,
+        this.tableService.checklistType,
+        this.tableService.generalDetailsRows,
+        this.tableService.tables
+      );
+      this.tableService.currentTemplateId = template.id;
+      this.tableService.saveForPreview();
+      this.modalTemplateName = template.name;
+      this.showPublishModal = true;
+    } catch (error) {
+      this.showSaveError(error);
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  private showSaveError(error: unknown): void {
+    console.error('Unable to save checklist.', error);
+    const message = (error as { error?: { message?: string } })?.error?.message
+      || 'Unable to save the checklist. Confirm that the backend is running and try again.';
+    alert(message);
+  }
+
+  closeModal(): void {
+    this.showPublishModal = false;
+    this.showDraftModal = false;
+  }
+
+  navigateToChecklists(): void {
+    this.closeModal();
+    this.router.navigate(['/']);
   }
 
 }

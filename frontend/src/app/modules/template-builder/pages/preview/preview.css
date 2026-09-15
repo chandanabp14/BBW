@@ -1,0 +1,483 @@
+/* ===================================================
+   PREVIEW CONTAINER & TOOLBAR
+   =================================================== */
+
+.preview-container {
+  min-height: 100vh;
+  background-color: #eef2f7;
+  padding: 24px 20px 60px 20px;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  color: #1a2530;
+}
+
+.preview-actions {
+  max-width: 1200px;
+  margin: 0 auto 16px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #d8e2ec;
+}
+
+.preview-tag {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.preview-tag span {
+  font-weight: 700;
+  font-size: 14px;
+  color: #17458a;
+}
+
+.preview-tag small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background-color: #f1f5f9;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.btn-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.btn-primary {
+  background-color: #17458a;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #113366;
+}
+
+
+/* ===================================================
+   CHECKSHEET DOCUMENT PAPER
+   =================================================== */
+
+.checksheet-document {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+
+/* ===================================================
+   TOP HEADER (LOGO | COMPANY | TEMPLATE)
+   =================================================== */
+
+.sheet-header {
+  display: grid;
+  grid-template-columns: 140px 1.2fr 1fr;
+  align-items: stretch;
+  border: 1.5px solid #204068;
+  background-color: #ffffff;
+  min-height: 60px;
+}
+
+.header-logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-right: 1.5px solid #204068;
+  background-color: #ffffff;
+}
+
+.header-logo {
+  max-height: 48px;
+  max-width: 110px;
+  object-fit: contain;
+}
+
+.logo-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #17458a;
+  line-height: 1.1;
+}
+
+.header-company-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-right: 1.5px solid #204068;
+  text-align: center;
+}
+
+.company-name {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: #19385c;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+}
+
+.header-template-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  text-align: center;
+  background-color: #f7fafc;
+}
+
+.template-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #17458a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+
+/* ===================================================
+   GENERAL DETAILS / FIXED FIELDS GRID
+   =================================================== */
+
+.sheet-general-details {
+  border-left: 1.5px solid #204068;
+  border-right: 1.5px solid #204068;
+  border-bottom: 1.5px solid #204068;
+  background-color: #ffffff;
+}
+
+.details-grid-row {
+  display: flex;
+  border-bottom: 1px solid #204068;
+}
+
+.details-grid-row:last-child {
+  border-bottom: none;
+}
+
+.details-grid-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border-right: 1px solid #204068;
+  box-sizing: border-box;
+}
+
+.details-grid-field:last-child {
+  border-right: none;
+}
+
+.field-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #173f78;
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+.field-value {
+  font-size: 12.5px;
+  color: #111827;
+  font-weight: 500;
+  flex: 1;
+}
+
+
+/* ===================================================
+   BODY CONTENT & ITEMS
+   =================================================== */
+
+.sheet-body {
+  margin-top: 14px;
+}
+
+
+/* ===================================================
+   SECTION HEADING
+   =================================================== */
+
+.sheet-heading {
+  margin: 14px 0 8px 0;
+  text-align: center;
+  border: 1px solid #204068;
+  background: #f0f4f9;
+  padding: 6px 12px;
+}
+
+.sheet-heading h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #173f78;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+/* ===================================================
+   TEXTBOX / CRITERIA / INSTRUCTIONS
+   =================================================== */
+
+.sheet-textbox {
+  border: 1px solid #204068;
+  margin: 10px 0;
+  background: #ffffff;
+  padding: 8px 12px;
+}
+
+.textbox-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #173f78;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.textbox-content {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #1e293b;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+
+/* ===================================================
+   DATE BOX
+   =================================================== */
+
+.sheet-date-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.date-label {
+  font-weight: 700;
+  color: #173f78;
+}
+
+.date-fill-line {
+  flex: 1;
+  max-width: 200px;
+  border-bottom: 1px solid #204068;
+  height: 16px;
+}
+
+
+/* ===================================================
+   INSPECTION TABLES
+   =================================================== */
+
+.sheet-table-section {
+  margin: 12px 0 16px 0;
+}
+
+.table-caption {
+  font-size: 13px;
+  font-weight: 700;
+  color: #173f78;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.table-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.sheet-table {
+  border-collapse: collapse;
+  width: max-content;
+  min-width: 100%;
+  border: 1.5px solid #204068;
+  table-layout: fixed;
+  background-color: #ffffff;
+}
+
+.sheet-table td {
+  border: 1px solid #204068;
+  padding: 4px 6px;
+  font-size: 11.5px;
+  color: #111827;
+  vertical-align: middle;
+  text-align: center;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.sheet-table td.header-cell {
+  background-color: #f1f6fb;
+  font-weight: 700;
+  color: #173f78;
+  font-size: 11.5px;
+}
+
+.sheet-table td.inspector-cell {
+  background-color: #ffffff;
+}
+
+.cell-text-wrapper {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.cell-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+
+.sheet-cell-img {
+  max-height: 60px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+.empty-image-placeholder {
+  color: #94a3b8;
+  font-size: 11px;
+  font-style: italic;
+}
+
+
+/* ===================================================
+   EMPTY STATE
+   =================================================== */
+
+.sheet-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 14px;
+  border: 1px dashed #cbd5e1;
+  margin-top: 16px;
+}
+
+
+/* ===================================================
+   PRINT STYLES
+   =================================================== */
+
+/* The checksheet is designed to use the wider page dimension when printed. */
+@page {
+  size: landscape;
+  margin: 10mm;
+}
+
+@media print {
+  body, .preview-container {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .preview-actions {
+    display: none !important;
+  }
+
+  .checksheet-document {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /*
+   * On screen a table can retain its configured cell widths and scroll
+   * horizontally. In print there is no useful horizontal scroll area, so
+   * allow every column to shrink and wrap inside the landscape page instead.
+   */
+  .table-scroll-container {
+    overflow: visible !important;
+  }
+
+  .sheet-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+  }
+
+  .sheet-table td {
+    min-width: 0 !important;
+    width: auto !important;
+    font-size: 9px !important;
+    padding: 3px 4px !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .details-grid-field {
+    min-width: 0;
+  }
+
+  .field-label,
+  .field-value {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  /* Keep a row intact where the printer needs to continue on a new page. */
+  .sheet-table tr,
+  .sheet-heading,
+  .sheet-textbox,
+  .sheet-date-box {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .sheet-header,
+  .sheet-general-details,
+  .sheet-table,
+  .sheet-heading,
+  .sheet-textbox {
+    border-color: #000000 !important;
+  }
+
+  .sheet-table td,
+  .details-grid-field,
+  .details-grid-row {
+    border-color: #000000 !important;
+  }
+}

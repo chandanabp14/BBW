@@ -22,6 +22,18 @@ export class PropertiesComponent {
 
   @Output() cellChange = new EventEmitter<TableCell>();
 
+  valueChanged(): void {
+    if (!this.cell) {
+      return;
+    }
+
+    this.cell.inputMode = this.cell.value.trim()
+      ? 'admin'
+      : 'inspector';
+
+    this.update();
+  }
+
   update(): void {
 
     const currentCell = this.cell;

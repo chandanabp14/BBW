@@ -1,0 +1,156 @@
+<app-navbar></app-navbar>
+
+<div class="checklists-page">
+
+  <div class="page-container">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+      <div class="header-titles">
+        <h1>Saved & Published Checklists</h1>
+        <p>Manage, edit drafts, publish templates, and view published inspection sheets</p>
+      </div>
+
+      <button class="new-button" (click)="newChecklist()">
+        <span>+</span> Create New Checklist
+      </button>
+
+    </div>
+
+
+    <!-- CONTROLS & FILTER BAR -->
+    <div class="controls-bar">
+
+      <div class="filter-tabs">
+        <button class="filter-tab" [class.active]="filterStatus === 'all'" (click)="filterStatus = 'all'">
+          All ({{ templates.length }})
+        </button>
+
+        <button class="filter-tab" [class.active]="filterStatus === 'published'" (click)="filterStatus = 'published'">
+          Published ({{ publishedCount }})
+        </button>
+
+        <button class="filter-tab" [class.active]="filterStatus === 'draft'" (click)="filterStatus = 'draft'">
+          Drafts ({{ draftCount }})
+        </button>
+      </div>
+
+      <div class="search-box">
+        <input type="text" placeholder="Search by checklist name..." [(ngModel)]="searchQuery">
+      </div>
+
+    </div>
+
+
+    <!-- EMPTY STATE (NO CHECKLISTS AT ALL) -->
+    <div class="empty-state" *ngIf="templates.length === 0">
+      <div class="empty-icon">📋</div>
+      <h2>No Checklists Created Yet</h2>
+      <p>Start building PDC setup sheets, inspection checklists, and maintenance forms.</p>
+      <button class="new-button" (click)="newChecklist()">
+        + Create Your First Checklist
+      </button>
+    </div>
+
+
+    <!-- EMPTY SEARCH RESULTS -->
+    <div class="empty-state" *ngIf="templates.length > 0 && filteredTemplates.length === 0">
+      <div class="empty-icon">🔍</div>
+      <h2>No matching checklists</h2>
+      <p>No checklists match your search or active filter.</p>
+      <button class="btn-clear-search" (click)="searchQuery = ''; filterStatus = 'all'">
+        Clear Search & Filters
+      </button>
+    </div>
+
+
+    <!-- CHECKLISTS GRID -->
+    <div class="checklist-grid" *ngIf="filteredTemplates.length > 0">
+
+      <div class="checklist-card" [class.card-draft]="template.status === 'draft'"
+        [class.card-published]="template.status === 'published'" *ngFor="let template of filteredTemplates">
+
+        <!-- CARD TOP BAR -->
+        <div class="card-top">
+
+          <div class="template-type-badge">
+            {{ template.checklistType || 'Inspection' }}
+          </div>
+
+          <!-- DRAFT BADGE -->
+          <span class="status-badge draft-badge" *ngIf="template.status === 'draft'">
+            Draft (Yet to Publish)
+          </span>
+
+          <!-- PUBLISHED BADGE -->
+          <span class="status-badge published-badge" *ngIf="template.status === 'published'">
+            ✓ Published
+          </span>
+
+        </div>
+
+
+        <!-- CARD CONTENT -->
+        <div class="card-body">
+          <h2 class="template-title" [title]="template.name">
+            {{ template.name || 'Untitled Checklist' }}
+          </h2>
+
+          <div class="template-meta">
+            <div class="meta-item">
+              <span>Updated: {{ template.updatedAt | date:'mediumDate' }}</span>
+            </div>
+            <div class="meta-item" *ngIf="template.items">
+              <span>{{ template.items.length }} components</span>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- CARD ACTIONS -->
+        <div class="card-actions">
+
+          <!-- FOR DRAFTS: EDIT, PUBLISH, DELETE -->
+          <ng-container *ngIf="template.status === 'draft'">
+            <button class="action-btn btn-duplicate" title="Create an editable copy of this checklist"
+              (click)="duplicateChecklist(template)">
+              Duplicate
+            </button>
+
+            <button class="action-btn btn-edit" title="Open draft in builder to edit" (click)="editDraft(template)">
+              Edit
+            </button>
+
+            <button class="action-btn btn-publish" title="Publish this template" (click)="publishDraft(template)">
+              Publish
+            </button>
+
+            <button class="action-btn btn-delete" title="Delete draft"
+              (click)="deleteChecklist(template.id, template.name)">
+              Delete
+            </button>
+          </ng-container>
+
+          <!-- FOR PUBLISHED: ONLY VIEW -->
+          <ng-container *ngIf="template.status === 'published'">
+            <button class="action-btn btn-duplicate" title="Create an editable copy of this checklist"
+              (click)="duplicateChecklist(template)">
+              Duplicate
+            </button>
+
+            <button class="action-btn btn-view" title="View published checksheet preview"
+              (click)="viewPublished(template)">
+              View Checksheet
+            </button>
+          </ng-container>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
