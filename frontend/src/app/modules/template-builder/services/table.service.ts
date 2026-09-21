@@ -7,7 +7,10 @@ import {
 } from '../models/table.model';
 
 import { BuilderItem } from '../models/builder-item.model';
-import { GeneralDetailsRow, GeneralDetail } from '../models/general-details.model';
+import {
+  GeneralDetailsRow,
+  GeneralDetail
+} from '../models/general-details.model';
 import { Template } from '../models/template.model';
 
 @Injectable({
@@ -48,26 +51,67 @@ export class TableService {
     }
   ];
 
+
   // =====================================================
   // TEMPLATE MANAGEMENT
   // =====================================================
 
   public loadTemplate(template: Template): void {
+
     this.currentTemplateId = template.id;
-    this.templateName = template.name || '';
-    this.checklistType = template.checklistType || 'Inspection';
-    if (template.generalDetailsRows && template.generalDetailsRows.length > 0) {
-      this.generalDetailsRows = structuredClone(template.generalDetailsRows);
+
+    this.templateName =
+      template.name || '';
+
+    this.checklistType =
+      template.checklistType || 'Inspection';
+
+    if (
+      template.generalDetailsRows &&
+      template.generalDetailsRows.length > 0
+    ) {
+      this.generalDetailsRows =
+        structuredClone(template.generalDetailsRows);
     }
-    this.tables = structuredClone(template.tables || []);
-    this.builderItems = structuredClone(template.items || []);
+
+    /*
+     * IMPORTANT FIX
+     *
+     * builderItems must be loaded first.
+     *
+     * We then rebuild tables[] using the SAME table objects
+     * contained inside builderItems.
+     *
+     * Do NOT separately structuredClone template.tables here.
+     * If we do, addRow/addColumn changes tables[], while the
+     * canvas displays builderItems[].table.
+     */
+
+    this.builderItems =
+      structuredClone(template.items || []);
+
+    this.tables = this.builderItems
+      .filter(
+        item =>
+          item.type === 'table' &&
+          item.table
+      )
+      .map(
+        item => item.table!
+      );
+
     this.saveForPreview();
   }
 
+
   public resetBuilder(): void {
+
     this.currentTemplateId = undefined;
+
     this.templateName = '';
+
     this.checklistType = 'Inspection';
+
     this.generalDetailsRows = [
       {
         id: 1,
@@ -84,63 +128,150 @@ export class TableService {
         ]
       }
     ];
+
     this.tables = [];
+
     this.builderItems = [];
+
     this.saveForPreview();
   }
+
 
   // =====================================================
   // PREVIEW PERSISTENCE
   // =====================================================
 
   public saveForPreview(): void {
+
     const previewData = {
-      currentTemplateId: this.currentTemplateId,
-      templateName: this.templateName,
-      checklistType: this.checklistType,
-      generalDetailsRows: this.generalDetailsRows,
-      builderItems: this.builderItems,
-      tables: this.tables
+
+      currentTemplateId:
+        this.currentTemplateId,
+
+      templateName:
+        this.templateName,
+
+      checklistType:
+        this.checklistType,
+
+      generalDetailsRows:
+        this.generalDetailsRows,
+
+      builderItems:
+        this.builderItems,
+
+      tables:
+        this.tables
     };
+
     try {
-      localStorage.setItem('bbw_preview_state', JSON.stringify(previewData));
-      sessionStorage.setItem('bbw_preview_state', JSON.stringify(previewData));
+
+      localStorage.setItem(
+        'bbw_preview_state',
+        JSON.stringify(previewData)
+      );
+
+      sessionStorage.setItem(
+        'bbw_preview_state',
+        JSON.stringify(previewData)
+      );
+
     } catch (e) {
-      console.warn('Failed to save preview state:', e);
+
+      console.warn(
+        'Failed to save preview state:',
+        e
+      );
     }
   }
 
+
   public loadPreviewData(): boolean {
+
     try {
-      const data = localStorage.getItem('bbw_preview_state') || sessionStorage.getItem('bbw_preview_state');
+
+      const data =
+        localStorage.getItem('bbw_preview_state') ||
+        sessionStorage.getItem('bbw_preview_state');
+
       if (data) {
-        const parsed = JSON.parse(data);
-        if (parsed.currentTemplateId !== undefined) this.currentTemplateId = parsed.currentTemplateId;
-        if (parsed.templateName !== undefined) this.templateName = parsed.templateName;
-        if (parsed.checklistType !== undefined) this.checklistType = parsed.checklistType;
-        if (parsed.generalDetailsRows && Array.isArray(parsed.generalDetailsRows)) {
-          this.generalDetailsRows = parsed.generalDetailsRows;
+
+        const parsed =
+          JSON.parse(data);
+
+        if (
+          parsed.currentTemplateId !== undefined
+        ) {
+          this.currentTemplateId =
+            parsed.currentTemplateId;
         }
-        if (parsed.builderItems && Array.isArray(parsed.builderItems)) {
-          this.builderItems = parsed.builderItems;
+
+        if (
+          parsed.templateName !== undefined
+        ) {
+          this.templateName =
+            parsed.templateName;
         }
-        if (parsed.tables && Array.isArray(parsed.tables)) {
-          this.tables = parsed.tables;
+
+        if (
+          parsed.checklistType !== undefined
+        ) {
+          this.checklistType =
+            parsed.checklistType;
         }
+
+        if (
+          parsed.generalDetailsRows &&
+          Array.isArray(parsed.generalDetailsRows)
+        ) {
+          this.generalDetailsRows =
+            parsed.generalDetailsRows;
+        }
+
+        if (
+          parsed.builderItems &&
+          Array.isArray(parsed.builderItems)
+        ) {
+          this.builderItems =
+            parsed.builderItems;
+        }
+
+        /*
+         * Same-reference fix for preview restoration.
+         */
+        this.tables = this.builderItems
+          .filter(
+            item =>
+              item.type === 'table' &&
+              item.table
+          )
+          .map(
+            item => item.table!
+          );
+
         return true;
       }
+
     } catch (e) {
-      console.warn('Failed to load preview state:', e);
+
+      console.warn(
+        'Failed to load preview state:',
+        e
+      );
     }
+
     return false;
   }
+
 
   // =====================================================
   // ID
   // =====================================================
 
   private generateId(): number {
-    return Date.now() + this.idCounter++;
+
+    return Date.now() +
+      this.idCounter++;
   }
 
 
@@ -149,11 +280,17 @@ export class TableService {
   // =====================================================
 
   addTextbox(): void {
+
     this.builderItems.push({
-        id: Date.now(),
-        type: 'textbox',
-        label: 'Text / Instruction',
-        text: ''
+
+      id: this.generateId(),
+
+      type: 'textbox',
+
+      label: 'Text / Instruction',
+
+      text: ''
+
     });
   }
 
@@ -173,7 +310,6 @@ export class TableService {
       text: 'Section Heading'
 
     });
-
   }
 
 
@@ -194,7 +330,6 @@ export class TableService {
       label: 'Date'
 
     });
-
   }
 
 
@@ -204,19 +339,27 @@ export class TableService {
 
   createTable(): void {
 
-    const tableId = this.generateId();
+    const tableId =
+      this.generateId();
 
     const rows: TableRow[] = [];
 
-    // ---------------------------------------------
-    // DEFAULT 3 x 3 TABLE
-    // ---------------------------------------------
 
-    for (let r = 0; r < 3; r++) {
+    // DEFAULT 3 x 3 TABLE
+
+    for (
+      let r = 0;
+      r < 3;
+      r++
+    ) {
 
       const cells: TableCell[] = [];
 
-      for (let c = 0; c < 3; c++) {
+      for (
+        let c = 0;
+        c < 3;
+        c++
+      ) {
 
         cells.push({
 
@@ -238,27 +381,20 @@ export class TableService {
               ? 'admin'
               : 'inspector',
 
-          inputType:
-            r === 0
-              ? 'text'
-              : 'text',
+          inputType: 'text',
 
           required: false,
 
           width: 120,
-          
+
           height: 60
 
         });
-
       }
 
       rows.push({
-
         cells
-
       });
-
     }
 
 
@@ -273,8 +409,9 @@ export class TableService {
     };
 
 
-    this.tables.push(table);
+    // SAME OBJECT REFERENCE
 
+    this.tables.push(table);
 
     this.builderItems.push({
 
@@ -285,7 +422,6 @@ export class TableService {
       table: table
 
     });
-
   }
 
 
@@ -298,9 +434,9 @@ export class TableService {
   ): DynamicTable | undefined {
 
     return this.tables.find(
-      table => table.id === tableId
+      table =>
+        table.id === tableId
     );
-
   }
 
 
@@ -308,11 +444,20 @@ export class TableService {
   // ADD ROW
   // =====================================================
 
-  addRow(tableId: number): void {
+  addRow(
+    tableId: number
+  ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
+
+      console.warn(
+        'addRow: table not found',
+        tableId
+      );
+
       return;
     }
 
@@ -321,10 +466,13 @@ export class TableService {
         ? table.rows[0].cells.length
         : 1;
 
-
     const cells: TableCell[] = [];
 
-    for (let c = 0; c < columnCount; c++) {
+    for (
+      let c = 0;
+      c < columnCount;
+      c++
+    ) {
 
       cells.push({
 
@@ -349,16 +497,13 @@ export class TableService {
         height: 60
 
       });
-
     }
 
-
     table.rows.push({
-
       cells
-
     });
 
+    this.saveForPreview();
   }
 
 
@@ -366,14 +511,22 @@ export class TableService {
   // ADD COLUMN
   // =====================================================
 
-  addColumn(tableId: number): void {
+  addColumn(
+    tableId: number
+  ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
+
+      console.warn(
+        'addColumn: table not found',
+        tableId
+      );
+
       return;
     }
-
 
     for (
       let r = 0;
@@ -406,59 +559,81 @@ export class TableService {
         required: false,
 
         width: 120,
-        
+
         height: 60
 
       });
-
     }
 
+    this.saveForPreview();
   }
-  
+
+
+  // =====================================================
+  // UPDATE CELL SIZE
+  // =====================================================
+
   updateCellSize(
-  tableId: number,
-  row: number,
-  column: number,
-  width: number,
-  height: number
-): void {
+    tableId: number,
+    row: number,
+    column: number,
+    width: number,
+    height: number
+  ): void {
 
-  const item = this.builderItems.find(
-    item => item.type === 'table' && item.table?.id === tableId
-  );
+    const item =
+      this.builderItems.find(
+        item =>
+          item.type === 'table' &&
+          item.table?.id === tableId
+      );
 
-  if (!item?.table) {
-    return;
+    if (!item?.table) {
+      return;
+    }
+
+    const cell =
+      item.table.rows[row]
+        ?.cells[column];
+
+    if (!cell) {
+      return;
+    }
+
+    cell.width =
+      Math.max(30, width);
+
+    cell.height =
+      Math.max(25, height);
+
+    this.saveForPreview();
   }
 
-  const cell = item.table.rows[row]?.cells[column];
-
-  if (!cell) {
-    return;
-  }
-
-  cell.width = Math.max(30, width);
-  cell.height = Math.max(25, height);
-}
 
   // =====================================================
   // DELETE ROW
   // =====================================================
 
-  deleteRow(tableId: number): void {
+  deleteRow(
+    tableId: number
+  ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
       return;
     }
 
-    if (table.rows.length <= 1) {
+    if (
+      table.rows.length <= 1
+    ) {
       return;
     }
 
     table.rows.pop();
 
+    this.saveForPreview();
   }
 
 
@@ -466,14 +641,16 @@ export class TableService {
   // DELETE COLUMN
   // =====================================================
 
-  deleteColumn(tableId: number): void {
+  deleteColumn(
+    tableId: number
+  ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
       return;
     }
-
 
     if (
       table.rows.length === 0 ||
@@ -482,13 +659,14 @@ export class TableService {
       return;
     }
 
-
-    for (const row of table.rows) {
+    for (
+      const row of table.rows
+    ) {
 
       row.cells.pop();
-
     }
 
+    this.saveForPreview();
   }
 
 
@@ -502,27 +680,26 @@ export class TableService {
     column: number
   ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
       return;
     }
 
-
-    this.clearSelectionForTable(table);
-
+    this.clearSelectionForTable(
+      table
+    );
 
     const cell =
-      table.rows[row]?.cells[column];
-
+      table.rows[row]
+        ?.cells[column];
 
     if (!cell) {
       return;
     }
 
-
     cell.selected = true;
-
   }
 
 
@@ -532,23 +709,22 @@ export class TableService {
 
   selectRange(
     tableId: number,
-
     startRow: number,
     startColumn: number,
-
     endRow: number,
     endColumn: number
   ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
       return;
     }
 
-
-    this.clearSelectionForTable(table);
-
+    this.clearSelectionForTable(
+      table
+    );
 
     const minRow =
       Math.min(
@@ -574,7 +750,6 @@ export class TableService {
         endColumn
       );
 
-
     for (
       let r = minRow;
       r <= maxRow;
@@ -588,19 +763,14 @@ export class TableService {
       ) {
 
         const cell =
-          table.rows[r]?.cells[c];
-
+          table.rows[r]
+            ?.cells[c];
 
         if (cell) {
-
           cell.selected = true;
-
         }
-
       }
-
     }
-
   }
 
 
@@ -610,12 +780,14 @@ export class TableService {
 
   clearSelection(): void {
 
-    for (const table of this.tables) {
+    for (
+      const table of this.tables
+    ) {
 
-      this.clearSelectionForTable(table);
-
+      this.clearSelectionForTable(
+        table
+      );
     }
-
   }
 
 
@@ -623,16 +795,17 @@ export class TableService {
     table: DynamicTable
   ): void {
 
-    for (const row of table.rows) {
+    for (
+      const row of table.rows
+    ) {
 
-      for (const cell of row.cells) {
+      for (
+        const cell of row.cells
+      ) {
 
         cell.selected = false;
-
       }
-
     }
-
   }
 
 
@@ -644,12 +817,12 @@ export class TableService {
     tableId: number
   ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
       return;
     }
-
 
     const selected: {
       row: number;
@@ -657,10 +830,6 @@ export class TableService {
       cell: TableCell;
     }[] = [];
 
-
-    // ---------------------------------------------
-    // FIND SELECTED CELLS
-    // ---------------------------------------------
 
     for (
       let r = 0;
@@ -677,45 +846,32 @@ export class TableService {
         const cell =
           table.rows[r].cells[c];
 
-
         if (
           cell.selected &&
           !cell.hidden
         ) {
 
           selected.push({
-
             row: r,
-
             column: c,
-
-            cell: cell
-
+            cell
           });
-
         }
-
       }
-
     }
 
 
-    // Need at least 2 cells
-
-    if (selected.length < 2) {
+    if (
+      selected.length < 2
+    ) {
 
       alert(
         'Select two or more adjacent cells to merge.'
       );
 
       return;
-
     }
 
-
-    // ---------------------------------------------
-    // FIND RECTANGLE
-    // ---------------------------------------------
 
     const minRow =
       Math.min(
@@ -751,10 +907,6 @@ export class TableService {
       (maxColumn - minColumn + 1);
 
 
-    // ---------------------------------------------
-    // MUST BE A COMPLETE RECTANGLE
-    // ---------------------------------------------
-
     if (
       selected.length !==
       requiredCellCount
@@ -765,15 +917,12 @@ export class TableService {
       );
 
       return;
-
     }
 
 
-    // ---------------------------------------------
-    // DO NOT MERGE ALREADY MERGED CELLS
-    // ---------------------------------------------
-
-    for (const item of selected) {
+    for (
+      const item of selected
+    ) {
 
       if (
         item.cell.rowspan !== 1 ||
@@ -785,28 +934,20 @@ export class TableService {
         );
 
         return;
-
       }
-
     }
 
-
-    // ---------------------------------------------
-    // TOP-LEFT CELL
-    // ---------------------------------------------
 
     const mainCell =
       table.rows[minRow]
         .cells[minColumn];
 
 
-    // ---------------------------------------------
-    // COMBINE TEXT
-    // ---------------------------------------------
-
     const values =
       selected
-        .map(x => x.cell.value)
+        .map(
+          x => x.cell.value
+        )
         .filter(
           value =>
             value &&
@@ -817,26 +958,12 @@ export class TableService {
     mainCell.value =
       values.join(' ');
 
-
-    // ---------------------------------------------
-    // ROWSPAN
-    // ---------------------------------------------
-
     mainCell.rowspan =
       maxRow - minRow + 1;
-
-
-    // ---------------------------------------------
-    // COLSPAN
-    // ---------------------------------------------
 
     mainCell.colspan =
       maxColumn - minColumn + 1;
 
-
-    // ---------------------------------------------
-    // HIDE OTHER CELLS
-    // ---------------------------------------------
 
     for (
       let r = minRow;
@@ -854,28 +981,23 @@ export class TableService {
           r === minRow &&
           c === minColumn
         ) {
-
           continue;
-
         }
-
 
         const cell =
           table.rows[r]
             .cells[c];
 
-
         cell.hidden = true;
 
         cell.selected = false;
-
       }
-
     }
 
 
     mainCell.selected = false;
 
+    this.saveForPreview();
   }
 
 
@@ -889,61 +1011,46 @@ export class TableService {
     column: number
   ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
       return;
     }
 
-
     const currentRow =
       table.rows[row];
-
 
     if (!currentRow) {
       return;
     }
 
-
     const firstCell =
       currentRow.cells[column];
 
-
     const secondCell =
       currentRow.cells[column + 1];
-
 
     if (
       !firstCell ||
       !secondCell
     ) {
-
       return;
-
     }
-
 
     if (
       firstCell.hidden ||
       secondCell.hidden
     ) {
-
       return;
-
     }
-
 
     if (
       firstCell.rowspan !== 1 ||
       secondCell.rowspan !== 1
     ) {
-
       return;
-
     }
-
-
-    // Combine values
 
     if (secondCell.value) {
 
@@ -951,19 +1058,16 @@ export class TableService {
         firstCell.value
           ? `${firstCell.value} ${secondCell.value}`
           : secondCell.value;
-
     }
-
 
     firstCell.colspan +=
       secondCell.colspan;
 
-
     secondCell.hidden = true;
-
 
     firstCell.selected = false;
 
+    this.saveForPreview();
   }
 
 
@@ -977,46 +1081,33 @@ export class TableService {
     column: number
   ): void {
 
-    const table = this.getTable(tableId);
+    const table =
+      this.getTable(tableId);
 
     if (!table) {
       return;
     }
 
-
     const mainCell =
       table.rows[row]
         ?.cells[column];
-
 
     if (!mainCell) {
       return;
     }
 
-
     const rowspan =
       mainCell.rowspan;
 
-
     const colspan =
       mainCell.colspan;
-
-
-    // Nothing to split
 
     if (
       rowspan === 1 &&
       colspan === 1
     ) {
-
       return;
-
     }
-
-
-    // ---------------------------------------------
-    // RESTORE CELLS
-    // ---------------------------------------------
 
     for (
       let r = row;
@@ -1034,21 +1125,16 @@ export class TableService {
           table.rows[r]
             ?.cells[c];
 
-
         if (!cell) {
           continue;
         }
-
 
         if (
           r === row &&
           c === column
         ) {
-
           continue;
-
         }
-
 
         cell.hidden = false;
 
@@ -1068,11 +1154,8 @@ export class TableService {
 
         cell.required =
           mainCell.required;
-
       }
-
     }
-
 
     mainCell.rowspan = 1;
 
@@ -1080,6 +1163,7 @@ export class TableService {
 
     mainCell.selected = false;
 
+    this.saveForPreview();
   }
 
 
@@ -1093,20 +1177,18 @@ export class TableService {
 
     const index =
       this.builderItems.findIndex(
-        item => item.id === itemId
+        item =>
+          item.id === itemId
       );
 
-
-    if (index === -1) {
+    if (
+      index === -1
+    ) {
       return;
     }
 
-
     const item =
       this.builderItems[index];
-
-
-    // Remove table from tables[]
 
     if (
       item.type === 'table' &&
@@ -1119,24 +1201,23 @@ export class TableService {
             table.id === item.table!.id
         );
 
-
-      if (tableIndex !== -1) {
+      if (
+        tableIndex !== -1
+      ) {
 
         this.tables.splice(
           tableIndex,
           1
         );
-
       }
-
     }
-
 
     this.builderItems.splice(
       index,
       1
     );
 
+    this.saveForPreview();
   }
 
 
@@ -1150,28 +1231,23 @@ export class TableService {
 
     const index =
       this.builderItems.findIndex(
-        item => item.id === itemId
+        item =>
+          item.id === itemId
       );
-
 
     if (
       index <= 0
     ) {
-
       return;
-
     }
-
 
     const item =
       this.builderItems[index];
-
 
     this.builderItems.splice(
       index,
       1
     );
-
 
     this.builderItems.splice(
       index - 1,
@@ -1179,6 +1255,7 @@ export class TableService {
       item
     );
 
+    this.saveForPreview();
   }
 
 
@@ -1192,30 +1269,25 @@ export class TableService {
 
     const index =
       this.builderItems.findIndex(
-        item => item.id === itemId
+        item =>
+          item.id === itemId
       );
-
 
     if (
       index === -1 ||
       index >=
         this.builderItems.length - 1
     ) {
-
       return;
-
     }
-
 
     const item =
       this.builderItems[index];
-
 
     this.builderItems.splice(
       index,
       1
     );
-
 
     this.builderItems.splice(
       index + 1,
@@ -1223,6 +1295,6 @@ export class TableService {
       item
     );
 
+    this.saveForPreview();
   }
-
 }

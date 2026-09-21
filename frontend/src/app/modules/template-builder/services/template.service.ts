@@ -17,7 +17,7 @@ export class TemplateService {
   private nextId = 1;
   private inspectionStorageKey = 'bbw-inspection-responses';
   private templates: Template[] = [];
-  private readonly templatesUrl = 'http://localhost:3001/api/templates';
+  private readonly templatesUrl = 'http://localhost:3000/api/templates';
 
   constructor(private http: HttpClient) {}
 
