@@ -1,0 +1,68 @@
+@import '../preview/preview.css';
+
+.inspector-input {
+  width: 100%;
+  min-width: 80px;
+  box-sizing: border-box;
+  padding: 4px 6px;
+  border: 1px solid #94a3b8;
+  border-radius: 3px;
+  background: #fffdf1;
+  color: #111827;
+  font: inherit;
+}
+
+.sheet-table td.inspector-cell {
+  background: #fffdf1;
+}
+
+.sheet-table td.inspector-cell:has(.inspector-input) {
+  padding: 3px;
+}
+
+.save-notice {
+  max-width: 1200px;
+  margin: 0 auto 16px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #dcfce7;
+  color: #166534;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+.submit-notice {
+  max-width: 1200px;
+  margin: 0 auto 16px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: .65;
+}
+
+.unavailable {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 120px 24px;
+  background: #eef2f7;
+  color: #173f78;
+  text-align: center;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+@media print {
+  .inspector-input {
+    border: 0;
+    background: transparent;
+    padding: 0;
+  }
+
+  input[type='file'] {
+    display: none;
+  }
+}

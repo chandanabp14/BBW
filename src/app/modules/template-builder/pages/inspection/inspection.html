@@ -1,0 +1,125 @@
+<div class="preview-container" *ngIf="template; else unavailable">
+  <div class="preview-actions">
+    <div class="preview-tag">
+      <span>Inspector Checklist</span>
+      <small>Complete the fields assigned to you, then save your responses.</small>
+    </div>
+    <div class="action-buttons">
+      <button type="button" class="btn btn-secondary" (click)="save()">Save Progress</button>
+      <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="submitted">
+        {{ submitted ? 'Inspection Submitted' : 'Submit Inspection' }}
+      </button>
+      <button type="button" class="btn btn-primary" (click)="print()">Print Checksheet</button>
+    </div>
+  </div>
+
+  <p class="save-notice" *ngIf="saved && !submitted">Inspection progress saved.</p>
+  <p class="submit-notice" *ngIf="submitted">Inspection submitted successfully.</p>
+
+  <div class="checksheet-document">
+    <div class="sheet-header">
+      <div class="header-logo-section">
+        <img src="/logo.jpg" alt="BBW Global logo" class="header-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+        <div class="logo-fallback" style="display: none;">
+          <strong>BBW</strong>
+          <span>GLOBAL</span>
+        </div>
+      </div>
+      <div class="header-company-section">
+        <h1 class="company-name">BBW GLOBAL Tek Pvt Ltd</h1>
+      </div>
+      <div class="header-template-section">
+        <h2 class="template-name">{{ template.name }}</h2>
+      </div>
+    </div>
+
+    <div class="sheet-general-details" *ngIf="template.generalDetailsRows?.length">
+      @for (row of template.generalDetailsRows; track row.id) {
+        <div class="details-grid-row">
+          @for (field of row.fields; track field.id) {
+            <div class="details-grid-field">
+              <span class="field-label">{{ field.label || 'Field' }}:</span>
+              @if (field.inputMode === 'admin') {
+                <span class="field-value">{{ field.value }}</span>
+              } @else if (field.inputType === 'date') {
+                <input class="inspector-input" type="date" [(ngModel)]="field.value">
+              } @else if (field.inputType === 'number') {
+                <input class="inspector-input" type="number" [(ngModel)]="field.value" placeholder="Enter value">
+              } @else {
+                <input class="inspector-input" type="text" [(ngModel)]="field.value" placeholder="Enter value">
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="sheet-body">
+      @for (item of template.items; track item.id) {
+        @if (item.type === 'heading') {
+          <div class="sheet-heading"><h3>{{ item.text }}</h3></div>
+        }
+
+        @if (item.type === 'textbox') {
+          <div class="sheet-textbox">
+            <div class="textbox-title" *ngIf="item.label">{{ item.label }}</div>
+            <div class="textbox-content">{{ item.text }}</div>
+          </div>
+        }
+
+        @if (item.type === 'date') {
+          <div class="sheet-date-box">
+            <span class="date-label">{{ item.label || 'Date' }}:</span>
+            <span class="date-fill-line"></span>
+          </div>
+        }
+
+        @if (item.type === 'table' && item.table) {
+          <div class="sheet-table-section">
+            <div class="table-caption" *ngIf="item.table.title && item.table.title !== 'Inspection Table'">{{ item.table.title }}</div>
+            <div class="table-scroll-container">
+              <table class="sheet-table">
+                <tbody>
+                  @for (row of item.table.rows; track $index) {
+                    <tr>
+                      @for (cell of row.cells; track $index) {
+                        @if (!cell.hidden) {
+                          <td [attr.colspan]="cell.colspan" [attr.rowspan]="cell.rowspan"
+                              [style.width.px]="cell.width || null" [style.min-width.px]="cell.width || null"
+                              [style.height.px]="cell.height || null"
+                              [class.header-cell]="cell.inputMode === 'admin'"
+                              [class.inspector-cell]="cell.inputMode === 'inspector'">
+                            @if (cell.inputMode === 'admin') {
+                              <img *ngIf="cell.inputType === 'image' && cell.value" [src]="cell.value" class="sheet-cell-img" alt="Admin reference">
+                              <div class="cell-text-wrapper" *ngIf="cell.inputType !== 'image'">{{ cell.value }}</div>
+                            } @else if (cell.inputType === 'checkbox') {
+                              <input type="checkbox" [checked]="cell.value === 'true'" (change)="setCheckbox(cell, $any($event.target).checked)">
+                            } @else if (cell.inputType === 'date') {
+                              <input class="inspector-input" type="date" [(ngModel)]="cell.value">
+                            } @else if (cell.inputType === 'image') {
+                              <input type="file" accept="image/*" (change)="selectImage($event, cell)">
+                              <img *ngIf="cell.value" [src]="cell.value" class="sheet-cell-img" alt="Inspector upload">
+                            } @else {
+                              <input class="inspector-input" type="text" [(ngModel)]="cell.value" [required]="cell.required" placeholder="Enter value">
+                            }
+                          </td>
+                        }
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>
+
+<ng-template #unavailable>
+  <main class="unavailable">
+    <h1>Checklist unavailable</h1>
+    <p>{{ loadError || 'Use the inspection link provided by your administrator.' }}</p>
+  </main>
+</ng-template>

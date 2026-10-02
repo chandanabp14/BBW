@@ -1,0 +1,518 @@
+<div class="builder-card">
+
+  <!-- ================================================= -->
+  <!-- HEADER -->
+  <!-- ================================================= -->
+
+  <div class="bbw-header">
+
+    <img src="/logo.jpg" alt="BBW Global logo">
+
+    <div class="brand-text">
+
+      <h2>BBW GLOBAL Tek Pvt Ltd</h2>
+
+      <p>Checklist Builder</p>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================================= -->
+  <!-- DETAILS -->
+  <!-- ================================================= -->
+
+  <div class="details">
+
+    <div class="detail-field">
+
+      <label>Template Name</label>
+
+      <input type="text" placeholder="Enter template name" [(ngModel)]="tableService.templateName">
+
+    </div>
+
+
+    <div class="detail-field">
+
+      <label>Checklist Type</label>
+
+      <select [(ngModel)]="tableService.checklistType">
+
+        <option>Inspection</option>
+
+        <option>Setup</option>
+
+      </select>
+
+    </div>
+
+  </div>
+  <app-general-details></app-general-details>
+
+
+  <!-- ================================================= -->
+  <!-- BUILDER TOOLBAR -->
+  <!-- ================================================= -->
+
+  <div class="builder-toolbar">
+
+    <button class="primary-button" (click)="addTable()">
+
+      + Add Table
+
+    </button>
+
+
+    <button class="secondary-button" (click)="addTextbox()">
+
+      + Add Textbox
+
+    </button>
+
+  </div>
+
+
+  <!-- ================================================= -->
+  <!-- BUILDER ITEMS -->
+  <!-- ================================================= -->
+
+  @for(item of tableService.builderItems; track item.id) {
+
+
+  @if(item.type === 'heading') {
+
+  <div class="heading-card">
+
+    <h2>
+      {{ item.text }}
+    </h2>
+
+  </div>
+
+  }
+  @if(item.type === 'date') {
+
+  <div class="date-card">
+
+    <label>
+      {{ item.label }}
+    </label>
+
+    <input type="date">
+
+  </div>
+
+  }
+  @if(item.type === 'table' && item.table) {
+
+  <div class="table-card">
+
+
+    <!-- TABLE HEADER -->
+
+    <div class="table-toolbar">
+
+      <h3>{{ item.table.title }}</h3>
+
+      <div>
+        <button (click)="addRow(item.table.id)">
+          + Row
+        </button>
+
+        <button (click)="addColumn(item.table.id)">
+          + Column
+        </button>
+
+        <button (click)="deleteRow(item.table.id)">
+          − Row
+        </button>
+
+        <button (click)="deleteColumn(item.table.id)">
+          − Column
+        </button>
+
+        <button class="merge-button" (click)="mergeSelected(item.table.id)">
+          Merge Selected
+        </button>
+
+      </div>
+
+
+      <div class="item-actions">
+
+        <button title="Move Up" (click)="moveUp(item.id)">
+
+          ↑
+
+        </button>
+
+
+        <button title="Move Down" (click)="moveDown(item.id)">
+
+          ↓
+
+        </button>
+
+
+        <button class="danger-button" title="Delete Table" (click)="deleteItem(item.id)">
+
+          Delete
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- TABLE CONTROLS -->
+
+    <div class="table-controls">
+
+      <button (click)="addRow(item.table.id)">
+
+        + Row
+
+      </button>
+
+
+      <button (click)="addColumn(item.table.id)">
+
+        + Column
+
+      </button>
+
+
+      <button (click)="deleteRow(item.table.id)">
+
+        − Row
+
+      </button>
+
+
+      <button (click)="deleteColumn(item.table.id)">
+
+        − Column
+
+      </button>
+
+    </div>
+
+
+    <!-- INSPECTION TABLE -->
+
+    <div class="table-wrapper">
+
+      <table class="inspection-table">
+
+        <tbody>
+
+          @for(
+          row of item.table.rows;
+          track $index;
+          let r = $index
+          ) {
+
+          <tr>
+
+            @for(
+            cell of row.cells;
+            track $index;
+            let c = $index
+            ) {
+
+
+            @if(!cell.hidden) {
+
+            <td [attr.colspan]="cell.colspan" [attr.rowspan]="cell.rowspan" [style.width.px]="cell.width"
+              [style.min-width.px]="cell.width" [style.height.px]="cell.height" [class.selected]="cell.selected"
+              (click)="selectCell(
+                          item.table.id,
+                          r,
+                          c,
+                          $event
+                        )">
+
+
+              <!-- HEADER CELL -->
+
+              @if(r === 0) {
+
+              <textarea class="header-input" [(ngModel)]="cell.value" (input)="autoResizeCell($event, cell)"
+                (click)="$event.stopPropagation()" rows="1"></textarea>
+
+              }
+
+              <!-- NORMAL CELL -->
+
+              @else {
+
+              @if(cell.inputType === 'image') {
+
+              <!-- IMAGE UPLOAD -->
+
+              @if(cell.value) {
+
+              <div class="image-cell">
+
+                <img [src]="cell.value" class="uploaded-image" alt="Uploaded image">
+
+                <button type="button" class="change-image-button"
+                  (click)="$event.stopPropagation(); imageInput.click()">
+                  Change Image
+                </button>
+
+              </div>
+
+              }
+
+              @else {
+
+              <div class="image-upload" (click)="$event.stopPropagation(); imageInput.click()">
+
+                <span class="upload-icon">📷</span>
+
+                <span>
+                  Upload Image
+                </span>
+
+              </div>
+
+              }
+
+              <input #imageInput type="file" accept="image/*" hidden (change)="onImageUpload($event, cell)">
+
+              }
+
+              @else {
+
+              <textarea class="cell-input" [(ngModel)]="cell.value" placeholder="Enter value"
+                (input)="autoResizeCell($event, cell)" (click)="$event.stopPropagation()" rows="1"></textarea>
+
+              }
+
+              }
+
+
+              <!-- CELL ACTIONS -->
+
+              <div class="cell-buttons">
+
+                <button class="merge-button-cell" title="Merge selected cells" (click)="
+                              mergeSelected(item.table!.id);
+                              $event.stopPropagation()
+                            ">
+                  Merge
+                </button>
+
+                <button class="split-button" title="Split merged cell" (click)="
+                              unmerge(
+                                item.table!.id,
+                                r,
+                                c
+                              );
+                              $event.stopPropagation()
+                            ">
+                  Split
+                </button>
+
+              </div>
+
+
+            </td>
+
+            }
+
+            }
+
+          </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+
+  </div>
+
+  }
+
+
+  <!-- ================================================= -->
+  <!-- TEXTBOX ITEM -->
+  <!-- ================================================= -->
+
+  @if(item.type === 'textbox') {
+
+  <div class="textbox-card">
+
+
+    <div class="textbox-header">
+
+      <input type="text" class="textbox-title" [(ngModel)]="item.label" placeholder="Enter title">
+
+
+      <div>
+
+        <button title="Move Up" (click)="moveUp(item.id)">
+
+          ↑
+
+        </button>
+
+
+        <button title="Move Down" (click)="moveDown(item.id)">
+
+          ↓
+
+        </button>
+
+
+        <button class="danger-button" (click)="deleteItem(item.id)">
+
+          Delete
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <textarea [(ngModel)]="item.text" placeholder="Enter instructions, notes or checklist information..."></textarea>
+
+
+  </div>
+
+  }
+
+  }
+
+
+  <!-- ================================================= -->
+  <!-- EMPTY STATE -->
+  <!-- ================================================= -->
+
+  @if(tableService.builderItems.length === 0) {
+
+  <div class="empty-state">
+
+    <div class="empty-icon">
+
+      📋
+
+    </div>
+
+    <h3>
+
+      Your checklist is empty
+
+    </h3>
+
+    <p>
+
+      Add a table or textbox to start building your checklist.
+
+    </p>
+
+
+    <div>
+
+      <button class="primary-button" (click)="addTable()">
+
+        + Add Table
+
+      </button>
+
+
+      <button class="secondary-button" (click)="addTextbox()">
+
+        + Add Textbox
+
+      </button>
+
+    </div>
+
+  </div>
+
+  }
+
+
+  <!-- ================================================= -->
+  <!-- FOOTER -->
+  <!-- ================================================= -->
+
+  <div class="builder-footer">
+
+    <button class="save-button" type="button" [disabled]="isSaving" (click)="saveDraft()">
+      {{ isSaving ? 'Saved' : 'Save Draft' }}
+    </button>
+
+
+    <button class="preview-button" (click)="preview()">
+      Preview
+    </button>
+
+
+    <button class="publish-button" type="button" [disabled]="isSaving" (click)="publish()">
+      {{ isSaving ? 'Saved' : 'Publish' }}
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- PUBLISH SUCCESS POPUP MODAL -->
+<!-- ================================================= -->
+@if (showPublishModal) {
+<div class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-card publish-modal" (click)="$event.stopPropagation()">
+    <div class="modal-icon publish-icon">🎉</div>
+    <h2>Template Published!</h2>
+    <p class="modal-desc">
+      <strong>"{{ modalTemplateName }}"</strong> has been published successfully and is now active for inspectors.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-modal btn-primary" (click)="navigateToChecklists()">
+        View in Checklists List
+      </button>
+      <button class="btn-modal btn-secondary" (click)="preview()">
+        Preview Checksheet
+      </button>
+      <button class="btn-modal btn-text" (click)="closeModal()">
+        Stay in Builder
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- ================================================= -->
+<!-- DRAFT SAVED POPUP MODAL -->
+<!-- ================================================= -->
+@if (showDraftModal) {
+<div class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-card draft-modal" (click)="$event.stopPropagation()">
+    <h2>Draft Saved!</h2>
+    <p class="modal-desc">
+      <strong>"{{ modalTemplateName }}"</strong> has been saved as a draft. You can reopen and edit it anytime from the
+      Saved Checklists page.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-modal btn-primary" (click)="navigateToChecklists()">
+        Go to Saved Checklists
+      </button>
+      <button class="btn-modal btn-secondary" (click)="closeModal()">
+        Continue Editing
+      </button>
+    </div>
+  </div>
+</div>
+}

@@ -1,0 +1,21 @@
+<app-navbar></app-navbar>
+
+<div class="workspace">
+
+  <app-sidebar></app-sidebar>
+
+  <app-canvas
+    (cellSelected)="movePropertyPanel($event)">
+  </app-canvas>
+
+  <div
+    class="properties-container"
+    [style.top.px]="propertyPanelTop">
+
+    <app-properties
+      [cell]="selectedCell">
+    </app-properties>
+
+  </div>
+
+</div>

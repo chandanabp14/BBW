@@ -1,0 +1,446 @@
+<div class="template-page-wrapper">
+
+  <!-- TOP ACTION BAR -->
+  <header class="top-nav-bar no-print">
+    <div class="left-branding">
+      <button type="button" class="btn-back" (click)="backToMasterConfig()">← Master Config</button>
+      <div class="brand-titles">
+        <span class="mode-tag">{{ viewMode === 'report' ? 'FINAL REPORT' : 'DIGITAL PDF INSPECTION SHEET' }}</span>
+        <span class="doc-code-badge" *ngIf="masterConfig?.documentCode">Doc: {{ masterConfig?.documentCode }}</span>
+      </div>
+    </div>
+
+    <!-- DISPLAY MODE SWITCHER: EXACT PDF MATRIX SHEET vs DETAILED LIST -->
+    <div class="display-switcher">
+      <button type="button" class="btn-toggle" [class.active]="displayMode === 'matrix'" (click)="displayMode = 'matrix'">📄 Authentic PDF Matrix Sheet</button>
+      <button type="button" class="btn-toggle" [class.active]="displayMode === 'sections'" (click)="displayMode = 'sections'">📋 Detailed Section List</button>
+    </div>
+
+    <div class="action-buttons-group">
+      <button type="button" class="btn btn-secondary" (click)="saveProgress()">Save Progress</button>
+      <button type="button" class="btn btn-primary" (click)="submitInspection()">Submit Inspection</button>
+      <button type="button" class="btn btn-success" (click)="approveInspection()">Approve</button>
+      <button type="button" class="btn btn-print" (click)="printReport()">🖨️ Print / PDF</button>
+    </div>
+  </header>
+
+  <div class="toast-notice" *ngIf="savedNotice">✓ Progress saved successfully</div>
+  <div class="toast-notice submit-toast" *ngIf="submittedNotice">✓ Inspection submitted successfully</div>
+
+  <!-- ========================================================================= -->
+  <!-- DISPLAY MODE 1: AUTHENTIC PDF PAPER MATRIX SHEET (MATCHING REFERENCE PDF 1-TO-1) -->
+  <!-- ========================================================================= -->
+  <div class="pdf-sheet-document matrix-sheet-container" *ngIf="masterConfig && displayMode === 'matrix'">
+
+    <!-- PDF TOP HEADER (EXACT 4-BOX HEADER FROM REFERENCE PDF) -->
+    <table class="pdf-exact-header">
+      <tr>
+        <td class="hdr-logo-box" style="width: 12%;">
+          <img src="/logo.jpg" alt="Logo" class="pdf-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+          <div class="logo-text-fallback" style="display: none;">
+            <strong>BBW</strong>
+            <span>GLOBAL</span>
+          </div>
+        </td>
+        <td class="hdr-title-box" style="width: 38%;">
+          <h1 class="hdr-main-company">BHARAT BALANCING WEIGHT & CO</h1>
+          <div class="hdr-sub-company">BBW GLOBAL Tek Pvt Ltd</div>
+        </td>
+        <td class="hdr-doc-box" style="width: 25%;">
+          <h2 class="hdr-doc-title">{{ masterConfig.mcType }} INPROCESS INSPECTION REPORT</h2>
+        </td>
+        <td class="hdr-right-box" style="width: 25%;">
+          <h2 class="hdr-doc-sub">{{ masterConfig.partName }} INPROCESS INSPECTION REPORT</h2>
+          <div class="hdr-code-ref">DOC NO: {{ masterConfig.documentCode || 'BBW/QTY/R/283' }}</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- PDF METADATA BLOCK (EXACT UNIFIED GRID FROM REFERENCE PDF) -->
+    <table class="pdf-exact-meta">
+      <tr>
+        <td style="width: 25%;"><strong>ERP PART NO:</strong> <span class="val-highlight">{{ inspectionInstance.partNumber }}</span></td>
+        <td style="width: 25%;"><strong>SETTING TIME:</strong> <input type="text" class="pdf-inline-input" [(ngModel)]="inspectionInstance.settingTime" placeholder="09.45 - 10.15" [readonly]="viewMode === 'report'"></td>
+        <td style="width: 25%;"><strong>DATE:</strong> <input type="text" class="pdf-inline-input" [(ngModel)]="inspectionInstance.date" placeholder="09/07/2026" [readonly]="viewMode === 'report'"></td>
+        <td style="width: 25%;"><strong>SHIFT:</strong> <input type="text" class="pdf-inline-input" [(ngModel)]="inspectionInstance.shift" placeholder="Day" [readonly]="viewMode === 'report'"></td>
+      </tr>
+      <tr>
+        <td><strong>DESCRIPTION:</strong> <span class="val-highlight">{{ inspectionInstance.partName }}</span></td>
+        <td><strong>SETTING BY:</strong> <input type="text" class="pdf-inline-input" [(ngModel)]="inspectionInstance.settingBy" placeholder="SELVAM" [readonly]="viewMode === 'report'"></td>
+        <td><strong>OPERATOR:</strong> <input type="text" class="pdf-inline-input" [(ngModel)]="inspectionInstance.operator" placeholder="Boshkar" [readonly]="viewMode === 'report'"></td>
+        <td><strong>QC NAME:</strong> <input type="text" class="pdf-inline-input" [(ngModel)]="inspectionInstance.qcName" placeholder="Sathig" [readonly]="viewMode === 'report'"></td>
+      </tr>
+      <tr>
+        <td><strong>M/C NO:</strong> <span class="val-highlight">{{ inspectionInstance.machine }}</span></td>
+        <td><strong>BATCH NO:</strong> <input type="text" class="pdf-inline-input" [(ngModel)]="inspectionInstance.batchNo" placeholder="PU2115" [readonly]="viewMode === 'report'"></td>
+        <td colspan="2"><strong>PROCESS PARAMETERS & LUBRICATIONS:</strong> Air Pressure: 4-6 Kg/cm2 | Tool Oiling: every 2 hours</td>
+      </tr>
+    </table>
+
+    <!-- VALIDATION SUMMARY KPI BAR -->
+    <div class="summary-kpi-bar">
+      <div class="kpi-card">
+        <span class="kpi-num">{{ totalParamsCount }}</span>
+        <span class="kpi-label">TOTAL PARAMETERS</span>
+      </div>
+      <div class="kpi-card pass">
+        <span class="kpi-num">{{ passedParamsCount }}</span>
+        <span class="kpi-label">✓ PASSED</span>
+      </div>
+      <div class="kpi-card fail">
+        <span class="kpi-num">{{ failedParamsCount }}</span>
+        <span class="kpi-label">✕ FAILED</span>
+      </div>
+      <div class="kpi-card pending">
+        <span class="kpi-num">{{ pendingParamsCount }}</span>
+        <span class="kpi-label">⏳ PENDING</span>
+      </div>
+      <div class="kpi-card overall" [class.badge-pass]="inspectionInstance.overallResult === 'PASS'" [class.badge-fail]="inspectionInstance.overallResult === 'FAIL'">
+        <span class="kpi-label">OVERALL STATUS</span>
+        <span class="kpi-status-text">{{ inspectionInstance.overallResult }}</span>
+      </div>
+    </div>
+
+    <!-- MAIN MULTI-COLUMN MATRIX TABLE (EXACT HORIZONTAL MATRIX FROM REFERENCE PDF) -->
+    <div class="pdf-matrix-scroll-wrapper">
+      <table class="pdf-exact-matrix-table">
+        <thead>
+          <!-- ROW 1: SECTION GROUP HEADERS -->
+          <tr class="tr-sec-hdr">
+            <th class="th-fixed-col" style="width: 110px;">TIME</th>
+            <th class="th-fixed-col" style="width: 50px;">SAMPLE</th>
+            @for (sec of masterConfig.sections; track sec.id) {
+              <th [attr.colspan]="getParametersForSection(sec.id).length" class="th-sec-group">
+                {{ sec.name | uppercase }}
+              </th>
+            }
+            <th style="width: 90px;">STATUS</th>
+          </tr>
+
+          <!-- ROW 2: PARAMETER NAMES -->
+          <tr class="tr-param-hdr">
+            <th class="th-fixed-col">TIMING SLOT</th>
+            <th class="th-fixed-col">ROW</th>
+            @for (param of masterConfig.parameters; track param.id) {
+              <th class="th-param-col">
+                <strong>{{ param.name }}</strong>
+                <div class="param-unit-sub" *ngIf="param.unit">({{ param.unit }})</div>
+              </th>
+            }
+            <th>VALIDATION</th>
+          </tr>
+
+          <!-- ROW 3: PHOTOS / DIAGRAMS ROW -->
+          <tr class="tr-photos-row">
+            <td class="th-fixed-col text-center" colspan="2"><strong>PHOTO / DIAGRAM</strong></td>
+            @for (param of masterConfig.parameters; track param.id) {
+              <td class="td-photo-cell">
+                <img *ngIf="param.referenceImage" [src]="param.referenceImage" class="matrix-ref-img" alt="Ref Image">
+                <span *ngIf="!param.referenceImage" class="photo-placeholder-icon">📷</span>
+              </td>
+            }
+            <td class="text-center">-</td>
+          </tr>
+
+          <!-- ROW 4: MASTER SPECIFICATIONS & CHECKING METHODS (IMMUTABLE!) -->
+          <tr class="tr-specs-row">
+            <td class="th-fixed-col text-center" colspan="2"><strong>REQUIREMENT & METHOD</strong></td>
+            @for (param of masterConfig.parameters; track param.id) {
+              <td class="td-spec-cell">
+                <div class="matrix-spec-val">{{ inspectionInstance.parameterEntries[param.id]?.specificationText }}</div>
+                <div class="matrix-method-val">{{ param.checkingMethod || 'VISUAL' }}</div>
+              </td>
+            }
+            <td class="text-center">READ-ONLY</td>
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- TIMED INSPECTION ENTRY ROWS (10:30 FIRST OFF A/B/C, 12:40 A/B/C, 3:00 A/B/C, 5:40 A/B/C) -->
+          @for (row of timeSlotRows; track $index) {
+            <tr class="tr-entry-row">
+              <td class="td-time-label" *ngIf="$index % 3 === 0" rowspan="3">
+                <strong>{{ row.timeLabel }}</strong>
+              </td>
+              <td class="td-sample-code">
+                <span class="sample-tag-badge">{{ row.sampleCode }}</span>
+              </td>
+
+              <!-- ACTUAL ENTRY MATRIX CELLS WITH REAL-TIME GREEN / RED VALIDATION -->
+              @for (param of masterConfig.parameters; track param.id) {
+                <td class="td-matrix-input-cell" [class.cell-pass]="row.results[param.id] === 'PASS'" [class.cell-fail]="row.results[param.id] === 'FAIL'">
+                  <input type="text" class="matrix-cell-input"
+                         [(ngModel)]="row.values[param.id]"
+                         (input)="onMatrixCellInput(param, row)"
+                         placeholder="Observation"
+                         [readonly]="viewMode === 'report'">
+                </td>
+              }
+
+              <!-- ROW STATUS -->
+              <td class="td-row-status text-center">
+                <span class="matrix-status-dot" [class.dot-pass]="getValidationResult(masterConfig.parameters[0]?.id || '') === 'PASS'" [class.dot-fail]="getValidationResult(masterConfig.parameters[0]?.id || '') === 'FAIL'">
+                  ✓ OK
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGE 2: SET UP AND START UP CHECK SHEET MATRIX TABLE (MATCHES PAGE 2 OF REFERENCE PDF) -->
+    <div class="page-2-setup-section">
+      <div class="section-table-caption">
+        📋 SET UP AND START UP CHECK SHEET (SETUP CONTROLS & CLEANNESS)
+      </div>
+
+      <table class="pdf-exact-matrix-table setup-matrix-table">
+        <thead>
+          <tr class="tr-sec-hdr">
+            <th style="width: 140px;">CHECKING PART</th>
+            <th>RAW MATERIAL</th>
+            <th>SETTING TOOLS</th>
+            <th>SETTING PARAMETERS</th>
+            <th>M/C CLEANING AND LUBRICATION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ITEMS</strong></td>
+            <td>Coil, Tool, Material Specification</td>
+            <td>Ejection Cylinder, Coil Feeder, Coil Stand</td>
+            <td>Feeder stroke length, Tool shut height, Stroke length, Clip ejection, Air pressure, Oil check</td>
+            <td>Ram, Ram bed, Oil collector, Coil feeder, Gear wheel free form dust</td>
+          </tr>
+          <tr>
+            <td><strong>REQUIREMENTS</strong></td>
+            <td>124.50 mm width, 3 mm thickness</td>
+            <td>Model Vise aligned properly</td>
+            <td>Ref from tool card, 4-6 Kg/cm2 pressure</td>
+            <td>Free form dust & unwanted items</td>
+          </tr>
+          <tr>
+            <td><strong>CHECKING METHOD</strong></td>
+            <td>model vise / vernier</td>
+            <td>model vise / visual</td>
+            <td>vernier / scale / visual</td>
+            <td>visual / manual</td>
+          </tr>
+          <tr>
+            <td><strong>ACTUAL OBSERVATION</strong></td>
+            <td><input type="text" class="matrix-cell-input" value="Done / 124.50" [readonly]="viewMode === 'report'"></td>
+            <td><input type="text" class="matrix-cell-input" value="Aligned / OK" [readonly]="viewMode === 'report'"></td>
+            <td><input type="text" class="matrix-cell-input" value="40.00 mm / 319.3 / 5.00 bar" [readonly]="viewMode === 'report'"></td>
+            <td><input type="text" class="matrix-cell-input" value="clean / free from dust" [readonly]="viewMode === 'report'"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- STARTUP CRITERIA BANNER (FROM REFERENCE PDF) -->
+    <div class="startup-criteria-banner">
+      <strong>STARTUP CRITERIA:</strong>
+      <span>1. Start of the shift | 2. After major break down (more than 3 hrs) | 3. Setting changes | 4. Trial productions | 5. Any major disruptions</span>
+    </div>
+
+    <!-- START UP ISSUES TABLE (RECREATES STARTUP ISSUES IN REFERENCE PDF) -->
+    <section class="startup-issues-block">
+      <div class="section-table-caption space-between">
+        <span>⚠️ START UP ISSUES LOG</span>
+        <button type="button" class="btn-sm-add" (click)="addStartupIssueRow()" *ngIf="viewMode !== 'report'">+ Add Issue Row</button>
+      </div>
+
+      <table class="pdf-exact-matrix-table issues-table">
+        <thead>
+          <tr>
+            <th style="width: 6%;">S.No</th>
+            <th style="width: 24%;">Description of the Problem</th>
+            <th style="width: 20%;">Root Cause</th>
+            <th style="width: 20%;">Action Taken</th>
+            <th style="width: 15%;">Responsibility</th>
+            <th style="width: 15%;">Target Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (issue of inspectionInstance.startupIssues; track issue.sNo; let idx = $index) {
+            <tr>
+              <td class="text-center">{{ idx + 1 }}</td>
+              <td><input type="text" class="issue-input" [(ngModel)]="issue.description" placeholder="Description of problem" [readonly]="viewMode === 'report'"></td>
+              <td><input type="text" class="issue-input" [(ngModel)]="issue.rootCause" placeholder="Root cause" [readonly]="viewMode === 'report'"></td>
+              <td><input type="text" class="issue-input" [(ngModel)]="issue.action" placeholder="Action taken" [readonly]="viewMode === 'report'"></td>
+              <td><input type="text" class="issue-input" [(ngModel)]="issue.responsibility" placeholder="Responsibility" [readonly]="viewMode === 'report'"></td>
+              <td><input type="date" class="issue-input" [(ngModel)]="issue.targetDate" [readonly]="viewMode === 'report'"></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CUT SECTION INSPECTION TABLE (FROM PDC PDF) -->
+    <section class="cut-section-block" *ngIf="masterConfig.mcType === 'PDC'">
+      <div class="section-table-caption space-between">
+        <span>✂️ CUT SECTION INSPECTION</span>
+        <button type="button" class="btn-sm-add" (click)="addCutSectionRow()" *ngIf="viewMode !== 'report'">+ Add Cut Section Entry</button>
+      </div>
+
+      <table class="pdf-exact-matrix-table">
+        <thead>
+          <tr>
+            <th style="width: 12%;">TIME</th>
+            <th style="width: 18%;">MODEL</th>
+            <th style="width: 20%;">GRAM WEIGHT</th>
+            <th style="width: 18%;">RESULT</th>
+            <th style="width: 16%;">CHECKED BY</th>
+            <th style="width: 16%;">APPROVED BY</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cs of inspectionInstance.cutSectionEntries; track $index) {
+            <tr>
+              <td><input type="text" class="issue-input" [(ngModel)]="cs.time" placeholder="10:30" [readonly]="viewMode === 'report'"></td>
+              <td><input type="text" class="issue-input" [(ngModel)]="cs.model" placeholder="Model" [readonly]="viewMode === 'report'"></td>
+              <td><input type="text" class="issue-input" [(ngModel)]="cs.gramWeight" placeholder="e.g. 20.2g" [readonly]="viewMode === 'report'"></td>
+              <td>
+                <select class="issue-input" [(ngModel)]="cs.result" [disabled]="viewMode === 'report'">
+                  <option value="PASS">✓ PASS</option>
+                  <option value="FAIL">✕ FAIL</option>
+                  <option value="PENDING">PENDING</option>
+                </select>
+              </td>
+              <td><input type="text" class="issue-input" [(ngModel)]="cs.checkedBy" placeholder="Inspector" [readonly]="viewMode === 'report'"></td>
+              <td><input type="text" class="issue-input" [(ngModel)]="cs.approvedBy" placeholder="Supervisor" [readonly]="viewMode === 'report'"></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- FAILED PARAMETERS ALERT BEFORE APPROVAL -->
+    <div class="failed-alert-box" *ngIf="failedParamsCount > 0">
+      <div class="failed-alert-title">⚠️ Attention: {{ failedParamsCount }} Parameter(s) Out of Range / Failed Validation</div>
+      <ul>
+        @for (f of failedParametersList; track f.parameterId) {
+          <li><strong>{{ f.parameterName }}</strong> — Expected: {{ f.specificationText }}, Actual: {{ f.actualValue || 'None' }}</li>
+        }
+      </ul>
+    </div>
+
+    <!-- APPROVAL BLOCK (RECREATES REFERENCE PDF APPROVAL SIGN-OFF) -->
+    <section class="approval-block-card">
+      <div class="approval-card-title">
+        <span>✍️ DOCUMENT APPROVAL SIGN-OFF</span>
+        <span class="approval-badge" [class.badge-approved]="inspectionInstance.approval.status === 'APPROVED'" [class.badge-rejected]="inspectionInstance.approval.status === 'REJECTED'">
+          Status: {{ inspectionInstance.approval.status }}
+        </span>
+      </div>
+
+      <div class="approval-inputs-grid">
+        <div class="app-field">
+          <label>Prepared By (Operator):</label>
+          <input type="text" class="form-control" [(ngModel)]="inspectionInstance.approval.preparedBy" placeholder="Boshkar" [readonly]="viewMode === 'report'">
+        </div>
+
+        <div class="app-field">
+          <label>Checked By (Supervisor):</label>
+          <input type="text" class="form-control" [(ngModel)]="inspectionInstance.approval.checkedBy" placeholder="SELVAM" [readonly]="viewMode === 'report'">
+        </div>
+
+        <div class="app-field">
+          <label>Approved By (Quality Manager):</label>
+          <input type="text" class="form-control" [(ngModel)]="inspectionInstance.approval.approvedBy" placeholder="Sathig" [readonly]="viewMode === 'report'">
+        </div>
+      </div>
+
+      <!-- APPROVAL ACTIONS -->
+      <div class="approval-actions-bar no-print" *ngIf="viewMode !== 'report'">
+        <button type="button" class="btn btn-reject" (click)="rejectInspection()">
+          ✕ REJECT INSPECTION
+        </button>
+
+        <button type="button" class="btn btn-approve" (click)="approveInspection()">
+          ✓ APPROVE INSPECTION SHEET
+        </button>
+      </div>
+    </section>
+
+    <!-- FOOTER DOCUMENT CODE -->
+    <footer class="pdf-footer-code">
+      <span>{{ masterConfig.documentCode || 'BBW/QTY/R/283' }}</span>
+      <span>BBW Digital Quality System - Authentic PDF Sheet</span>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- DISPLAY MODE 2: DETAILED SECTION LIST VIEW -->
+  <!-- ========================================================================= -->
+  <div class="pdf-sheet-document" *ngIf="masterConfig && displayMode === 'sections'">
+    <div class="sheet-sections-container">
+      @for (sec of getFilteredSections(); track sec.id) {
+        <section class="section-table-block">
+          <div class="section-table-caption">
+            <span class="caption-icon">📋</span> {{ sec.name | uppercase }} <span class="caption-scope">({{ sec.scope }})</span>
+          </div>
+
+          <table class="pdf-data-table">
+            <thead>
+              <tr>
+                <th style="width: 22%;">CHECKING PART / PARAMETER</th>
+                <th style="width: 18%;">REQUIREMENT / SPECIFICATION <small>(MASTER)</small></th>
+                <th style="width: 12%;">CHECKING METHOD</th>
+                <th style="width: 8%;">PHOTO</th>
+                <th style="width: 25%;">SAMPLE READINGS (A / B / C) <small>(DATA ENTRY)</small></th>
+                <th style="width: 15%;">VALIDATION RESULT</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (param of getParametersForSection(sec.id); track param.id) {
+                <tr [class.tr-fail]="getValidationResult(param.id) === 'FAIL'" [class.tr-pass]="getValidationResult(param.id) === 'PASS'">
+                  <td class="td-param-name">
+                    <strong>{{ param.name }}</strong>
+                    <span class="req-star" *ngIf="param.required">*</span>
+                  </td>
+                  <td class="td-spec">
+                    <span class="spec-badge-box">{{ inspectionInstance.parameterEntries[param.id]?.specificationText }}</span>
+                  </td>
+                  <td class="td-checking-method">
+                    <span class="method-badge">{{ param.checkingMethod || 'VISUAL' }}</span>
+                  </td>
+                  <td class="td-ref-photo text-center">
+                    <img *ngIf="param.referenceImage" [src]="param.referenceImage" class="cell-ref-img" alt="Ref Image">
+                    <span *ngIf="!param.referenceImage" class="photo-icon-placeholder">📷</span>
+                  </td>
+                  <td class="td-samples-entry">
+                    <div class="samples-flex">
+                      @for (s of inspectionInstance.parameterEntries[param.id].samples; track s.sampleCode) {
+                        <div class="sample-item">
+                          <span class="sample-tag">{{ s.sampleCode }}:</span>
+                          <input type="text" class="sample-input-num"
+                                 [class.input-pass]="s.result === 'PASS'"
+                                 [class.input-fail]="s.result === 'FAIL'"
+                                 [(ngModel)]="s.value"
+                                 (input)="onSampleChange(param, s)"
+                                 placeholder="Val"
+                                 [readonly]="viewMode === 'report'">
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td class="td-result-cell text-center">
+                    @switch (getValidationResult(param.id)) {
+                      @case ('PASS') { <span class="status-badge pass-badge">✓ PASS / OK</span> }
+                      @case ('FAIL') { <span class="status-badge fail-badge">✕ FAIL</span> }
+                      @case ('PENDING') { <span class="status-badge pending-badge">⏳ PENDING</span> }
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+    </div>
+  </div>
+
+</div>

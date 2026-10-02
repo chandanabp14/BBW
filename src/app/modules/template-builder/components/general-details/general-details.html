@@ -1,0 +1,104 @@
+<div class="general-details">
+
+  <div class="general-details-header">
+
+    <div>
+      <h3>General Details</h3>
+
+    </div>
+
+    <div class="general-actions">
+
+      <button
+        type="button"
+        (click)="addRow()">
+
+        + Row
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================= -->
+  <!-- DETAILS -->
+  <!-- ========================================= -->
+
+  <div class="details-scroll">
+
+    <div
+      class="details-row"
+      *ngFor="let row of rows; let r = index">
+
+      <div
+        class="detail-field"
+        *ngFor="let field of row.fields; let i = index">
+
+        <!-- LABEL -->
+
+        <div class="detail-label">
+
+          <input
+            type="text"
+            [(ngModel)]="field.label"
+            placeholder="FIELD NAME">
+
+        </div>
+
+
+        <!-- VALUE -->
+
+        <div class="detail-value">
+
+          <input
+            type="text"
+            [(ngModel)]="field.value"
+            placeholder="Enter value">
+
+        </div>
+
+
+        <!-- DELETE -->
+
+        <button
+          type="button"
+          class="delete-field"
+          (click)="deleteField(row, i)">
+
+          ×
+
+        </button>
+
+      </div>
+
+
+      <!-- ADD FIELD -->
+
+      <button
+        type="button"
+        class="add-field"
+        (click)="addField(row)">
+
+        + Add Field
+
+      </button>
+
+
+      <!-- DELETE ROW -->
+
+      <button
+        type="button"
+        class="delete-row"
+        (click)="deleteRow(r)">
+
+        − Row
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

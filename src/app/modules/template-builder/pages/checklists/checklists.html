@@ -1,0 +1,155 @@
+<app-navbar></app-navbar>
+
+<div class="checklists-page">
+  <div class="page-container">
+
+    <!-- HERO HEADER -->
+    <div class="page-header">
+      <div class="header-titles">
+        <span class="header-badge">BBW QUALITY MANAGEMENT SYSTEM</span>
+        <h1>Digital Quality Inspection Dashboard</h1>
+        <p>Manage Master Configurations (Source of Truth), perform real-time digital QA inspections, and view 1-to-1 PDF compliance reports.</p>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn-primary-mc" (click)="newMasterConfig()">
+          ⚙️ Master Config Engine
+        </button>
+        <button class="btn-new-inspection" (click)="openDataEntry()">
+          📋 Perform New Inspection
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 1: ACTIVE DIGITAL INSPECTION SHEETS & COMPLETED REPORTS (HOME PAGE LIST) -->
+    <section class="dashboard-section">
+      <div class="section-title-bar space-between">
+        <div>
+          <h2>📋 Active Inspection Sheets & Saved Reports</h2>
+          <p class="section-sub">Real-time digital inspection instances logged by operators and approved by QA managers.</p>
+        </div>
+        <button class="btn-sm-primary" (click)="openDataEntry()">+ Start Inspection</button>
+      </div>
+
+      <div class="inspection-table-container shadow-sm" *ngIf="inspectionInstances.length > 0; else noInspections">
+        <table class="home-inspection-table">
+          <thead>
+            <tr>
+              <th>DOC CODE</th>
+              <th>PART NAME & NO</th>
+              <th>M/C NO</th>
+              <th>OPERATOR / QC</th>
+              <th>DATE & SHIFT</th>
+              <th>VAL STATUS</th>
+              <th>APPROVAL STATUS</th>
+              <th class="text-right">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (inst of inspectionInstances; track inst.id) {
+              <tr>
+                <td>
+                  <span class="doc-code-pill">{{ inst.documentCode || 'BBW/QTY/R/283' }}</span>
+                </td>
+                <td>
+                  <strong>{{ inst.partName }}</strong>
+                  <div class="sub-text">{{ inst.partNumber }}</div>
+                </td>
+                <td>
+                  <span class="mc-pill">M/C {{ inst.machine }}</span>
+                </td>
+                <td>
+                  <div class="user-info-text">Op: <strong>{{ inst.operator || 'Boshkar' }}</strong></div>
+                  <div class="sub-text">QC: {{ inst.qcName || 'Sathig' }}</div>
+                </td>
+                <td>
+                  <div>{{ inst.date || 'Today' }}</div>
+                  <div class="sub-text">Shift: {{ inst.shift || 'Day' }}</div>
+                </td>
+                <td>
+                  <span class="status-badge"
+                        [class.pass-badge]="inst.overallResult === 'PASS'"
+                        [class.fail-badge]="inst.overallResult === 'FAIL'"
+                        [class.pending-badge]="inst.overallResult === 'PENDING'">
+                    {{ inst.overallResult === 'PASS' ? '✓ PASS' : inst.overallResult === 'FAIL' ? '✕ FAIL' : '⏳ PENDING' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="app-badge"
+                        [class.app-approved]="inst.approval.status === 'APPROVED'"
+                        [class.app-rejected]="inst.approval.status === 'REJECTED'"
+                        [class.app-pending]="inst.approval.status === 'PENDING'">
+                    {{ inst.approval.status }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <div class="row-actions">
+                    <button class="btn-action-entry" (click)="openDataEntry(inst.id)">
+                      📝 Perform Inspection
+                    </button>
+                    <button class="btn-action-report" (click)="openDataEntry(inst.id)">
+                      📄 View PDF Report
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #noInspections>
+        <div class="empty-state-box">
+          <div class="empty-icon">📋</div>
+          <h3>No Inspection Instances Found</h3>
+          <p>Generate a digital template from a Master Configuration to start performing quality inspections.</p>
+          <button class="btn-primary-mc" (click)="generateTemplateFromMaster(masterConfigs[0])">
+            ✨ Generate Template from Press MC 120
+          </button>
+        </div>
+      </ng-template>
+    </section>
+
+    <!-- SECTION 2: MASTER CONFIGURATIONS (SOURCE OF TRUTH) -->
+    <section class="dashboard-section margin-top-lg">
+      <div class="section-title-bar space-between">
+        <div>
+          <h2>⚙️ Master Configurations (Source of Truth)</h2>
+          <p class="section-sub">Master specifications and boundary rules set by QA Administrators. Generate 1-to-1 PDF inspection templates instantly.</p>
+        </div>
+        <button class="btn-sm-secondary" (click)="newMasterConfig()">+ Create New Config</button>
+      </div>
+
+      <div class="master-config-cards-grid">
+        @for (mc of masterConfigs; track mc.id) {
+          <div class="mc-card shadow-sm">
+            <div class="mc-card-header">
+              <span class="mc-badge">{{ mc.mcType }}</span>
+              <span class="mc-doc-ref">DOC: {{ mc.documentCode || 'BBW/QTY/R/283' }}</span>
+            </div>
+
+            <div class="mc-card-body">
+              <h3 class="mc-title">{{ mc.name }}</h3>
+              <div class="mc-meta-grid">
+                <div><small>PART NAME:</small> <strong>{{ mc.partName || 'PLATE HINGE' }}</strong></div>
+                <div><small>ERP PART NO:</small> <strong>{{ mc.partNumber || '1A1-03220 / BL' }}</strong></div>
+                <div><small>MACHINE NO:</small> <strong>{{ mc.machine || '120' }}</strong></div>
+                <div><small>SCOPE:</small> <strong>{{ mc.configType }} Scope</strong></div>
+              </div>
+              <div class="mc-counts">
+                <span>📁 {{ mc.sections.length }} Sections</span> •
+                <span>📐 {{ mc.parameters.length }} Master Parameters</span>
+              </div>
+            </div>
+
+            <div class="mc-card-actions">
+              <button class="btn-mc-edit" (click)="openMasterConfig(mc.id)">⚙️ Edit Config</button>
+              <button class="btn-mc-generate" (click)="generateTemplateFromMaster(mc)">✨ Generate PDF Sheet</button>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+  </div>
+</div>

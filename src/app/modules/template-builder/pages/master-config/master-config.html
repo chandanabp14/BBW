@@ -1,0 +1,270 @@
+<app-navbar></app-navbar>
+
+<div class="master-config-container">
+  <div class="header-banner">
+    <div class="banner-title">
+      <span class="badge-source">Source of Truth</span>
+      <h1>Master Configuration Engine</h1>
+      <p>Define master specifications, parameters, checklist items, and validation rules. Master Configuration generates the digital template for operators.</p>
+    </div>
+
+    <!-- PRESET SELECTOR -->
+    <div class="preset-selector-card">
+      <label>Load Reference Configuration Preset:</label>
+      <div class="preset-buttons">
+        @for (c of existingConfigs; track c.id) {
+          <button type="button" class="btn-preset" [class.active]="selectedPresetId === c.id" (click)="loadConfigPreset(c.id)">
+            📋 {{ c.name }}
+          </button>
+        }
+        <button type="button" class="btn-preset new-preset" (click)="newConfig()">
+          ➕ Create New Config
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="save-notice-toast" *ngIf="savedNotice">
+    ✓ Master Configuration saved successfully!
+  </div>
+
+  <!-- CONFIG FORM CARD -->
+  <div class="config-card">
+
+    <!-- 1. BASIC DETAILS SECTION -->
+    <section class="config-section">
+      <div class="section-header-title">
+        <h2>1. Basic Details & Machine Mapping</h2>
+      </div>
+
+      <div class="form-grid-3">
+        <div class="form-group">
+          <label>Configuration Name <span class="req">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="config.name" placeholder="e.g. PRESS MC 120 Master Config">
+        </div>
+
+        <div class="form-group">
+          <label>Scope Type</label>
+          <select class="form-control" [(ngModel)]="config.configType">
+            <option value="Both">Both (Setup & Inprocess Inspection)</option>
+            <option value="Setup">Setup Only</option>
+            <option value="Inspection">Inspection Only</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>MC Type</label>
+          <select class="form-control" [(ngModel)]="config.mcType">
+            <option value="Press">Press Machine</option>
+            <option value="PDC">PDC (Die Casting)</option>
+            <option value="Assembly">Assembly Line</option>
+            <option value="Machining">Machining / CNC</option>
+            <option value="General">General Plant</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Part Name</label>
+          <input type="text" class="form-control" [(ngModel)]="config.partName" placeholder="e.g. PLATE HINGE">
+        </div>
+
+        <div class="form-group">
+          <label>ERP Part Number</label>
+          <input type="text" class="form-control" [(ngModel)]="config.partNumber" placeholder="e.g. 1A1-03220 / BL">
+        </div>
+
+        <div class="form-group">
+          <label>Part Type</label>
+          <input type="text" class="form-control" [(ngModel)]="config.partType" placeholder="e.g. Sheet Metal Component">
+        </div>
+
+        <div class="form-group">
+          <label>Machine Type</label>
+          <input type="text" class="form-control" [(ngModel)]="config.machineType" placeholder="e.g. Automatic Press 120T">
+        </div>
+
+        <div class="form-group">
+          <label>Machine / M/C No</label>
+          <input type="text" class="form-control" [(ngModel)]="config.machine" placeholder="e.g. 120">
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SECTIONS SETUP -->
+    <section class="config-section">
+      <div class="section-header-title space-between">
+        <h2>2. Document Sections</h2>
+        <button type="button" class="btn btn-secondary-sm" (click)="addSection()">+ Add Section</button>
+      </div>
+
+      <div class="sections-list">
+        @for (sec of config.sections; track sec.id; let i = $index) {
+          <div class="section-box">
+            <div class="section-box-header">
+              <span class="sec-num">Section {{ i + 1 }}</span>
+              <div class="sec-inputs">
+                <input type="text" class="form-control sec-title-input" [(ngModel)]="sec.name" placeholder="Section Name">
+                <select class="form-control sec-scope-select" [(ngModel)]="sec.scope">
+                  <option value="Both">Both (Setup & Inspection)</option>
+                  <option value="Setup">Setup Only</option>
+                  <option value="Inspection">Inspection Only</option>
+                </select>
+              </div>
+              <button type="button" class="btn-icon-del" (click)="removeSection(i)" title="Delete section">✕</button>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- 3. PARAMETERS & SPECIFICATIONS -->
+    <section class="config-section">
+      <div class="section-header-title space-between">
+        <h2>3. Parameters, Specifications & Validation Rules</h2>
+        <button type="button" class="btn btn-secondary-sm" (click)="addParameter()">+ Add Parameter</button>
+      </div>
+
+      <div class="parameters-container">
+        @for (sec of config.sections; track sec.id) {
+          <div class="section-parameters-group">
+            <div class="group-title">
+              📁 {{ sec.name }} <small>({{ sec.scope }})</small>
+              <button type="button" class="btn-add-param-link" (click)="addParameter(sec.id)">+ Add Param to Section</button>
+            </div>
+
+            @for (param of getParametersForSection(sec.id); track param.id; let pIdx = $index) {
+              <div class="parameter-card shadow-sm">
+                <div class="param-card-top">
+                  <div class="param-main-info">
+                    <span class="param-idx">#{{ pIdx + 1 }}</span>
+                    <input type="text" class="form-control param-name-input" [(ngModel)]="param.name" placeholder="Parameter Name (e.g. Furnace Temp, Embossing Height)">
+                  </div>
+                  <div class="param-top-actions">
+                    <label class="required-checkbox">
+                      <input type="checkbox" [(ngModel)]="param.required"> Required Field
+                    </label>
+                    <button type="button" class="btn-icon-del" (click)="removeParameter(config.parameters.indexOf(param))" title="Delete Parameter">✕</button>
+                  </div>
+                </div>
+
+                <div class="param-grid-4">
+                  <div class="form-group">
+                    <label>Scope</label>
+                    <select class="form-control" [(ngModel)]="param.scope">
+                      <option value="Both">Both (Setup & Inspection)</option>
+                      <option value="Setup">Setup</option>
+                      <option value="Inspection">Inspection</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Input Type</label>
+                    <select class="form-control" [(ngModel)]="param.inputType">
+                      @for (it of inputTypes; track it.value) {
+                        <option [value]="it.value">{{ it.label }}</option>
+                      }
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Specification Type</label>
+                    <select class="form-control" [(ngModel)]="param.specificationType">
+                      @for (st of specTypes; track st.value) {
+                        <option [value]="st.value">{{ st.label }}</option>
+                      }
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Unit</label>
+                    <input type="text" class="form-control" [(ngModel)]="param.unit" placeholder="e.g. mm, bar, °C, grams" list="unit-suggestions">
+                    <datalist id="unit-suggestions">
+                      @for (u of commonUnits; track u) {
+                        <option [value]="u"></option>
+                      }
+                    </datalist>
+                  </div>
+                </div>
+
+                <!-- DYNAMIC SPECIFICATION INPUTS -->
+                <div class="spec-rules-panel">
+                  <div class="spec-rules-title">Validation Rule Parameters:</div>
+
+                  <div class="spec-fields-row">
+                    @if (param.specificationType === 'range') {
+                      <div class="form-group min-max-field">
+                        <label>Minimum Value</label>
+                        <input type="number" class="form-control" [(ngModel)]="param.minValue" placeholder="e.g. 10">
+                      </div>
+
+                      <div class="form-group min-max-field">
+                        <label>Maximum Value</label>
+                        <input type="number" class="form-control" [(ngModel)]="param.maxValue" placeholder="e.g. 20">
+                      </div>
+                    }
+
+                    @if (param.specificationType === 'min') {
+                      <div class="form-group min-max-field">
+                        <label>Minimum Value (>=)</label>
+                        <input type="number" class="form-control" [(ngModel)]="param.minValue" placeholder="e.g. 10">
+                      </div>
+                    }
+
+                    @if (param.specificationType === 'max') {
+                      <div class="form-group min-max-field">
+                        <label>Maximum Value (<=)</label>
+                        <input type="number" class="form-control" [(ngModel)]="param.maxValue" placeholder="e.g. 50">
+                      </div>
+                    }
+
+                    @if (param.specificationType === 'exact' || param.specificationType === 'selection' || param.specificationType === 'checklist') {
+                      <div class="form-group expected-field">
+                        <label>Expected / Reference Value</label>
+                        <input type="text" class="form-control" [(ngModel)]="param.expectedValue" placeholder="e.g. 220 V or OK or Nill Allowed">
+                      </div>
+                    }
+
+                    @if (param.inputType === 'dropdown') {
+                      <div class="form-group dropdown-options-field">
+                        <label>Dropdown Options (comma separated)</label>
+                        <input type="text" class="form-control" [ngModel]="param.dropdownOptions?.join(', ')" (ngModelChange)="updateDropdownOptions(param, $event)" placeholder="OK, NOT OK, N/A">
+                      </div>
+                    }
+                  </div>
+
+                  <!-- REFERENCE IMAGE & INFO -->
+                  <div class="spec-ref-row">
+                    <div class="form-group ref-info-field">
+                      <label>Reference Info / Notes</label>
+                      <input type="text" class="form-control" [(ngModel)]="param.referenceInfo" placeholder="e.g. Check via Micro Meter or Vernier Gauge">
+                    </div>
+
+                    <div class="form-group ref-img-field">
+                      <label>Reference Image</label>
+                      <div class="image-upload-wrapper">
+                        <input type="file" accept="image/*" (change)="handleImageUpload($event, param)">
+                        <img *ngIf="param.referenceImage" [src]="param.referenceImage" class="param-img-preview" alt="Ref Image">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ACTION FOOTER BAR -->
+    <div class="config-action-footer">
+      <button type="button" class="btn btn-save" (click)="saveMasterConfig()">
+        💾 SAVE MASTER CONFIGURATION
+      </button>
+
+      <button type="button" class="btn btn-create-template" (click)="createTemplate()">
+        ✨ CREATE TEMPLATE FROM MASTER
+      </button>
+    </div>
+
+  </div>
+</div>
