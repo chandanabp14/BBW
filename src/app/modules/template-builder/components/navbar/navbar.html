@@ -1,35 +1,32 @@
-<header class="navbar">
-
-    <div class="company">
-
-        <img src="/logo.jpg" alt="BBW Global logo" class="logo">
-
-        <div class="company-text">
-            <h2>BBW GLOBAL Tek Pvt Ltd</h2>
-            <p>Checklist Builder Module</p>
-        </div>
-
+<header class="qa-navbar">
+  <div class="nav-brand">
+    <div class="logo-box">
+      <img src="/logo.jpg" alt="BBW Logo" class="brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="logo-fallback" style="display: none;">BBW</div>
     </div>
-
-    <nav class="nav-links">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
-            Home
-        </a>
-        <a routerLink="/master-config" routerLinkActive="active" class="nav-link">
-            ⚙️ Master Config
-        </a>
-        <a routerLink="/published-template" routerLinkActive="active" class="nav-link">
-            📋 Inspection Sheet
-        </a>
-        <a routerLink="/builder" routerLinkActive="active" class="nav-link">
-            Template Builder
-        </a>
-    </nav>
-
-    <div class="user">
-
-        👤 Admin
-
+    <div class="brand-text">
+      <h1 class="company-name">BBW GLOBAL Tek Pvt Ltd</h1>
+      <span class="module-title">Checklist Builder Module</span>
     </div>
+  </div>
 
+  <nav class="nav-menu">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+      Home
+    </a>
+    <a routerLink="/master-config" routerLinkActive="active" class="nav-item">
+      Master Config
+    </a>
+    <a routerLink="/published-template" routerLinkActive="active" class="nav-item">
+      Inspection
+    </a>
+    <a routerLink="/builder" routerLinkActive="active" class="nav-item">
+      Template Builder
+    </a>
+  </nav>
+
+  <div class="nav-user">
+    <span class="user-badge">Admin</span>
+  </div>
 </header>
+

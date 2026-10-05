@@ -18,6 +18,8 @@ import {
   ValidationStatus
 } from '../../models/master-config.model';
 
+import { NavbarComponent } from '../../components/navbar/navbar';
+
 export interface TimeSlotRow {
   timeLabel: string;
   sampleCode: 'A' | 'B' | 'C' | 'FIRST OFF';
@@ -28,7 +30,7 @@ export interface TimeSlotRow {
 @Component({
   selector: 'app-published-template',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './published-template.html',
   styleUrl: './published-template.css'
 })
@@ -57,31 +59,30 @@ export class PublishedTemplateComponent implements OnInit {
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id') || this.route.snapshot.queryParamMap.get('id');
+    const targetId = idParam ? Number(idParam) : undefined;
 
-    if (idParam) {
-      const targetId = Number(idParam);
+    if (targetId) {
       const existingInspection = this.inspectionService.getInspectionById(targetId);
 
       if (existingInspection) {
         this.inspectionInstance = existingInspection;
-        this.masterConfig = this.masterConfigService.getMasterConfigById(existingInspection.masterConfigId);
+        this.masterConfig = this.masterConfigService.getPublishedMasterConfig(existingInspection.masterConfigId) ||
+                            this.masterConfigService.getMasterConfigById(existingInspection.masterConfigId);
       } else {
-        let config = this.masterConfigService.getMasterConfigById(targetId);
-        if (!config) {
-          const allConfigs = this.masterConfigService.getMasterConfigs();
-          config = allConfigs[0];
-        }
+        const config = this.masterConfigService.getPublishedMasterConfig(targetId) ||
+                       this.masterConfigService.getMasterConfigById(targetId);
 
         if (config) {
           this.masterConfig = config;
           this.createNewInspectionInstance(config);
         }
       }
-    } else {
-      const configs = this.masterConfigService.getMasterConfigs();
-      if (configs.length > 0) {
-        this.masterConfig = configs[0];
-        this.createNewInspectionInstance(configs[0]);
+    }
+
+    if (!this.masterConfig) {
+      this.masterConfig = this.masterConfigService.getPublishedMasterConfig();
+      if (this.masterConfig) {
+        this.createNewInspectionInstance(this.masterConfig);
       }
     }
 
@@ -92,6 +93,7 @@ export class PublishedTemplateComponent implements OnInit {
     this.initTimeSlotRows();
     this.changeDetector.detectChanges();
   }
+
 
   private createNewInspectionInstance(config: MasterConfig): void {
     const now = new Date().toISOString();
@@ -203,6 +205,18 @@ export class PublishedTemplateComponent implements OnInit {
   }
 
   // Real-time automatic data validation on sample entry!
+  onSingleValueChange(param: MasterConfigParameter, actualValue: string): void {
+    const entry = this.inspectionInstance.parameterEntries[param.id];
+    if (!entry) return;
+
+    entry.actualValue = actualValue;
+    const valResult: ValidationResult = this.validationService.validateValue(param, actualValue);
+    entry.result = valResult.status;
+    entry.validationMessage = valResult.message;
+
+    this.inspectionInstance.overallResult = this.computeOverallResult();
+  }
+
   onSampleChange(param: MasterConfigParameter, sample: InspectionSample): void {
     const entry = this.inspectionInstance.parameterEntries[param.id];
     if (!entry) return;
@@ -241,6 +255,38 @@ export class PublishedTemplateComponent implements OnInit {
 
   getValidationMessage(paramId: string): string {
     return this.inspectionInstance.parameterEntries[paramId]?.validationMessage ?? '';
+  }
+
+  getGroupsForSection(sectionId: string) {
+    if (!this.masterConfig || !this.masterConfig.groups) return [];
+    return this.masterConfig.groups.filter(g => g.sectionId === sectionId).sort((a, b) => a.order - b.order);
+  }
+
+  getParametersForGroup(groupId: string): MasterConfigParameter[] {
+    if (!this.masterConfig) return [];
+    return this.masterConfig.parameters.filter(p => p.groupId === groupId).sort((a, b) => a.order - b.order);
+  }
+
+  addInspectionReadingRow(): void {
+    const nextSlotNum = Math.floor(this.timeSlotRows.length / 3) + 1;
+    const timeLabel = `Reading Slot ${nextSlotNum}`;
+
+    for (const sampleCode of ['A', 'B', 'C'] as const) {
+      const valMap: Record<string, string> = {};
+      const resMap: Record<string, ValidationStatus> = {};
+
+      for (const param of this.masterConfig?.parameters || []) {
+        valMap[param.id] = '';
+        resMap[param.id] = 'PENDING';
+      }
+
+      this.timeSlotRows.push({
+        timeLabel,
+        sampleCode,
+        values: valMap,
+        results: resMap
+      });
+    }
   }
 
   getFilteredSections() {

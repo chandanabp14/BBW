@@ -1,52 +1,51 @@
 .sidebar {
-  width: 210px;
-  padding: 20px 10px;
+  width: 220px;
+  padding: 16px 12px;
   box-sizing: border-box;
+  background: #ffffff;
+  border-right: 1px solid var(--border-color);
+  height: 100%;
 }
 
 .sidebar h3 {
-  margin: 0 0 8px;
-  font-size: 16px;
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-navy);
 }
 
 .hint {
-  margin: 0 0 16px;
-  font-size: 13px;
-  color: #555;
+  margin: 0 0 14px;
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .component-button {
   width: 100%;
-  min-height: 48px;
-
-  margin-bottom: 12px;
-
   padding: 10px 12px;
-
-  border: none;
-  border-radius: 6px;
-
-  background: #17457f;
-  color: white;
-
+  margin-bottom: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: var(--primary-navy);
   text-align: left;
-
   cursor: pointer;
-
   display: flex;
-  flex-direction: column;   
-  gap: 4px;
-
-  font-size: 14px;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
   font-weight: 600;
+  transition: all 0.15s ease;
 }
 
 .component-button span {
   font-size: 11px;
   font-weight: 400;
-  opacity: 0.9;
+  color: var(--text-muted);
 }
 
 .component-button:hover {
-  background: #123966;
-}
+  background: var(--primary-blue-light);
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+}

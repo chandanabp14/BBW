@@ -7,6 +7,15 @@ const sendError = (res, error) => {
 
 exports.createMasterConfig = async (req, res) => {
     try {
+        if (!req.body.id) {
+            req.body.id = Date.now();
+        }
+        if (!req.body.createdAt) {
+            req.body.createdAt = new Date().toISOString();
+        }
+        if (!req.body.updatedAt) {
+            req.body.updatedAt = new Date().toISOString();
+        }
         const config = await MasterConfig.create(req.body);
         res.status(201).json({ success: true, data: config });
     } catch (error) {

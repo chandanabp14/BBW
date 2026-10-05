@@ -1,15 +1,417 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@500;700&display=swap');
 
+:root {
+  --primary-navy: #0f172a;
+  --secondary-navy: #1e293b;
+  --primary-blue: #2563eb;
+  --primary-blue-hover: #1d4ed8;
+  --primary-blue-light: #eff6ff;
+  --text-main: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --bg-page: #f8fafc;
+  --bg-surface: #ffffff;
+  --border-color: #e2e8f0;
+  --border-color-dark: #cbd5e1;
+
+  --pass-green: #16a34a;
+  --pass-bg: #f0fdf4;
+  --pass-border: #bbf7d0;
+
+  --fail-red: #dc2626;
+  --fail-bg: #fef2f2;
+  --fail-border: #fecaca;
+
+  --pending-amber: #d97706;
+  --pending-bg: #fffbe7;
+  --pending-border: #fef08a;
+
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: #0f172a;
-  background-color: #f8fafc;
+  color: var(--text-main);
+  background-color: var(--bg-page);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 button, input, select, textarea {
   font-family: inherit;
+  font-size: inherit;
 }
+
+/* GLOBAL ENTERPRISE UTILITY CLASSES */
+.qa-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+
+/* Enterprise Header Block */
+.qa-page-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.qa-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
+}
+
+.qa-page-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Enterprise Card */
+.qa-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.qa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.qa-btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.qa-btn-primary {
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  border-color: var(--primary-blue);
+}
+
+.qa-btn-primary:hover {
+  background-color: var(--primary-blue-hover);
+  border-color: var(--primary-blue-hover);
+}
+
+.qa-btn-secondary {
+  background-color: #ffffff;
+  color: var(--text-secondary);
+  border-color: var(--border-color-dark);
+}
+
+.qa-btn-secondary:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-navy);
+}
+
+.qa-btn-success {
+  background-color: var(--pass-green);
+  color: #ffffff;
+}
+
+.qa-btn-success:hover {
+  background-color: #15803d;
+}
+
+.qa-btn-danger {
+  background-color: var(--fail-red);
+  color: #ffffff;
+}
+
+.qa-btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.qa-btn-outline {
+  background-color: transparent;
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.qa-btn-outline:hover {
+  background-color: var(--primary-blue-light);
+}
+
+.qa-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Form Controls */
+.qa-form-group {
+  margin-bottom: 16px;
+}
+
+.qa-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 6px;
+}
+
+.qa-input, .qa-select, .qa-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-main);
+  background-color: #ffffff;
+  border: 1px solid var(--border-color-dark);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.qa-input:focus, .qa-select:focus, .qa-textarea:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.qa-input[readonly], .qa-select[disabled] {
+  background-color: #f8fafc;
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+/* Status Badges */
+.qa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.qa-badge-pass {
+  background-color: var(--pass-bg);
+  color: var(--pass-green);
+  border: 1px solid var(--pass-border);
+}
+
+.qa-badge-fail {
+  background-color: var(--fail-bg);
+  color: var(--fail-red);
+  border: 1px solid var(--fail-border);
+}
+
+.qa-badge-pending {
+  background-color: var(--pending-bg);
+  color: var(--pending-amber);
+  border: 1px solid var(--pending-border);
+}
+
+.qa-badge-neutral {
+  background-color: #f1f5f9;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Enterprise Data Table */
+.qa-table-wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.qa-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.qa-table th {
+  background-color: #f1f5f9;
+  color: var(--primary-navy);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color-dark);
+}
+
+.qa-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.qa-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.qa-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.qa-table .text-right {
+  text-align: right;
+}
+
+.qa-table .text-center {
+  text-align: center;
+}
+
+/* Modals */
+.qa-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.qa-modal-content {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 560px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.qa-modal-header {
+  padding: 16px 20px;
+  background-color: #f8fafc;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.qa-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-navy);
+}
+
+.qa-modal-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.qa-modal-footer {
+  padding: 12px 20px;
+  background-color: #f8fafc;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Step Wizard Indicator */
+.qa-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 24px;
+  margin-bottom: 24px;
+}
+
+.qa-step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.qa-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #f1f5f9;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid var(--border-color-dark);
+}
+
+.qa-step-item.active {
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.qa-step-item.active .qa-step-num {
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  border-color: var(--primary-blue);
+}
+
+.qa-step-item.completed .qa-step-num {
+  background-color: var(--pass-green);
+  color: #ffffff;
+  border-color: var(--pass-green);
+}
+
+.qa-step-divider {
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0 16px;
+}
+

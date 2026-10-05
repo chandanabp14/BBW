@@ -2,7 +2,7 @@ export type ScopeType = 'Setup' | 'Inspection' | 'Both';
 
 export type MasterMcType = 'PDC' | 'Press' | 'Assembly' | 'Machining' | 'General';
 
-export type MasterInputType = 'number' | 'text' | 'dropdown' | 'yes_no' | 'checkbox' | 'image';
+export type MasterInputType = 'number' | 'text' | 'dropdown' | 'yes_no' | 'checkbox' | 'visual' | 'measurement';
 
 export type MasterSpecType = 'range' | 'exact' | 'min' | 'max' | 'selection' | 'checklist' | 'none';
 
@@ -13,13 +13,23 @@ export interface MasterConfigSection {
   order: number;
 }
 
-export interface MasterConfigParameter {
+export interface MasterConfigGroup {
   id: string;
   sectionId: string;
   name: string;
+  order: number;
+}
+
+export interface MasterConfigParameter {
+  id: string;
+  sectionId: string;
+  groupId?: string;
+  name: string;
+  parameterCode?: string;
   scope: ScopeType;
   inputType: MasterInputType;
   specificationType: MasterSpecType;
+  reqSpec?: string;
   minValue?: number;
   maxValue?: number;
   expectedValue?: string;
@@ -29,12 +39,30 @@ export interface MasterConfigParameter {
   referenceImage?: string;
   referenceInfo?: string;
   required: boolean;
+  remarksRequired?: boolean;
   order: number;
+}
+
+export interface ReportLayoutConfig {
+  reportTitle?: string;
+  companyName?: string;
+  companySubtitle?: string;
+  showGroupHeaders?: boolean;
+  showPhotoRow?: boolean;
+  showMethodRow?: boolean;
+  showReqSpecRow?: boolean;
+  requiredReadingsCount?: number;
+  showStartupIssues?: boolean;
+  showCutSection?: boolean;
+  showApprovalBlock?: boolean;
 }
 
 export interface MasterConfig {
   id: number;
   name: string;
+  reportTitle?: string;
+  companyName?: string;
+  companySubtitle?: string;
   configType: ScopeType;
   mcType: MasterMcType;
   documentCode?: string;
@@ -44,7 +72,9 @@ export interface MasterConfig {
   machineType: string;
   machine: string;
   sections: MasterConfigSection[];
+  groups: MasterConfigGroup[];
   parameters: MasterConfigParameter[];
+  layoutConfig?: ReportLayoutConfig;
   createdAt: string;
   updatedAt: string;
   publishedTemplateId?: number;
@@ -59,7 +89,7 @@ export interface ValidationResult {
 }
 
 export interface InspectionSample {
-  sampleCode: 'A' | 'B' | 'C' | 'Single';
+  sampleCode: 'A' | 'B' | 'C' | 'Single' | string;
   value: string;
   result: ValidationStatus;
 }

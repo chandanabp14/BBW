@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 // restored exactly as it was designed.
 const templateSchema = new mongoose.Schema(
     {
-        id: { type: Number, required: true, unique: true, index: true },
+        id: { type: Number, index: true, sparse: true },
         name: { type: String, required: true, trim: true },
         checklistType: { type: String, default: "Inspection" },
         generalDetailsRows: { type: [mongoose.Schema.Types.Mixed], default: [] },

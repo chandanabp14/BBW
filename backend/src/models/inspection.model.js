@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const inspectionSchema = new mongoose.Schema(
     {
-        id: { type: Number, required: true, unique: true, index: true },
+        id: { type: Number, index: true, sparse: true },
         masterConfigId: { type: Number, required: true },
         templateId: { type: Number },
         templateName: { type: String },

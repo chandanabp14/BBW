@@ -1,270 +1,621 @@
 <app-navbar></app-navbar>
 
-<div class="master-config-container">
-  <div class="header-banner">
-    <div class="banner-title">
-      <span class="badge-source">Source of Truth</span>
-      <h1>Master Configuration Engine</h1>
-      <p>Define master specifications, parameters, checklist items, and validation rules. Master Configuration generates the digital template for operators.</p>
+<div class="qa-container">
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 1: MASTER CONFIGURATIONS LIST PAGE -->
+  <!-- ========================================================================= -->
+  <div *ngIf="currentView === 'list'">
+
+    <!-- PAGE HEADER -->
+    <div class="qa-page-header">
+      <div>
+        <h1 class="qa-page-title">MASTER CONFIGURATIONS</h1>
+        <p class="qa-page-subtitle">Source of Truth for inspection and setup templates. Created and maintained by QA Administrators.</p>
+      </div>
+      <button type="button" class="qa-btn qa-btn-primary" (click)="startNewConfig()">
+        + Create New Configuration
+      </button>
     </div>
 
-    <!-- PRESET SELECTOR -->
-    <div class="preset-selector-card">
-      <label>Load Reference Configuration Preset:</label>
-      <div class="preset-buttons">
-        @for (c of existingConfigs; track c.id) {
-          <button type="button" class="btn-preset" [class.active]="selectedPresetId === c.id" (click)="loadConfigPreset(c.id)">
-            📋 {{ c.name }}
-          </button>
-        }
-        <button type="button" class="btn-preset new-preset" (click)="newConfig()">
-          ➕ Create New Config
+    <!-- SEARCH & SCOPE FILTER BAR -->
+    <div class="filter-search-bar qa-card">
+      <div class="search-input-wrap">
+        <input type="text" class="qa-input" [(ngModel)]="searchQuery" placeholder="Search by configuration name, part name or ERP number...">
+      </div>
+      <div class="scope-filter-buttons">
+        <span class="filter-label">Filter by Scope:</span>
+        <button type="button" class="qa-btn qa-btn-sm" [class.qa-btn-primary]="scopeFilter === 'All'" [class.qa-btn-secondary]="scopeFilter !== 'All'" (click)="scopeFilter = 'All'">All</button>
+        <button type="button" class="qa-btn qa-btn-sm" [class.qa-btn-primary]="scopeFilter === 'Inspection'" [class.qa-btn-secondary]="scopeFilter !== 'Inspection'" (click)="scopeFilter = 'Inspection'">Inspection</button>
+        <button type="button" class="qa-btn qa-btn-sm" [class.qa-btn-primary]="scopeFilter === 'Setup'" [class.qa-btn-secondary]="scopeFilter !== 'Setup'" (click)="scopeFilter = 'Setup'">Setup</button>
+        <button type="button" class="qa-btn qa-btn-sm" [class.qa-btn-primary]="scopeFilter === 'Both'" [class.qa-btn-secondary]="scopeFilter !== 'Both'" (click)="scopeFilter = 'Both'">Both</button>
+      </div>
+    </div>
+
+    <!-- REFERENCE DOCUMENTS BANNER -->
+    <div class="ref-docs-banner qa-card">
+      <div class="ref-docs-info">
+        <h4>REFERENCE DOCUMENTS</h4>
+        <p>These documents are examples used to understand the required inspection/setup structure.</p>
+      </div>
+      <div class="ref-docs-btns">
+        <button type="button" class="qa-btn qa-btn-outline qa-btn-sm" (click)="openReferencePreset('PRESS')">
+          PRESS MC 120
+        </button>
+        <button type="button" class="qa-btn qa-btn-outline qa-btn-sm" (click)="openReferencePreset('PDC')">
+          PDC MC 07
         </button>
       </div>
     </div>
-  </div>
 
-  <div class="save-notice-toast" *ngIf="savedNotice">
-    ✓ Master Configuration saved successfully!
-  </div>
-
-  <!-- CONFIG FORM CARD -->
-  <div class="config-card">
-
-    <!-- 1. BASIC DETAILS SECTION -->
-    <section class="config-section">
-      <div class="section-header-title">
-        <h2>1. Basic Details & Machine Mapping</h2>
-      </div>
-
-      <div class="form-grid-3">
-        <div class="form-group">
-          <label>Configuration Name <span class="req">*</span></label>
-          <input type="text" class="form-control" [(ngModel)]="config.name" placeholder="e.g. PRESS MC 120 Master Config">
-        </div>
-
-        <div class="form-group">
-          <label>Scope Type</label>
-          <select class="form-control" [(ngModel)]="config.configType">
-            <option value="Both">Both (Setup & Inprocess Inspection)</option>
-            <option value="Setup">Setup Only</option>
-            <option value="Inspection">Inspection Only</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>MC Type</label>
-          <select class="form-control" [(ngModel)]="config.mcType">
-            <option value="Press">Press Machine</option>
-            <option value="PDC">PDC (Die Casting)</option>
-            <option value="Assembly">Assembly Line</option>
-            <option value="Machining">Machining / CNC</option>
-            <option value="General">General Plant</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Part Name</label>
-          <input type="text" class="form-control" [(ngModel)]="config.partName" placeholder="e.g. PLATE HINGE">
-        </div>
-
-        <div class="form-group">
-          <label>ERP Part Number</label>
-          <input type="text" class="form-control" [(ngModel)]="config.partNumber" placeholder="e.g. 1A1-03220 / BL">
-        </div>
-
-        <div class="form-group">
-          <label>Part Type</label>
-          <input type="text" class="form-control" [(ngModel)]="config.partType" placeholder="e.g. Sheet Metal Component">
-        </div>
-
-        <div class="form-group">
-          <label>Machine Type</label>
-          <input type="text" class="form-control" [(ngModel)]="config.machineType" placeholder="e.g. Automatic Press 120T">
-        </div>
-
-        <div class="form-group">
-          <label>Machine / M/C No</label>
-          <input type="text" class="form-control" [(ngModel)]="config.machine" placeholder="e.g. 120">
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. SECTIONS SETUP -->
-    <section class="config-section">
-      <div class="section-header-title space-between">
-        <h2>2. Document Sections</h2>
-        <button type="button" class="btn btn-secondary-sm" (click)="addSection()">+ Add Section</button>
-      </div>
-
-      <div class="sections-list">
-        @for (sec of config.sections; track sec.id; let i = $index) {
-          <div class="section-box">
-            <div class="section-box-header">
-              <span class="sec-num">Section {{ i + 1 }}</span>
-              <div class="sec-inputs">
-                <input type="text" class="form-control sec-title-input" [(ngModel)]="sec.name" placeholder="Section Name">
-                <select class="form-control sec-scope-select" [(ngModel)]="sec.scope">
-                  <option value="Both">Both (Setup & Inspection)</option>
-                  <option value="Setup">Setup Only</option>
-                  <option value="Inspection">Inspection Only</option>
-                </select>
-              </div>
-              <button type="button" class="btn-icon-del" (click)="removeSection(i)" title="Delete section">✕</button>
-            </div>
-          </div>
-        }
-      </div>
-    </section>
-
-    <!-- 3. PARAMETERS & SPECIFICATIONS -->
-    <section class="config-section">
-      <div class="section-header-title space-between">
-        <h2>3. Parameters, Specifications & Validation Rules</h2>
-        <button type="button" class="btn btn-secondary-sm" (click)="addParameter()">+ Add Parameter</button>
-      </div>
-
-      <div class="parameters-container">
-        @for (sec of config.sections; track sec.id) {
-          <div class="section-parameters-group">
-            <div class="group-title">
-              📁 {{ sec.name }} <small>({{ sec.scope }})</small>
-              <button type="button" class="btn-add-param-link" (click)="addParameter(sec.id)">+ Add Param to Section</button>
-            </div>
-
-            @for (param of getParametersForSection(sec.id); track param.id; let pIdx = $index) {
-              <div class="parameter-card shadow-sm">
-                <div class="param-card-top">
-                  <div class="param-main-info">
-                    <span class="param-idx">#{{ pIdx + 1 }}</span>
-                    <input type="text" class="form-control param-name-input" [(ngModel)]="param.name" placeholder="Parameter Name (e.g. Furnace Temp, Embossing Height)">
-                  </div>
-                  <div class="param-top-actions">
-                    <label class="required-checkbox">
-                      <input type="checkbox" [(ngModel)]="param.required"> Required Field
-                    </label>
-                    <button type="button" class="btn-icon-del" (click)="removeParameter(config.parameters.indexOf(param))" title="Delete Parameter">✕</button>
-                  </div>
+    <!-- ENTERPRISE CONFIGURATIONS TABLE -->
+    <div class="qa-table-wrapper" *ngIf="filteredConfigs.length > 0; else noConfigs">
+      <table class="qa-table">
+        <thead>
+          <tr>
+            <th>Configuration</th>
+            <th>Part</th>
+            <th>Part Number</th>
+            <th>Machine</th>
+            <th>Scope</th>
+            <th class="text-center">Sections</th>
+            <th class="text-center">Groups</th>
+            <th class="text-center">Parameters</th>
+            <th>Status</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of filteredConfigs; track c.id) {
+            <tr>
+              <td>
+                <strong>{{ c.name }}</strong>
+                <div class="sub-code-text" *ngIf="c.documentCode">Doc: {{ c.documentCode }}</div>
+              </td>
+              <td>{{ c.partName || '—' }}</td>
+              <td><span class="sub-code-text">{{ c.partNumber || '—' }}</span></td>
+              <td>M/C {{ c.machine || '—' }}</td>
+              <td>
+                <span class="qa-badge qa-badge-neutral">{{ c.configType }}</span>
+              </td>
+              <td class="text-center">{{ c.sections.length }}</td>
+              <td class="text-center">{{ (c.groups || []).length }}</td>
+              <td class="text-center">{{ c.parameters.length }}</td>
+              <td>
+                <span class="qa-badge qa-badge-pass">Active</span>
+              </td>
+              <td class="text-right">
+                <div class="table-actions-flex">
+                  <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="editConfig(c.id)">
+                    Edit
+                  </button>
+                  <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="createTemplate(c)">
+                    Generate Template
+                  </button>
                 </div>
-
-                <div class="param-grid-4">
-                  <div class="form-group">
-                    <label>Scope</label>
-                    <select class="form-control" [(ngModel)]="param.scope">
-                      <option value="Both">Both (Setup & Inspection)</option>
-                      <option value="Setup">Setup</option>
-                      <option value="Inspection">Inspection</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Input Type</label>
-                    <select class="form-control" [(ngModel)]="param.inputType">
-                      @for (it of inputTypes; track it.value) {
-                        <option [value]="it.value">{{ it.label }}</option>
-                      }
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Specification Type</label>
-                    <select class="form-control" [(ngModel)]="param.specificationType">
-                      @for (st of specTypes; track st.value) {
-                        <option [value]="st.value">{{ st.label }}</option>
-                      }
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Unit</label>
-                    <input type="text" class="form-control" [(ngModel)]="param.unit" placeholder="e.g. mm, bar, °C, grams" list="unit-suggestions">
-                    <datalist id="unit-suggestions">
-                      @for (u of commonUnits; track u) {
-                        <option [value]="u"></option>
-                      }
-                    </datalist>
-                  </div>
-                </div>
-
-                <!-- DYNAMIC SPECIFICATION INPUTS -->
-                <div class="spec-rules-panel">
-                  <div class="spec-rules-title">Validation Rule Parameters:</div>
-
-                  <div class="spec-fields-row">
-                    @if (param.specificationType === 'range') {
-                      <div class="form-group min-max-field">
-                        <label>Minimum Value</label>
-                        <input type="number" class="form-control" [(ngModel)]="param.minValue" placeholder="e.g. 10">
-                      </div>
-
-                      <div class="form-group min-max-field">
-                        <label>Maximum Value</label>
-                        <input type="number" class="form-control" [(ngModel)]="param.maxValue" placeholder="e.g. 20">
-                      </div>
-                    }
-
-                    @if (param.specificationType === 'min') {
-                      <div class="form-group min-max-field">
-                        <label>Minimum Value (>=)</label>
-                        <input type="number" class="form-control" [(ngModel)]="param.minValue" placeholder="e.g. 10">
-                      </div>
-                    }
-
-                    @if (param.specificationType === 'max') {
-                      <div class="form-group min-max-field">
-                        <label>Maximum Value (<=)</label>
-                        <input type="number" class="form-control" [(ngModel)]="param.maxValue" placeholder="e.g. 50">
-                      </div>
-                    }
-
-                    @if (param.specificationType === 'exact' || param.specificationType === 'selection' || param.specificationType === 'checklist') {
-                      <div class="form-group expected-field">
-                        <label>Expected / Reference Value</label>
-                        <input type="text" class="form-control" [(ngModel)]="param.expectedValue" placeholder="e.g. 220 V or OK or Nill Allowed">
-                      </div>
-                    }
-
-                    @if (param.inputType === 'dropdown') {
-                      <div class="form-group dropdown-options-field">
-                        <label>Dropdown Options (comma separated)</label>
-                        <input type="text" class="form-control" [ngModel]="param.dropdownOptions?.join(', ')" (ngModelChange)="updateDropdownOptions(param, $event)" placeholder="OK, NOT OK, N/A">
-                      </div>
-                    }
-                  </div>
-
-                  <!-- REFERENCE IMAGE & INFO -->
-                  <div class="spec-ref-row">
-                    <div class="form-group ref-info-field">
-                      <label>Reference Info / Notes</label>
-                      <input type="text" class="form-control" [(ngModel)]="param.referenceInfo" placeholder="e.g. Check via Micro Meter or Vernier Gauge">
-                    </div>
-
-                    <div class="form-group ref-img-field">
-                      <label>Reference Image</label>
-                      <div class="image-upload-wrapper">
-                        <input type="file" accept="image/*" (change)="handleImageUpload($event, param)">
-                        <img *ngIf="param.referenceImage" [src]="param.referenceImage" class="param-img-preview" alt="Ref Image">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
-    </section>
-
-    <!-- ACTION FOOTER BAR -->
-    <div class="config-action-footer">
-      <button type="button" class="btn btn-save" (click)="saveMasterConfig()">
-        💾 SAVE MASTER CONFIGURATION
-      </button>
-
-      <button type="button" class="btn btn-create-template" (click)="createTemplate()">
-        ✨ CREATE TEMPLATE FROM MASTER
-      </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
 
+    <ng-template #noConfigs>
+      <div class="qa-card text-center text-muted" style="padding: 40px;">
+        <p>No master configurations found matching filter criteria.</p>
+        <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="startNewConfig()">
+          Create Configuration
+        </button>
+      </div>
+    </ng-template>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 2: CREATE / EDIT MASTER CONFIGURATION 5-STEP WIZARD -->
+  <!-- ========================================================================= -->
+  <div *ngIf="currentView === 'editor'">
+
+    <!-- TOP NAV BACK & TITLE -->
+    <div class="editor-header-bar">
+      <div>
+        <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="goToList()">
+          ← Back to Configurations
+        </button>
+        <h1 class="qa-page-title" style="margin-top: 8px;">Master Configuration Builder</h1>
+        <p class="qa-page-subtitle">Source of truth baseline for shopfloor inspection & setup templates.</p>
+      </div>
+    </div>
+
+    <!-- STEP WIZARD INDICATOR (5 STEPS) -->
+    <div class="qa-stepper">
+      <div class="qa-step-item" [class.active]="currentStep === 1" [class.completed]="currentStep > 1" (click)="setStep(1)">
+        <div class="qa-step-num">1</div>
+        <span>Document Details</span>
+      </div>
+      <div class="qa-step-divider"></div>
+      <div class="qa-step-item" [class.active]="currentStep === 2" [class.completed]="currentStep > 2" (click)="setStep(2)">
+        <div class="qa-step-num">2</div>
+        <span>Inspection Structure</span>
+      </div>
+      <div class="qa-step-divider"></div>
+      <div class="qa-step-item" [class.active]="currentStep === 3" [class.completed]="currentStep > 3" (click)="setStep(3)">
+        <div class="qa-step-num">3</div>
+        <span>Parameters & Validation</span>
+      </div>
+      <div class="qa-step-divider"></div>
+      <div class="qa-step-item" [class.active]="currentStep === 4" [class.completed]="currentStep > 4" (click)="setStep(4)">
+        <div class="qa-step-num">4</div>
+        <span>Report Layout</span>
+      </div>
+      <div class="qa-step-divider"></div>
+      <div class="qa-step-item" [class.active]="currentStep === 5" (click)="setStep(5)">
+        <div class="qa-step-num">5</div>
+        <span>Review & Save</span>
+      </div>
+    </div>
+
+    <!-- STEP 1: DOCUMENT DETAILS -->
+    <div class="qa-card" *ngIf="currentStep === 1">
+      <h3 class="step-card-heading">1. Document & Company Details</h3>
+
+      <div class="form-grid-2">
+        <div class="qa-form-group">
+          <label class="qa-label">Configuration Name *</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.name" placeholder="e.g. PRESS MC 120 Master Configuration">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Report Title</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.reportTitle" placeholder="e.g. PRESS MC 120 INPROCESS INSPECTION & SETUP REPORT">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Company Name</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.companyName" placeholder="e.g. BHARAT BALANCING WEIGHT & CO">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Company Subtitle</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.companySubtitle" placeholder="e.g. BBW GLOBAL Tek Pvt Ltd">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Document Reference Code</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.documentCode" placeholder="e.g. BBW/QTY/R/283">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Scope</label>
+          <select class="qa-select" [(ngModel)]="config.configType">
+            <option value="Both">Both (Inspection & Setup)</option>
+            <option value="Inspection">Inspection Only</option>
+            <option value="Setup">Setup Only</option>
+          </select>
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Part Name</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.partName" placeholder="e.g. PLATE HINGE">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">ERP Part Number</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.partNumber" placeholder="e.g. 1A1-03220 / BL">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Machine / M/C Number</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.machine" placeholder="e.g. 120 or M/C 07">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Machine Type</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.machineType" placeholder="e.g. Automatic Press 120T">
+        </div>
+      </div>
+
+      <div class="wizard-footer-actions">
+        <button type="button" class="qa-btn qa-btn-secondary" (click)="goToList()">Cancel</button>
+        <button type="button" class="qa-btn qa-btn-primary" (click)="nextStep()">Save & Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: INSPECTION STRUCTURE (TREE HIERARCHY BUILDER) -->
+    <div *ngIf="currentStep === 2">
+      <div class="qa-card">
+        <div class="card-title-flex">
+          <div>
+            <h3 class="step-card-heading">2. Inspection Structure (Hierarchy Builder)</h3>
+            <p class="qa-page-subtitle">Build the 2-level structure: SECTION ➔ GROUP ➔ PARAMETER.</p>
+          </div>
+          <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="addSection()">
+            + Add Section
+          </button>
+        </div>
+
+        <!-- HIERARCHICAL TREE VIEW -->
+        <div class="tree-container">
+          @for (sec of config.sections; track sec.id; let sIdx = $index) {
+            <div class="tree-section-node">
+              <div class="tree-section-header">
+                <span class="tree-icon">📂</span>
+                <span class="tree-node-title">{{ sec.name }}</span>
+                <span class="sec-scope-pill">{{ sec.scope }}</span>
+                <div class="tree-node-actions">
+                  <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="editSection(sec)">Rename Section</button>
+                  <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="addGroup(sec.id)">+ Add Group</button>
+                  <button type="button" class="qa-btn qa-btn-danger qa-btn-sm" (click)="removeSection(sIdx)">Delete Section</button>
+                </div>
+              </div>
+
+              <!-- GROUPS UNDER SECTION -->
+              <div class="tree-groups-list">
+                @for (grp of getGroupsForSection(sec.id); track grp.id) {
+                  <div class="tree-group-node">
+                    <div class="tree-group-header">
+                      <span class="tree-icon">📁</span>
+                      <span class="tree-group-title">{{ grp.name }}</span>
+                      <div class="tree-node-actions">
+                        <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="editGroup(grp)">Rename Group</button>
+                        <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="openAddParamModal(sec.id, grp.id)">+ Add Parameter</button>
+                        <button type="button" class="qa-btn qa-btn-danger qa-btn-sm" (click)="removeGroup(grp.id)">Delete Group</button>
+                      </div>
+                    </div>
+
+                    <!-- PARAMETERS UNDER GROUP -->
+                    <div class="tree-params-list">
+                      @for (param of getParametersForGroup(grp.id); track param.id; let pIdx = $index) {
+                        <div class="tree-param-node">
+                          <span class="tree-leaf-icon">📄</span>
+                          <span class="param-name">{{ param.name }}</span>
+                          <span class="param-spec-tag">{{ formatParamReqSpec(param) }}</span>
+                          <span class="param-method-tag">{{ param.checkingMethod || 'VISUAL' }}</span>
+                          <div class="tree-param-actions">
+                            <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="openEditParamModal(param)">Edit</button>
+                            <button type="button" class="qa-btn qa-btn-danger qa-btn-sm" (click)="removeParameter(config.parameters.indexOf(param))">Delete</button>
+                          </div>
+                        </div>
+                      }
+                      <div *ngIf="getParametersForGroup(grp.id).length === 0" class="text-muted tree-empty-note">
+                        No parameters in this group yet. Click "+ Add Parameter" above.
+                      </div>
+                    </div>
+                  </div>
+                }
+                <div *ngIf="getGroupsForSection(sec.id).length === 0" class="text-muted tree-empty-note">
+                  No groups in this section yet. Click "+ Add Group" above.
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="wizard-footer-actions">
+        <button type="button" class="qa-btn qa-btn-secondary" (click)="prevStep()">← Previous</button>
+        <button type="button" class="qa-btn qa-btn-primary" (click)="nextStep()">Save & Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: PARAMETERS & VALIDATION -->
+    <div *ngIf="currentStep === 3">
+      <div class="qa-card">
+        <div class="card-title-flex">
+          <div>
+            <h3 class="step-card-heading">3. Parameters & Validation Rules Table</h3>
+            <p class="qa-page-subtitle">Configure explicit parameter specifications, methods, limits, and automated rules.</p>
+          </div>
+          <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="openAddParamModal(config.sections[0]?.id || '')">
+            + Add Parameter Row
+          </button>
+        </div>
+
+        <div class="qa-table-wrapper" *ngIf="config.parameters.length > 0; else noParamTable">
+          <table class="qa-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;">#</th>
+                <th>Specification / Question</th>
+                <th>Section</th>
+                <th>Group</th>
+                <th>Req / Spec</th>
+                <th>Method</th>
+                <th>Type</th>
+                <th>Unit</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th class="text-center">Required</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (param of config.parameters; track param.id; let idx = $index) {
+                <tr>
+                  <td>{{ idx + 1 }}</td>
+                  <td><strong>{{ param.name }}</strong></td>
+                  <td><span class="sub-code-text">{{ (config.sections.find(s => s.id === param.sectionId)?.name) || '—' }}</span></td>
+                  <td><span class="sub-code-text">{{ (config.groups.find(g => g.id === param.groupId)?.name) || '—' }}</span></td>
+                  <td><span class="range-badge">{{ formatParamReqSpec(param) }}</span></td>
+                  <td><span class="qa-badge qa-badge-neutral">{{ param.checkingMethod || 'VISUAL' }}</span></td>
+                  <td><span class="qa-badge qa-badge-neutral">{{ param.inputType | uppercase }}</span></td>
+                  <td>{{ param.inputType === 'number' ? (param.unit || '—') : '—' }}</td>
+                  <td>{{ param.inputType === 'number' ? (param.minValue ?? '—') : '—' }}</td>
+                  <td>{{ param.inputType === 'number' ? (param.maxValue ?? '—') : '—' }}</td>
+                  <td class="text-center">
+                    <span class="qa-badge" [class.qa-badge-pass]="param.required" [class.qa-badge-neutral]="!param.required">
+                      {{ param.required ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                  <td class="text-right">
+                    <div class="table-actions-flex">
+                      <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="openEditParamModal(param)">Edit</button>
+                      <button type="button" class="qa-btn qa-btn-danger qa-btn-sm" (click)="removeParameter(idx)">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #noParamTable>
+          <div class="text-muted text-center" style="padding: 30px;">
+            No parameters defined yet. Click "+ Add Parameter Row" to create inspection points.
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="wizard-footer-actions">
+        <button type="button" class="qa-btn qa-btn-secondary" (click)="prevStep()">← Previous</button>
+        <button type="button" class="qa-btn qa-btn-primary" (click)="nextStep()">Save & Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: REPORT LAYOUT CONFIGURATION -->
+    <div class="qa-card" *ngIf="currentStep === 4 && config.layoutConfig">
+      <h3 class="step-card-heading">4. Report Layout Configuration</h3>
+      <p class="qa-page-subtitle" style="margin-bottom: 20px;">Configure how the generated digital sheet and official PDF report are arranged.</p>
+
+      <div class="form-grid-2">
+        <div class="qa-form-group">
+          <label class="qa-label">Report Document Title</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.layoutConfig.reportTitle">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Company Name Header</label>
+          <input type="text" class="qa-input" [(ngModel)]="config.layoutConfig.companyName">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Show Grouped Headers in Matrix Report?</label>
+          <select class="qa-select" [(ngModel)]="config.layoutConfig.showGroupHeaders">
+            <option [ngValue]="true">Yes (Multi-level Parent & Child headers)</option>
+            <option [ngValue]="false">No (Flattened headers)</option>
+          </select>
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Show Photo / Diagram Row?</label>
+          <select class="qa-select" [(ngModel)]="config.layoutConfig.showPhotoRow">
+            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">No</option>
+          </select>
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Show Checking Method Row?</label>
+          <select class="qa-select" [(ngModel)]="config.layoutConfig.showMethodRow">
+            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">No</option>
+          </select>
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Show Requirement / Specification Row?</label>
+          <select class="qa-select" [(ngModel)]="config.layoutConfig.showReqSpecRow">
+            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">No</option>
+          </select>
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Required Inspection Reading Slots</label>
+          <input type="number" class="qa-input" [(ngModel)]="config.layoutConfig.requiredReadingsCount" placeholder="e.g. 12 timed slots or 3 samples">
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Show Startup Issues Log Block?</label>
+          <select class="qa-select" [(ngModel)]="config.layoutConfig.showStartupIssues">
+            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="wizard-footer-actions">
+        <button type="button" class="qa-btn qa-btn-secondary" (click)="prevStep()">← Previous</button>
+        <button type="button" class="qa-btn qa-btn-primary" (click)="nextStep()">Review Master Configuration →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: REVIEW & SAVE -->
+    <div class="qa-card" *ngIf="currentStep === 5">
+      <h3 class="step-card-heading">5. MASTER CONFIGURATION REVIEW</h3>
+      <p class="qa-page-subtitle" style="margin-bottom: 20px;">Review baseline details before saving and generating the inspection template.</p>
+
+      <div class="review-summary-grid">
+        <div class="review-item">
+          <span class="rev-label">Configuration Name:</span>
+          <strong class="rev-val">{{ config.name }}</strong>
+        </div>
+        <div class="review-item">
+          <span class="rev-label">Part Name / ERP Number:</span>
+          <strong class="rev-val">{{ config.partName }} ({{ config.partNumber }})</strong>
+        </div>
+        <div class="review-item">
+          <span class="rev-label">Machine No:</span>
+          <strong class="rev-val">M/C {{ config.machine }}</strong>
+        </div>
+        <div class="review-item">
+          <span class="rev-label">Scope:</span>
+          <strong class="rev-val">{{ config.configType }}</strong>
+        </div>
+        <div class="review-item">
+          <span class="rev-label">Total Sections:</span>
+          <strong class="rev-val">{{ config.sections.length }}</strong>
+        </div>
+        <div class="review-item">
+          <span class="rev-label">Total Groups:</span>
+          <strong class="rev-val">{{ (config.groups || []).length }}</strong>
+        </div>
+        <div class="review-item">
+          <span class="rev-label">Total Parameters:</span>
+          <strong class="rev-val">{{ config.parameters.length }} Parameters</strong>
+        </div>
+        <div class="review-item">
+          <span class="rev-label">Reading Slots:</span>
+          <strong class="rev-val">{{ config.layoutConfig?.requiredReadingsCount || 12 }} Slots</strong>
+        </div>
+      </div>
+
+      <!-- HIERARCHY SUMMARY TABLE -->
+      <div style="margin-top: 20px;">
+        <h4 style="font-size: 13px; font-weight: 700; color: var(--primary-navy); margin-bottom: 8px;">Structure Summary:</h4>
+        <div class="qa-table-wrapper">
+          <table class="qa-table">
+            <thead>
+              <tr>
+                <th>Section</th>
+                <th>Group</th>
+                <th class="text-center">Parameters Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (sec of config.sections; track sec.id) {
+                @for (grp of getGroupsForSection(sec.id); track grp.id) {
+                  <tr>
+                    <td><strong>{{ sec.name }}</strong></td>
+                    <td>{{ grp.name }}</td>
+                    <td class="text-center">{{ getParametersForGroup(grp.id).length }}</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="wizard-footer-actions" style="margin-top: 24px;">
+        <button type="button" class="qa-btn qa-btn-secondary" (click)="setStep(2)">Back to Edit</button>
+        <button type="button" class="qa-btn qa-btn-secondary" (click)="saveMasterConfig()">Save Configuration</button>
+        <button type="button" class="qa-btn qa-btn-primary" (click)="createTemplate()">Generate Template →</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- ADD / EDIT PARAMETER MODAL (CLEAN INLINE ROW ADDITION) -->
+<!-- ========================================================================= -->
+<div class="qa-modal-backdrop" *ngIf="showParamModal">
+  <div class="qa-modal-content">
+    <div class="qa-modal-header">
+      <h3>{{ isEditParamMode ? 'Edit Parameter' : 'Add New Parameter Row' }}</h3>
+      <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="closeParamModal()">✕</button>
+    </div>
+
+    <div class="qa-modal-body">
+      <div class="qa-form-group">
+        <label class="qa-label">Specification / Question Name *</label>
+        <input type="text" class="qa-input" [(ngModel)]="paramModalData.name" placeholder="e.g. Raw Material Width, Embossing Height, Hole Dia 1">
+      </div>
+
+      <div class="qa-form-group">
+        <label class="qa-label">Group</label>
+        <select class="qa-select" [(ngModel)]="paramModalGroupId">
+          @for (grp of getGroupsForSection(paramModalSectionId); track grp.id) {
+            <option [value]="grp.id">{{ grp.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="qa-form-group">
+        <label class="qa-label">Checking Method / Instrument</label>
+        <input type="text" class="qa-input" [(ngModel)]="paramModalData.checkingMethod" placeholder="e.g. VISUAL, D. VERNIER, MICRO METER, PLUG GAUGE">
+      </div>
+
+      <div class="form-grid-2">
+        <div class="qa-form-group">
+          <label class="qa-label">Parameter Type</label>
+          <select class="qa-select" [(ngModel)]="paramModalData.inputType" (change)="onParamTypeChange(paramModalData)">
+            @for (it of inputTypes; track it.value) {
+              <option [value]="it.value">{{ it.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="qa-form-group">
+          <label class="qa-label">Required Field?</label>
+          <select class="qa-select" [(ngModel)]="paramModalData.required">
+            <option [ngValue]="true">Yes (Mandatory)</option>
+            <option [ngValue]="false">No (Optional)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- NUMERIC SPECIFIC FIELDS -->
+      <div *ngIf="paramModalData.inputType === 'number' || paramModalData.inputType === 'measurement'" class="numeric-spec-box">
+        <div class="qa-form-group">
+          <label class="qa-label">Unit</label>
+          <input type="text" class="qa-input" [(ngModel)]="paramModalData.unit" placeholder="e.g. mm, °C, bar, grams, Kg/cm2">
+        </div>
+
+        <div class="form-grid-2">
+          <div class="qa-form-group">
+            <label class="qa-label">Minimum Allowed Value</label>
+            <input type="number" class="qa-input" [(ngModel)]="paramModalData.minValue" placeholder="e.g. 124.40">
+          </div>
+
+          <div class="qa-form-group">
+            <label class="qa-label">Maximum Allowed Value</label>
+            <input type="number" class="qa-input" [(ngModel)]="paramModalData.maxValue" placeholder="e.g. 124.60">
+          </div>
+        </div>
+      </div>
+
+      <!-- PASS/FAIL OR YES/NO SPECIFIC FIELDS -->
+      <div *ngIf="paramModalData.inputType === 'checkbox' || paramModalData.inputType === 'yes_no' || paramModalData.inputType === 'visual'" class="numeric-spec-box">
+        <div class="qa-form-group">
+          <label class="qa-label">Expected Value</label>
+          <input type="text" class="qa-input" [(ngModel)]="paramModalData.expectedValue" placeholder="e.g. OK, Pass, Nill Allowed">
+        </div>
+      </div>
+
+      <!-- DROPDOWN OPTIONS -->
+      <div *ngIf="paramModalData.inputType === 'dropdown'" class="numeric-spec-box">
+        <div class="qa-form-group">
+          <label class="qa-label">Dropdown Options (comma separated)</label>
+          <input type="text" class="qa-input" [ngModel]="paramModalData.dropdownOptions?.join(', ')" (ngModelChange)="updateDropdownOptions(paramModalData, $event)" placeholder="OK, NOT OK, N/A">
+        </div>
+      </div>
+
+      <!-- PHOTO REFERENCE ATTACHMENT -->
+      <div class="qa-form-group">
+        <label class="qa-label">Reference Image / Diagram (Optional)</label>
+        <input type="file" accept="image/*" (change)="handleImageUpload($event, paramModalData)">
+        <img *ngIf="paramModalData.referenceImage" [src]="paramModalData.referenceImage" class="param-img-preview" alt="Ref Image" style="max-height: 50px; margin-top: 6px;">
+      </div>
+    </div>
+
+    <div class="qa-modal-footer">
+      <button type="button" class="qa-btn qa-btn-secondary" (click)="closeParamModal()">Cancel</button>
+      <button type="button" class="qa-btn qa-btn-primary" (click)="saveParamModal()">
+        {{ isEditParamMode ? 'Save Changes' : 'Add Parameter Row' }}
+      </button>
+    </div>
   </div>
 </div>
