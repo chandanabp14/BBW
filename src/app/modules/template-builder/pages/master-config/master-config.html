@@ -306,9 +306,18 @@
             <h3 class="step-card-heading">3. Parameters & Validation Rules Table</h3>
             <p class="qa-page-subtitle">Configure explicit parameter specifications, methods, limits, and automated rules.</p>
           </div>
-          <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="openAddParamModal(config.sections[0]?.id || '')">
-            + Add Parameter Row
-          </button>
+          <div style="display: flex; gap: 8px;">
+            <label class="qa-btn qa-btn-secondary qa-btn-sm" style="cursor: pointer; margin: 0;">
+              📥 Import CSV
+              <input type="file" accept=".csv" (change)="importMasterConfigFromCSV($event)" style="display: none;">
+            </label>
+            <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="exportMasterConfigToCSV()">
+              📤 Export CSV
+            </button>
+            <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="openAddParamModal(config.sections[0]?.id || '')">
+              + Add Parameter Row
+            </button>
+          </div>
         </div>
 
         <div class="qa-table-wrapper" *ngIf="config.parameters.length > 0; else noParamTable">

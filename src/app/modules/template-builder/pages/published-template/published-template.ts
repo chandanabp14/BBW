@@ -421,6 +421,57 @@ export class PublishedTemplateComponent implements OnInit {
     window.print();
   }
 
+  exportInspectionToCSV(): void {
+    if (!this.inspectionInstance || !this.masterConfig) {
+      alert('No active inspection sheet data to export.');
+      return;
+    }
+
+    const headers = ['Parameter ID', 'Parameter Name', 'Specification / Range', 'Checking Method', 'Sample A', 'Sample B', 'Sample C', 'Actual Recorded Value', 'Validation Result', 'Message'];
+    const rows: string[][] = [];
+
+    for (const param of this.masterConfig.parameters || []) {
+      const entry = this.inspectionInstance.parameterEntries[param.id];
+      const sampleA = entry?.samples[0]?.value || '';
+      const sampleB = entry?.samples[1]?.value || '';
+      const sampleC = entry?.samples[2]?.value || '';
+      const actualVal = entry?.actualValue || '';
+      const result = entry?.result || 'PENDING';
+      const msg = entry?.validationMessage || '';
+
+      rows.push([
+        param.id,
+        param.name,
+        entry?.specificationText || this.validationService.formatSpecification(param),
+        param.checkingMethod || 'VISUAL',
+        sampleA,
+        sampleB,
+        sampleC,
+        actualVal,
+        result,
+        msg
+      ]);
+    }
+
+    const csvLines = [
+      `"INSPECTION REPORT - ${this.masterConfig.name}"`,
+      `"Part Name: ${this.inspectionInstance.partName}","ERP Part No: ${this.inspectionInstance.partNumber}","M/C No: ${this.inspectionInstance.machine}","Date: ${this.inspectionInstance.date}"`,
+      `"Overall Result: ${this.inspectionInstance.overallResult}"`,
+      '',
+      headers.join(','),
+      ...rows.map(r => r.map(c => `"${(c || '').replace(/"/g, '""')}"`).join(','))
+    ];
+
+    const csvBlob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(csvBlob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${(this.inspectionInstance.partName || 'InspectionReport').replace(/\s+/g, '_')}_Results.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   backToMasterConfig(): void {
     this.router.navigate(['/master-config']);
   }

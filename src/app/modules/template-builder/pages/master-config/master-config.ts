@@ -458,6 +458,133 @@ export class MasterConfigComponent implements OnInit {
     param.dropdownOptions = rawOptions.split(',').map(s => s.trim()).filter(Boolean);
   }
 
+  exportMasterConfigToCSV(): void {
+    if (!this.config || !this.config.parameters || this.config.parameters.length === 0) {
+      alert('No parameters to export in this configuration.');
+      return;
+    }
+
+    const headers = ['Section', 'Group', 'Parameter Name', 'Scope', 'Input Type', 'Spec Type', 'Req Spec', 'Min Value', 'Max Value', 'Expected Value', 'Unit', 'Checking Method', 'Required'];
+    const rows: string[][] = [];
+
+    for (const param of this.config.parameters) {
+      const secName = this.config.sections.find(s => s.id === param.sectionId)?.name || '';
+      const grpName = this.config.groups.find(g => g.id === param.groupId)?.name || '';
+
+      rows.push([
+        secName,
+        grpName,
+        param.name || '',
+        param.scope || 'Both',
+        param.inputType || 'number',
+        param.specificationType || 'range',
+        this.formatParamReqSpec(param),
+        param.minValue !== undefined ? String(param.minValue) : '',
+        param.maxValue !== undefined ? String(param.maxValue) : '',
+        param.expectedValue || '',
+        param.unit || '',
+        param.checkingMethod || 'VISUAL',
+        param.required ? 'Yes' : 'No'
+      ]);
+    }
+
+    const csvLines = [
+      headers.join(','),
+      ...rows.map(e => e.map(cell => `"${(cell || '').replace(/"/g, '""')}"`).join(','))
+    ];
+    const csvBlob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(csvBlob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${(this.config.name || 'MasterConfig').replace(/\s+/g, '_')}_Parameters.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  importMasterConfigFromCSV(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = String(e.target?.result || '');
+      this.parseCSVAndPopulate(text);
+      input.value = '';
+    };
+    reader.readAsText(file);
+  }
+
+  private parseCSVAndPopulate(csvText: string): void {
+    const lines = csvText.split(/\r\n|\n/).filter(line => line.trim().length > 0);
+    if (lines.length <= 1) {
+      alert('CSV file is empty or missing data rows.');
+      return;
+    }
+
+    let importedCount = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      const cols = line.split(',');
+      const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
+
+      if (cleanCols.length < 3) continue;
+
+      const secName = cleanCols[0] || 'PRODUCT PARAMETERS';
+      const grpName = cleanCols[1] || 'GENERAL PARAMETERS';
+      const paramName = cleanCols[2];
+
+      if (!paramName) continue;
+
+      let sec = this.config.sections.find(s => s.name.toLowerCase() === secName.toLowerCase());
+      if (!sec) {
+        sec = {
+          id: 'sec_' + Date.now() + Math.floor(Math.random() * 1000),
+          name: secName,
+          scope: 'Both',
+          order: this.config.sections.length + 1
+        };
+        this.config.sections.push(sec);
+      }
+
+      let grp = this.config.groups.find(g => g.sectionId === sec.id && g.name.toLowerCase() === grpName.toLowerCase());
+      if (!grp) {
+        grp = {
+          id: 'grp_' + Date.now() + Math.floor(Math.random() * 1000),
+          sectionId: sec.id,
+          name: grpName,
+          order: this.getGroupsForSection(sec.id).length + 1
+        };
+        this.config.groups.push(grp);
+      }
+
+      const newParam: MasterConfigParameter = {
+        id: 'pm_' + Date.now() + Math.floor(Math.random() * 10000),
+        sectionId: sec.id,
+        groupId: grp.id,
+        name: paramName,
+        scope: (cleanCols[3] as any) || 'Both',
+        inputType: (cleanCols[4] as any) || 'number',
+        specificationType: (cleanCols[5] as any) || 'range',
+        reqSpec: cleanCols[6] || '',
+        minValue: cleanCols[7] ? Number(cleanCols[7]) : undefined,
+        maxValue: cleanCols[8] ? Number(cleanCols[8]) : undefined,
+        expectedValue: cleanCols[9] || undefined,
+        unit: cleanCols[10] || '',
+        checkingMethod: cleanCols[11] || 'VISUAL',
+        required: cleanCols[12]?.toLowerCase() === 'yes' || cleanCols[12]?.toLowerCase() === 'true',
+        order: this.config.parameters.length + 1
+      };
+
+      this.config.parameters.push(newParam);
+      importedCount++;
+    }
+
+    this.autoSaveDraft();
+    alert(`Successfully imported ${importedCount} parameters into Master Configuration!`);
+  }
+
   saveMasterConfig(): void {
     if (!this.config.name.trim()) {
       alert('Please enter a Configuration Name.');
@@ -470,6 +597,7 @@ export class MasterConfigComponent implements OnInit {
     this.savedNotice = true;
     setTimeout(() => this.savedNotice = false, 3000);
   }
+
 
   createTemplate(configToUse?: MasterConfig): void {
     const targetConfig = configToUse || this.config;
