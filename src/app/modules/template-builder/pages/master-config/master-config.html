@@ -74,7 +74,7 @@
               </td>
               <td>{{ c.partName || '—' }}</td>
               <td><span class="sub-code-text">{{ c.partNumber || '—' }}</span></td>
-              <td>M/C {{ c.machine || '—' }}</td>
+              <td>{{ (c.machine || '').toUpperCase().startsWith('M/C') ? c.machine : ('M/C ' + (c.machine || '—')) }}</td>
               <td>
                 <span class="qa-badge qa-badge-neutral">{{ c.configType }}</span>
               </td>
@@ -473,7 +473,7 @@
         </div>
         <div class="review-item">
           <span class="rev-label">Machine No:</span>
-          <strong class="rev-val">M/C {{ config.machine }}</strong>
+          <strong class="rev-val">{{ (config.machine || '').toUpperCase().startsWith('M/C') ? config.machine : ('M/C ' + (config.machine || '—')) }}</strong>
         </div>
         <div class="review-item">
           <span class="rev-label">Scope:</span>
