@@ -59,7 +59,7 @@
         </div>
         <div class="meta-field">
           <span class="meta-label">Machine No</span>
-          <span class="meta-value-text">M/C {{ masterConfig.machine }}</span>
+          <span class="meta-value-text">{{ (masterConfig.machine || '').toUpperCase().startsWith('M/C') ? masterConfig.machine : ('M/C ' + (masterConfig.machine || '—')) }}</span>
         </div>
         <div class="meta-field">
           <span class="meta-label">Date</span>
@@ -67,27 +67,27 @@
         </div>
         <div class="meta-field">
           <span class="meta-label">Shift</span>
-          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.shift" placeholder="Day" [readonly]="viewMode === 'report'">
+          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.shift" placeholder="Day / Night" [readonly]="viewMode === 'report'">
         </div>
         <div class="meta-field">
           <span class="meta-label">Operator</span>
-          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.operator" placeholder="Boshkar" [readonly]="viewMode === 'report'">
+          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.operator" placeholder="Enter Operator Name" [readonly]="viewMode === 'report'">
         </div>
         <div class="meta-field">
           <span class="meta-label">QC Name</span>
-          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.qcName" placeholder="Sathig" [readonly]="viewMode === 'report'">
+          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.qcName" placeholder="Enter QC Name" [readonly]="viewMode === 'report'">
         </div>
         <div class="meta-field">
           <span class="meta-label">Batch No</span>
-          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.batchNo" placeholder="PU2115" [readonly]="viewMode === 'report'">
+          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.batchNo" placeholder="Enter Batch No" [readonly]="viewMode === 'report'">
         </div>
         <div class="meta-field">
           <span class="meta-label">Setting By</span>
-          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.settingBy" placeholder="SELVAM" [readonly]="viewMode === 'report'">
+          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.settingBy" placeholder="Enter Setting By" [readonly]="viewMode === 'report'">
         </div>
         <div class="meta-field">
           <span class="meta-label">Setting Time</span>
-          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.settingTime" placeholder="09:45 - 10:15" [readonly]="viewMode === 'report'">
+          <input type="text" class="qa-input qa-input-sm" [(ngModel)]="inspectionInstance.settingTime" placeholder="e.g. 09:45 - 10:15" [readonly]="viewMode === 'report'">
         </div>
       </div>
     </div>
@@ -469,15 +469,15 @@
       <tr>
         <td>
           <div class="sig-label">PREPARED BY (OPERATOR)</div>
-          <div class="sig-val">{{ inspectionInstance.approval.preparedBy || 'Boshkar' }}</div>
+          <div class="sig-val">{{ inspectionInstance.approval.preparedBy || inspectionInstance.operator || '— Pending Sign —' }}</div>
         </td>
         <td>
           <div class="sig-label">CHECKED BY (SUPERVISOR)</div>
-          <div class="sig-val">{{ inspectionInstance.approval.checkedBy || 'SELVAM' }}</div>
+          <div class="sig-val">{{ inspectionInstance.approval.checkedBy || inspectionInstance.supervisor || '— Pending Sign —' }}</div>
         </td>
         <td>
           <div class="sig-label">APPROVED BY (QA MANAGER)</div>
-          <div class="sig-val">{{ inspectionInstance.approval.approvedBy || 'Sathig' }}</div>
+          <div class="sig-val">{{ inspectionInstance.approval.approvedBy || inspectionInstance.qcName || '— Pending Sign —' }}</div>
         </td>
       </tr>
     </table>

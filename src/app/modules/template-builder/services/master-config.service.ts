@@ -212,9 +212,9 @@ export class MasterConfigService {
       {
         id: 1,
         fields: [
-          { id: 101, label: 'ERP PART NUMBER', value: config.partNumber || '1A1-03220 / BL', inputType: 'text', inputMode: 'admin' },
-          { id: 102, label: 'PART DESCRIPTION', value: config.partName || 'PLATE HINGE', inputType: 'text', inputMode: 'admin' },
-          { id: 103, label: 'M/C NO', value: config.machine || '120', inputType: 'text', inputMode: 'admin' }
+          { id: 101, label: 'ERP PART NUMBER', value: config.partNumber || '', inputType: 'text', inputMode: 'admin' },
+          { id: 102, label: 'PART DESCRIPTION', value: config.partName || '', inputType: 'text', inputMode: 'admin' },
+          { id: 103, label: 'M/C NO', value: config.machine || '', inputType: 'text', inputMode: 'admin' }
         ]
       },
       {
@@ -223,7 +223,7 @@ export class MasterConfigService {
           { id: 104, label: 'DATE', value: now.split('T')[0], inputType: 'date', inputMode: 'inspector' },
           { id: 105, label: 'SHIFT', value: 'Day', inputType: 'text', inputMode: 'inspector' },
           { id: 106, label: 'OPERATOR', value: '', inputType: 'text', inputMode: 'inspector' },
-          { id: 107, label: 'SUPERVISOR', value: 'SELVA', inputType: 'text', inputMode: 'inspector' }
+          { id: 107, label: 'SUPERVISOR', value: '', inputType: 'text', inputMode: 'inspector' }
         ]
       }
     ];

@@ -97,6 +97,7 @@ export class PublishedTemplateComponent implements OnInit {
 
   private createNewInspectionInstance(config: MasterConfig): void {
     const now = new Date().toISOString();
+    const today = new Date().toISOString().split('T')[0];
     const entries: Record<string, InspectionParamEntry> = {};
 
     for (const param of config.parameters) {
@@ -123,32 +124,28 @@ export class PublishedTemplateComponent implements OnInit {
       masterConfigId: config.id,
       templateId: config.publishedTemplateId || Date.now(),
       templateName: config.name,
-      documentCode: config.documentCode || 'BBW/QTY/R/283',
+      documentCode: config.documentCode || '',
       mcType: config.mcType,
-      partName: config.partName || 'PLATE HINGE',
-      partNumber: config.partNumber || '1A1-03220 / BL',
-      machine: config.machine || '120',
-      operator: 'Boshkar',
-      supervisor: 'SELVAM',
-      qcName: 'Sathig',
-      date: '09/07/2026',
+      partName: config.partName || '',
+      partNumber: config.partNumber || '',
+      machine: config.machine || '',
+      operator: '',
+      supervisor: '',
+      qcName: '',
+      date: today,
       shift: 'Day',
-      settingTime: '09.45 - 10.15',
-      settingBy: 'SELVAM',
-      batchNo: 'PU2115',
+      settingTime: '',
+      settingBy: '',
+      batchNo: '',
       inspectionType: config.configType,
       parameterEntries: entries,
       generalDetails: {},
-      startupIssues: [
-        { sNo: 1, description: '', rootCause: '', action: '', responsibility: '', targetDate: '', remarks: '' }
-      ],
-      cutSectionEntries: [
-        { time: '10:30', model: 'M-120', gramWeight: '20.1g', result: 'PASS', checkedBy: 'Sathig', approvedBy: 'SELVAM' }
-      ],
+      startupIssues: [],
+      cutSectionEntries: [],
       approval: {
-        preparedBy: 'Boshkar',
-        checkedBy: 'SELVAM',
-        approvedBy: 'Sathig',
+        preparedBy: '',
+        checkedBy: '',
+        approvedBy: '',
         status: 'PENDING'
       },
       overallResult: 'PENDING',
