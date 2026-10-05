@@ -134,25 +134,33 @@
         <span>Document Details</span>
       </div>
       <div class="qa-step-divider"></div>
-      <div class="qa-step-item" [class.active]="currentStep === 2" [class.completed]="currentStep > 2" (click)="setStep(2)">
+      <div class="qa-step-item" [class.active]="currentStep === 2" [class.completed]="currentStep > 2" [class.locked]="!canNavigateToStep(2)" (click)="setStep(2)">
         <div class="qa-step-num">2</div>
-        <span>Inspection Structure</span>
+        <span>Inspection Structure <span *ngIf="!canNavigateToStep(2)">🔒</span></span>
       </div>
       <div class="qa-step-divider"></div>
-      <div class="qa-step-item" [class.active]="currentStep === 3" [class.completed]="currentStep > 3" (click)="setStep(3)">
+      <div class="qa-step-item" [class.active]="currentStep === 3" [class.completed]="currentStep > 3" [class.locked]="!canNavigateToStep(3)" (click)="setStep(3)">
         <div class="qa-step-num">3</div>
-        <span>Parameters & Validation</span>
+        <span>Parameters & Validation <span *ngIf="!canNavigateToStep(3)">🔒</span></span>
       </div>
       <div class="qa-step-divider"></div>
-      <div class="qa-step-item" [class.active]="currentStep === 4" [class.completed]="currentStep > 4" (click)="setStep(4)">
+      <div class="qa-step-item" [class.active]="currentStep === 4" [class.completed]="currentStep > 4" [class.locked]="!canNavigateToStep(4)" (click)="setStep(4)">
         <div class="qa-step-num">4</div>
-        <span>Report Layout</span>
+        <span>Report Layout <span *ngIf="!canNavigateToStep(4)">🔒</span></span>
       </div>
       <div class="qa-step-divider"></div>
-      <div class="qa-step-item" [class.active]="currentStep === 5" (click)="setStep(5)">
+      <div class="qa-step-item" [class.active]="currentStep === 5" [class.locked]="!canNavigateToStep(5)" (click)="setStep(5)">
         <div class="qa-step-num">5</div>
-        <span>Review & Save</span>
+        <span>Review & Save <span *ngIf="!canNavigateToStep(5)">🔒</span></span>
       </div>
+    </div>
+
+    <!-- VALIDATION ERROR ALERT BANNER -->
+    <div class="step-error-banner" *ngIf="stepValidationErrors.length > 0" style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px;">
+      <strong>⚠️ Please complete required details before proceeding:</strong>
+      <ul style="margin: 6px 0 0 18px; padding: 0;">
+        <li *ngFor="let err of stepValidationErrors">{{ err }}</li>
+      </ul>
     </div>
 
     <!-- STEP 1: DOCUMENT DETAILS -->
@@ -161,7 +169,7 @@
 
       <div class="form-grid-2">
         <div class="qa-form-group">
-          <label class="qa-label">Configuration Name *</label>
+          <label class="qa-label">Configuration Name <span class="text-danger" style="color: #dc2626;">*</span></label>
           <input type="text" class="qa-input" [(ngModel)]="config.name" placeholder="e.g. PRESS MC 120 Master Configuration">
         </div>
 
@@ -195,17 +203,17 @@
         </div>
 
         <div class="qa-form-group">
-          <label class="qa-label">Part Name</label>
+          <label class="qa-label">Part Name <span class="text-danger" style="color: #dc2626;">*</span></label>
           <input type="text" class="qa-input" [(ngModel)]="config.partName" placeholder="e.g. PLATE HINGE">
         </div>
 
         <div class="qa-form-group">
-          <label class="qa-label">ERP Part Number</label>
+          <label class="qa-label">ERP Part Number <span class="text-danger" style="color: #dc2626;">*</span></label>
           <input type="text" class="qa-input" [(ngModel)]="config.partNumber" placeholder="e.g. 1A1-03220 / BL">
         </div>
 
         <div class="qa-form-group">
-          <label class="qa-label">Machine / M/C Number</label>
+          <label class="qa-label">Machine / M/C Number <span class="text-danger" style="color: #dc2626;">*</span></label>
           <input type="text" class="qa-input" [(ngModel)]="config.machine" placeholder="e.g. 120 or M/C 07">
         </div>
 
@@ -516,10 +524,23 @@
         </div>
       </div>
 
+      <!-- CONFIGURATION COMPLETENESS ALERT -->
+      <div style="margin-top: 20px;">
+        <div *ngIf="isConfigFullyValid" style="background-color: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 12px 16px; border-radius: 8px; font-weight: 600; font-size: 13px;">
+          ✓ Master Configuration is complete and validated! Ready for saving & digital template generation.
+        </div>
+        <div *ngIf="!isConfigFullyValid" style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 12px 16px; border-radius: 8px; font-size: 13px;">
+          <strong>⚠️ Configuration Incomplete — Please resolve the following missing fields before saving:</strong>
+          <ul style="margin: 6px 0 0 18px; padding: 0;">
+            <li *ngFor="let err of allConfigValidationErrors">{{ err }}</li>
+          </ul>
+        </div>
+      </div>
+
       <div class="wizard-footer-actions" style="margin-top: 24px;">
-        <button type="button" class="qa-btn qa-btn-secondary" (click)="setStep(2)">Back to Edit</button>
-        <button type="button" class="qa-btn qa-btn-secondary" (click)="saveMasterConfig()">Save Configuration</button>
-        <button type="button" class="qa-btn qa-btn-primary" (click)="createTemplate()">Generate Template →</button>
+        <button type="button" class="qa-btn qa-btn-secondary" (click)="setStep(1)">Back to Edit</button>
+        <button type="button" class="qa-btn qa-btn-secondary" (click)="saveMasterConfig()" [disabled]="!isConfigFullyValid" [style.opacity]="!isConfigFullyValid ? '0.5' : '1'">Save Configuration</button>
+        <button type="button" class="qa-btn qa-btn-primary" (click)="createTemplate()" [disabled]="!isConfigFullyValid" [style.opacity]="!isConfigFullyValid ? '0.5' : '1'">Generate Template →</button>
       </div>
     </div>
 

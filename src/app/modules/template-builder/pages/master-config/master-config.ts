@@ -239,12 +239,87 @@ export class MasterConfigComponent implements OnInit {
     }
   }
 
+  stepValidationErrors: string[] = [];
+
+  validateStep(step: number): { valid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    if (step === 1) {
+      if (!this.config.name || !this.config.name.trim()) {
+        errors.push('Configuration Name is required.');
+      }
+      if (!this.config.partName || !this.config.partName.trim()) {
+        errors.push('Part Name is required.');
+      }
+      if (!this.config.partNumber || !this.config.partNumber.trim()) {
+        errors.push('ERP Part Number is required.');
+      }
+      if (!this.config.machine || !this.config.machine.trim()) {
+        errors.push('Machine / M/C Number is required.');
+      }
+    } else if (step === 2) {
+      if (!this.config.sections || this.config.sections.length === 0) {
+        errors.push('At least 1 Section is required in the Inspection Structure.');
+      }
+      if (!this.config.groups || this.config.groups.length === 0) {
+        errors.push('At least 1 Group is required in the Inspection Structure.');
+      }
+    } else if (step === 3) {
+      if (!this.config.parameters || this.config.parameters.length === 0) {
+        errors.push('At least 1 Inspection Parameter row is required.');
+      } else {
+        const invalidParams = this.config.parameters.filter(p => !p.name || !p.name.trim());
+        if (invalidParams.length > 0) {
+          errors.push(`${invalidParams.length} parameter(s) have empty specification names.`);
+        }
+      }
+    }
+
+    return { valid: errors.length === 0, errors };
+  }
+
+  canNavigateToStep(targetStep: number): boolean {
+    if (targetStep <= this.currentStep) return true;
+
+    for (let s = 1; s < targetStep; s++) {
+      const res = this.validateStep(s);
+      if (!res.valid) return false;
+    }
+    return true;
+  }
+
   setStep(step: 1 | 2 | 3 | 4 | 5): void {
+    if (step > this.currentStep) {
+      if (!this.canNavigateToStep(step)) {
+        const currentRes = this.validateStep(this.currentStep);
+        if (!currentRes.valid) {
+          this.stepValidationErrors = currentRes.errors;
+        } else {
+          for (let s = 1; s < step; s++) {
+            const check = this.validateStep(s);
+            if (!check.valid) {
+              this.stepValidationErrors = [`Step ${s} is incomplete: ${check.errors.join(', ')}`];
+              break;
+            }
+          }
+        }
+        return;
+      }
+    }
+
+    this.stepValidationErrors = [];
     this.currentStep = step;
     this.autoSaveDraft();
   }
 
   nextStep(): void {
+    const res = this.validateStep(this.currentStep);
+    if (!res.valid) {
+      this.stepValidationErrors = res.errors;
+      return;
+    }
+
+    this.stepValidationErrors = [];
     if (this.currentStep < 5) {
       this.currentStep++;
       this.autoSaveDraft();
@@ -252,11 +327,25 @@ export class MasterConfigComponent implements OnInit {
   }
 
   prevStep(): void {
+    this.stepValidationErrors = [];
     if (this.currentStep > 1) {
       this.currentStep--;
       this.autoSaveDraft();
     }
   }
+
+  get isConfigFullyValid(): boolean {
+    return this.validateStep(1).valid && this.validateStep(2).valid && this.validateStep(3).valid;
+  }
+
+  get allConfigValidationErrors(): string[] {
+    return [
+      ...this.validateStep(1).errors,
+      ...this.validateStep(2).errors,
+      ...this.validateStep(3).errors
+    ];
+  }
+
 
   // Hierarchy Builders: Section -> Group -> Parameter
   addSection(): void {
@@ -586,11 +675,14 @@ export class MasterConfigComponent implements OnInit {
   }
 
   saveMasterConfig(): void {
-    if (!this.config.name.trim()) {
-      alert('Please enter a Configuration Name.');
+    const errors = this.allConfigValidationErrors;
+    if (errors.length > 0) {
+      this.stepValidationErrors = errors;
+      alert(`Cannot save incomplete Master Configuration:\n\n• ${errors.join('\n• ')}`);
       return;
     }
 
+    this.stepValidationErrors = [];
     const saved = this.masterConfigService.saveMasterConfig(this.config);
     this.config = structuredClone(saved);
     this.selectedPresetId = saved.id;
@@ -598,14 +690,16 @@ export class MasterConfigComponent implements OnInit {
     setTimeout(() => this.savedNotice = false, 3000);
   }
 
-
   createTemplate(configToUse?: MasterConfig): void {
     const targetConfig = configToUse || this.config;
-    if (!targetConfig.name.trim()) {
-      alert('Please save configuration basic details first.');
+    const errors = this.allConfigValidationErrors;
+    if (errors.length > 0) {
+      this.stepValidationErrors = errors;
+      alert(`Cannot generate template from incomplete Master Configuration:\n\n• ${errors.join('\n• ')}`);
       return;
     }
 
+    this.stepValidationErrors = [];
     const savedConfig = this.masterConfigService.publishMasterConfig(targetConfig);
     const generatedTemplate = this.masterConfigService.generateTemplateFromMaster(savedConfig);
 
