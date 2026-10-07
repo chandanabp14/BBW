@@ -2,158 +2,111 @@
 
 <div class="qa-container">
 
-  <!-- PAGE HEADER -->
-  <div class="qa-page-header">
-    <div>
-      <h1 class="qa-page-title">DIGITAL QUALITY MANAGEMENT SYSTEM</h1>
-      <p class="qa-page-subtitle">Centralized quality control system for manufacturing setup, digital inspection, automated pass/fail validation, and compliance reporting.</p>
-    </div>
-    <div class="header-action-group">
-      <button type="button" class="qa-btn qa-btn-secondary" (click)="newMasterConfig()">
-        Master Config
-      </button>
-      <button type="button" class="qa-btn qa-btn-primary" (click)="openDataEntry()">
-        + Start Inspection
-      </button>
-    </div>
+  <!-- MAIN WELCOME SECTION -->
+  <div class="checklist-hero">
+    <h1 class="hero-title">Checklist Builder</h1>
+    <p class="hero-subtitle">Create and manage manufacturing checklist configurations.</p>
   </div>
 
-  <!-- KPI SUMMARY DASHBOARD -->
-  <div class="dashboard-kpi-grid">
-    <div class="kpi-block">
-      <span class="kpi-label">Active Inspections</span>
-      <span class="kpi-value navy-val">{{ activeInspectionsCount }}</span>
-    </div>
-    <div class="kpi-block">
-      <span class="kpi-label">Pending Approval</span>
-      <span class="kpi-value amber-val">{{ pendingApprovalCount }}</span>
-    </div>
-    <div class="kpi-block">
-      <span class="kpi-label">Passed</span>
-      <span class="kpi-value green-val">{{ passedCount }}</span>
-    </div>
-    <div class="kpi-block">
-      <span class="kpi-label">Failed</span>
-      <span class="kpi-value red-val">{{ failedCount }}</span>
-    </div>
-  </div>
+  <!-- 3 MAIN ACTIONS -->
+  <div class="actions-section">
 
-  <!-- QUICK ACCESS & REFERENCE DOCUMENTS PANEL -->
-  <div class="quick-nav-panel">
-    <div class="quick-card">
-      <div class="quick-info">
-        <h3>Master Configurations</h3>
-        <p>Source of Truth for part specs, machine limits & validation rules.</p>
+    <!-- PRIMARY ACTION: CREATE MASTER CONFIG -->
+    <div class="primary-action-card" (click)="newMasterConfig()">
+      <div class="action-card-body">
+        <div class="action-card-header-row">
+          <span class="primary-tag">Primary Action</span>
+        </div>
+        <h2 class="primary-action-title">+ Create Master Config</h2>
+        <p class="action-desc">Create a new checklist configuration.</p>
       </div>
-      <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="newMasterConfig()">
-        Open Master Config
+      <button type="button" class="qa-btn qa-btn-primary action-btn" (click)="$event.stopPropagation(); newMasterConfig()">
+        + Create Master Config
       </button>
     </div>
 
-    <div class="quick-card">
-      <div class="quick-info">
-        <h3>Inspections</h3>
-        <p>Perform live shopfloor data entry with instant auto-validation.</p>
+    <!-- SECONDARY ACTIONS -->
+    <div class="secondary-actions-grid">
+
+      <!-- MANAGE MASTER CONFIG -->
+      <div class="action-card" (click)="manageMasterConfig()">
+        <div class="action-card-body">
+          <h3 class="action-title">Manage Master Config</h3>
+          <p class="action-desc">View and edit existing configurations.</p>
+        </div>
+        <div class="action-card-footer">
+          <span class="action-link">Open Master Configs &rarr;</span>
+        </div>
       </div>
-      <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="openDataEntry()">
-        Start Inspection
-      </button>
+
+      <!-- TEMPLATE BUILDER -->
+      <div class="action-card" (click)="newChecklist()">
+        <div class="action-card-body">
+          <h3 class="action-title">Template Builder</h3>
+          <p class="action-desc">Create the final checklist/template.</p>
+        </div>
+        <div class="action-card-footer">
+          <span class="action-link">Open Template Builder &rarr;</span>
+        </div>
+      </div>
+
     </div>
+
   </div>
 
-  <!-- REFERENCE DOCUMENTS SECTION -->
-  <div class="ref-docs-section qa-card">
-    <div class="ref-docs-header">
-      <h4>REFERENCE DOCUMENTS</h4>
-      <p>These documents are examples used to understand the required inspection/setup structure.</p>
+  <!-- EXISTING CONFIGURATIONS TABLE -->
+  <div class="table-section qa-card">
+    <div class="section-title-bar">
+      <h2 class="section-title">Existing Configurations</h2>
     </div>
-    <div class="ref-docs-actions">
-      <button type="button" class="qa-btn qa-btn-outline qa-btn-sm" (click)="openReferenceDoc('PRESS')">
-        PRESS MC 120
-      </button>
-      <button type="button" class="qa-btn qa-btn-outline qa-btn-sm" (click)="openReferenceDoc('PDC')">
-        PDC MC 07
-      </button>
-    </div>
-  </div>
 
-  <!-- ACTIVE / RECENT INSPECTIONS TABLE -->
-  <div class="table-section-title">
-    <h2>Recent & Active Inspections</h2>
-    <span class="count-pill">{{ inspectionInstances.length }} Record(s)</span>
-  </div>
-
-  <div class="qa-table-wrapper" *ngIf="inspectionInstances.length > 0; else emptyState">
-    <table class="qa-table">
-      <thead>
-        <tr>
-          <th>Document Code</th>
-          <th>Part Name</th>
-          <th>Part Number</th>
-          <th>Machine</th>
-          <th>Operator</th>
-          <th>Date</th>
-          <th>Shift</th>
-          <th>Validation Status</th>
-          <th>Approval Status</th>
-          <th class="text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (inst of inspectionInstances; track inst.id) {
+    <div class="qa-table-wrapper" *ngIf="masterConfigs.length > 0; else emptyMasterConfigs">
+      <table class="qa-table">
+        <thead>
           <tr>
-            <td>
-              <span class="doc-code-text">{{ inst.documentCode || 'BBW/QTY/R/283' }}</span>
-            </td>
-            <td>
-              <strong>{{ inst.partName }}</strong>
-            </td>
-            <td>
-              <span class="part-num-text">{{ inst.partNumber }}</span>
-            </td>
-            <td>M/C {{ inst.machine }}</td>
-            <td>{{ inst.operator || 'Boshkar' }}</td>
-            <td>{{ inst.date || '09/07/2026' }}</td>
-            <td>{{ inst.shift || 'Day' }}</td>
-            <td>
-              <span class="qa-badge"
-                    [class.qa-badge-pass]="inst.overallResult === 'PASS'"
-                    [class.qa-badge-fail]="inst.overallResult === 'FAIL'"
-                    [class.qa-badge-pending]="inst.overallResult === 'PENDING'">
-                {{ inst.overallResult === 'PASS' ? '✓ PASS' : inst.overallResult === 'FAIL' ? '✕ FAIL' : 'Pending' }}
-              </span>
-            </td>
-            <td>
-              <span class="qa-badge"
-                    [class.qa-badge-pass]="inst.approval.status === 'APPROVED'"
-                    [class.qa-badge-fail]="inst.approval.status === 'REJECTED'"
-                    [class.qa-badge-pending]="inst.approval.status === 'PENDING'">
-                {{ inst.approval.status }}
-              </span>
-            </td>
-            <td class="text-right">
-              <div class="table-actions-flex">
-                <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="openDataEntry(inst.id)">
-                  Perform Inspection
-                </button>
-                <button type="button" class="qa-btn qa-btn-outline qa-btn-sm" (click)="openDataEntry(inst.id)">
-                  View Report
-                </button>
-              </div>
-            </td>
+            <th>Configuration</th>
+            <th>Part</th>
+            <th>Machine</th>
+            <th>Document Code</th>
+            <th class="text-right">Action</th>
           </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-
-  <ng-template #emptyState>
-    <div class="empty-table-box qa-card text-center">
-      <p>No active inspection instances recorded yet.</p>
-      <button type="button" class="qa-btn qa-btn-primary qa-btn-sm" (click)="openDataEntry()">
-        Start First Inspection
-      </button>
+        </thead>
+        <tbody>
+          @for (config of masterConfigs; track config.id) {
+            <tr>
+              <td>
+                <span class="config-name-text">{{ config.name }}</span>
+              </td>
+              <td>
+                <span>{{ config.partName || '—' }}</span>
+              </td>
+              <td>
+                <span>{{ config.machine || '—' }}</span>
+              </td>
+              <td>
+                <span class="doc-code-text">{{ config.documentCode || '—' }}</span>
+              </td>
+              <td class="text-right">
+                <button type="button" class="qa-btn qa-btn-secondary qa-btn-sm" (click)="openMasterConfig(config.id)">
+                  View / Edit
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-  </ng-template>
+
+    <ng-template #emptyMasterConfigs>
+      <div class="empty-table-box text-center">
+        <h3>No configurations found</h3>
+        <p>Create your first master configuration to start managing shopfloor checklists.</p>
+        <button type="button" class="qa-btn qa-btn-primary" (click)="newMasterConfig()">
+          + Create Master Config
+        </button>
+      </div>
+    </ng-template>
+  </div>
 
 </div>
+

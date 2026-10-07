@@ -7,6 +7,9 @@ import { MasterConfigService } from '../../services/master-config.service';
 import { TemplateService } from '../../services/template.service';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import {
+  ApprovalConfigRole,
+  ConfigStatus,
+  InspectionFrequencyType,
   MasterConfig,
   MasterConfigGroup,
   MasterConfigParameter,
@@ -14,6 +17,7 @@ import {
   MasterInputType,
   MasterMcType,
   MasterSpecType,
+  ReferenceType,
   ReportLayoutConfig,
   ScopeType
 } from '../../models/master-config.model';
@@ -28,10 +32,12 @@ import {
 export class MasterConfigComponent implements OnInit {
   currentView: 'list' | 'editor' = 'list';
   currentStep: 1 | 2 | 3 | 4 | 5 = 1;
+  activeEditorTab: 'doc' | 'sections' | 'params' | 'report' | 'approval' = 'doc';
 
   config: MasterConfig = this.createEmptyConfig();
   selectedPresetId: number | null = null;
   savedNotice = false;
+  publishedNotice = false;
 
   // Search & filter for list view
   searchQuery = '';
@@ -43,8 +49,20 @@ export class MasterConfigComponent implements OnInit {
   paramModalSectionId = '';
   paramModalGroupId = '';
   paramModalData: MasterConfigParameter = this.createEmptyParam();
+  paramModalTab: 'basic' | 'spec' | 'instrument' | 'ref' | 'acceptance' | 'instructions' | 'frequency' = 'basic';
 
-  commonUnits = ['mm', 'bar', '°C', 'grams', 'Kg/cm2', 'sec', 'V', 'ml', 'mm/sec', 'rpm', 'psi'];
+  // Add / Edit Section Modal
+  showSectionModal = false;
+  isEditSectionMode = false;
+  sectionModalData: MasterConfigSection = { id: '', name: '', code: '', description: '', scope: 'Both', order: 1, active: true };
+
+  // Add / Edit Group Modal
+  showGroupModal = false;
+  isEditGroupMode = false;
+  groupModalData: MasterConfigGroup = { id: '', sectionId: '', name: '', code: '', description: '', order: 1, active: true };
+
+  commonUnits = ['mm', 'bar', '°C', 'grams', 'Kg/cm2', 'sec', 'V', 'ml', 'mm/sec', 'rpm', 'psi', 'microns', 'inches'];
+
   inputTypes: { value: MasterInputType; label: string }[] = [
     { value: 'number', label: 'Numeric / Measurement' },
     { value: 'text', label: 'Text' },
@@ -63,6 +81,29 @@ export class MasterConfigComponent implements OnInit {
     { value: 'selection', label: 'Expected Selection' },
     { value: 'checklist', label: 'Checklist Verification' },
     { value: 'none', label: 'None (Observation Only)' }
+  ];
+
+  referenceTypes: ReferenceType[] = [
+    'Drawing',
+    'Specification Sheet',
+    'Work Instruction',
+    'Customer Standard',
+    'Control Plan',
+    'Reference Parameter',
+    'Other'
+  ];
+
+  frequencyTypes: InspectionFrequencyType[] = [
+    'First Piece',
+    'Start-up',
+    'Hourly',
+    'Every 2 Hours',
+    'Every Batch',
+    'Shift-wise',
+    'Random',
+    'Last Piece',
+    'Final Inspection',
+    'Other'
   ];
 
   constructor(
@@ -105,11 +146,12 @@ export class MasterConfigComponent implements OnInit {
     if (!this.config.groups) this.config.groups = [];
     if (!this.config.sections) this.config.sections = [];
     if (!this.config.parameters) this.config.parameters = [];
+    if (!this.config.status) this.config.status = 'Draft';
     if (!this.config.layoutConfig) {
       this.config.layoutConfig = {
         reportTitle: this.config.reportTitle || this.config.name,
-        companyName: this.config.companyName || 'BHARAT BALANCING WEIGHT & CO',
-        companySubtitle: this.config.companySubtitle || 'BBW GLOBAL Tek Pvt Ltd',
+        companyName: this.config.companyName || '',
+        companySubtitle: this.config.companySubtitle || '',
         showGroupHeaders: true,
         showPhotoRow: true,
         showMethodRow: true,
@@ -118,6 +160,13 @@ export class MasterConfigComponent implements OnInit {
         showStartupIssues: true,
         showCutSection: this.config.mcType === 'PDC',
         showApprovalBlock: true
+      };
+    }
+    if (!this.config.approvalConfig) {
+      this.config.approvalConfig = {
+        preparedBy: { roleName: 'Prepared By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true },
+        checkedBy: { roleName: 'Checked By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true },
+        approvedBy: { roleName: 'Approved By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true }
       };
     }
   }
@@ -139,58 +188,53 @@ export class MasterConfigComponent implements OnInit {
   }
 
   createEmptyConfig(): MasterConfig {
-    const defaultSecId = 'sec_' + Date.now();
-    const defaultGrpId = 'grp_' + Date.now();
+    const now = new Date().toISOString();
     return {
       id: Date.now(),
-      name: 'New Master Configuration',
-      reportTitle: 'INPROCESS INSPECTION & SETUP REPORT',
-      companyName: 'BHARAT BALANCING WEIGHT & CO',
-      companySubtitle: 'BBW GLOBAL Tek Pvt Ltd',
+      name: '',
+      status: 'Draft',
+      reportTitle: '',
+      companyName: '',
+      companySubtitle: '',
+      companyLogo: '',
       configType: 'Both',
       mcType: 'Press',
+      documentCode: '',
+      revision: '01',
+      effectiveDate: now.split('T')[0],
       partName: '',
       partType: '',
       partNumber: '',
       machineType: '',
       machine: '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      sections: [
-        { id: defaultSecId, name: 'PRODUCT PARAMETERS', scope: 'Inspection', order: 1 }
-      ],
-      groups: [
-        { id: defaultGrpId, sectionId: defaultSecId, name: 'RAW MATERIAL SPECIFICATION', order: 1 }
-      ],
-      parameters: [
-        {
-          id: 'pm_' + Date.now(),
-          sectionId: defaultSecId,
-          groupId: defaultGrpId,
-          name: 'Raw Material Width',
-          reqSpec: '124.40 - 124.60 mm',
-          scope: 'Inspection',
-          inputType: 'number',
-          specificationType: 'range',
-          minValue: 124.40,
-          maxValue: 124.60,
-          unit: 'mm',
-          checkingMethod: 'D. VERNIER',
-          required: true,
-          order: 1
-        }
-      ],
+      createdAt: now,
+      updatedAt: now,
+      sections: [],
+      groups: [],
+      parameters: [],
       layoutConfig: {
-        reportTitle: 'INPROCESS INSPECTION & SETUP REPORT',
-        companyName: 'BHARAT BALANCING WEIGHT & CO',
-        companySubtitle: 'BBW GLOBAL Tek Pvt Ltd',
+        reportTitle: '',
+        companyName: '',
+        companySubtitle: '',
         showGroupHeaders: true,
         showPhotoRow: true,
         showMethodRow: true,
         showReqSpecRow: true,
         requiredReadingsCount: 12,
+        readingFrequency: 'Hourly',
+        readingColumns: 12,
         showStartupIssues: true,
+        showRemarks: true,
+        showCutSection: true,
+        showRefImage: true,
+        showDeviationDetails: true,
+        showCorrectiveAction: true,
         showApprovalBlock: true
+      },
+      approvalConfig: {
+        preparedBy: { roleName: 'Prepared By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true },
+        checkedBy: { roleName: 'Checked By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true },
+        approvedBy: { roleName: 'Approved By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true }
       }
     };
   }
@@ -203,13 +247,55 @@ export class MasterConfigComponent implements OnInit {
       sectionId: secId,
       groupId: grpId,
       name: '',
+      parameterCode: '',
+      description: '',
       scope: 'Both',
       inputType: 'number',
       specificationType: 'range',
-      minValue: 0,
-      maxValue: 100,
+      nominalValue: undefined,
+      minValue: undefined,
+      maxValue: undefined,
       unit: 'mm',
+      decimalPlaces: 2,
+      expectedValue: '',
+      allowedValues: [],
+      dropdownOptions: [],
+      tolerance: '',
+      toleranceType: 'symmetric',
+
       checkingMethod: 'VISUAL',
+      instrumentId: '',
+      calibrationRequired: false,
+      calibrationFrequency: 'Monthly',
+      calibrationCertNo: '',
+
+      referenceType: 'Drawing',
+      referenceNumber: '',
+      referenceRevision: '',
+      referenceDescription: '',
+      workInstructionRef: '',
+
+      referenceImage: '',
+      imageDescription: '',
+      imageRef: '',
+
+      acceptanceCriteria: '',
+      passCondition: '',
+      failCondition: '',
+      deviationAllowed: false,
+      deviationLimit: '',
+      remarksRequiredOnFailure: true,
+
+      inspectionInstructions: '',
+      operatorInstructions: '',
+      specialPrecautions: '',
+      safetyInstructions: '',
+      remarks: '',
+
+      frequency: 'Hourly',
+      readingsCount: 12,
+      frequencyDescription: 'Hourly shopfloor check',
+
       required: true,
       order: (this.config?.parameters?.length || 0) + 1
     };
@@ -236,6 +322,16 @@ export class MasterConfigComponent implements OnInit {
       this.currentStep = 1;
       this.currentView = 'editor';
       this.autoSaveDraft();
+    }
+  }
+
+  deleteConfig(id: number, name: string): void {
+    const confirmed = confirm(`Are you sure you want to delete master configuration "${name}"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    this.masterConfigService.deleteMasterConfig(id);
+    if (this.selectedPresetId === id) {
+      this.selectedPresetId = null;
     }
   }
 
@@ -346,28 +442,48 @@ export class MasterConfigComponent implements OnInit {
     ];
   }
 
-
-  // Hierarchy Builders: Section -> Group -> Parameter
-  addSection(): void {
-    const name = prompt('Enter New Section Title:', `SECTION 0${this.config.sections.length + 1}`);
-    if (!name || !name.trim()) return;
-
-    const secId = 'sec_' + Date.now();
-    this.config.sections.push({
-      id: secId,
-      name: name.trim(),
+  // Section Modal Handlers
+  openAddSectionModal(): void {
+    this.isEditSectionMode = false;
+    this.sectionModalData = {
+      id: 'sec_' + Date.now(),
+      name: '',
+      code: '',
+      description: '',
       scope: 'Both',
-      order: this.config.sections.length + 1
-    });
-    this.autoSaveDraft();
+      order: this.config.sections.length + 1,
+      active: true
+    };
+    this.showSectionModal = true;
   }
 
-  editSection(sec: MasterConfigSection): void {
-    const newName = prompt('Edit Section Title:', sec.name);
-    if (newName && newName.trim()) {
-      sec.name = newName.trim();
-      this.autoSaveDraft();
+  openEditSectionModal(sec: MasterConfigSection): void {
+    this.isEditSectionMode = true;
+    this.sectionModalData = structuredClone(sec);
+    this.showSectionModal = true;
+  }
+
+  closeSectionModal(): void {
+    this.showSectionModal = false;
+  }
+
+  saveSectionModal(): void {
+    if (!this.sectionModalData.name.trim()) {
+      alert('Please enter a Section Name.');
+      return;
     }
+
+    if (this.isEditSectionMode) {
+      const idx = this.config.sections.findIndex(s => s.id === this.sectionModalData.id);
+      if (idx >= 0) {
+        this.config.sections[idx] = structuredClone(this.sectionModalData);
+      }
+    } else {
+      this.config.sections.push(structuredClone(this.sectionModalData));
+    }
+
+    this.showSectionModal = false;
+    this.autoSaveDraft();
   }
 
   removeSection(index: number): void {
@@ -381,26 +497,52 @@ export class MasterConfigComponent implements OnInit {
     this.autoSaveDraft();
   }
 
-  addGroup(sectionId: string): void {
-    const name = prompt('Enter New Group Title (e.g. RAW MATERIAL SPECIFICATION):');
-    if (!name || !name.trim()) return;
-
-    const grpId = 'grp_' + Date.now();
-    this.config.groups.push({
-      id: grpId,
+  // Group Modal Handlers
+  openAddGroupModal(sectionId: string): void {
+    this.isEditGroupMode = false;
+    this.groupModalData = {
+      id: 'grp_' + Date.now(),
       sectionId,
-      name: name.trim(),
-      order: this.getGroupsForSection(sectionId).length + 1
-    });
-    this.autoSaveDraft();
+      name: '',
+      code: '',
+      description: '',
+      order: this.getGroupsForSection(sectionId).length + 1,
+      active: true
+    };
+    this.showGroupModal = true;
   }
 
-  editGroup(grp: MasterConfigGroup): void {
-    const newName = prompt('Edit Group Title:', grp.name);
-    if (newName && newName.trim()) {
-      grp.name = newName.trim();
-      this.autoSaveDraft();
+  openEditGroupModal(grp: MasterConfigGroup): void {
+    this.isEditGroupMode = true;
+    this.groupModalData = structuredClone(grp);
+    this.showGroupModal = true;
+  }
+
+  closeGroupModal(): void {
+    this.showGroupModal = false;
+  }
+
+  saveGroupModal(): void {
+    if (!this.groupModalData.name.trim()) {
+      alert('Please enter a Group Name.');
+      return;
     }
+    if (!this.groupModalData.sectionId) {
+      alert('Please select a Parent Section.');
+      return;
+    }
+
+    if (this.isEditGroupMode) {
+      const idx = this.config.groups.findIndex(g => g.id === this.groupModalData.id);
+      if (idx >= 0) {
+        this.config.groups[idx] = structuredClone(this.groupModalData);
+      }
+    } else {
+      this.config.groups.push(structuredClone(this.groupModalData));
+    }
+
+    this.showGroupModal = false;
+    this.autoSaveDraft();
   }
 
   removeGroup(groupId: string): void {
@@ -427,14 +569,16 @@ export class MasterConfigComponent implements OnInit {
 
   openAddParamModal(sectionId: string, groupId?: string): void {
     this.isEditParamMode = false;
-    this.paramModalSectionId = sectionId;
-    this.paramModalGroupId = groupId || (this.getGroupsForSection(sectionId)[0]?.id ?? '');
-    this.paramModalData = this.createEmptyParam(sectionId, this.paramModalGroupId);
+    this.paramModalTab = 'basic';
+    this.paramModalSectionId = sectionId || (this.config.sections[0]?.id ?? '');
+    this.paramModalGroupId = groupId || (this.getGroupsForSection(this.paramModalSectionId)[0]?.id ?? '');
+    this.paramModalData = this.createEmptyParam(this.paramModalSectionId, this.paramModalGroupId);
     this.showParamModal = true;
   }
 
   openEditParamModal(param: MasterConfigParameter): void {
     this.isEditParamMode = true;
+    this.paramModalTab = 'basic';
     this.paramModalSectionId = param.sectionId;
     this.paramModalGroupId = param.groupId || '';
     this.paramModalData = structuredClone(param);
@@ -447,15 +591,12 @@ export class MasterConfigComponent implements OnInit {
 
   saveParamModal(): void {
     if (!this.paramModalData.name.trim()) {
-      alert('Please enter a parameter specification name.');
+      alert('Please enter a Parameter Name.');
       return;
     }
 
-    // Always update sectionId and groupId on the parameter object
     this.paramModalData.sectionId = this.paramModalSectionId;
     this.paramModalData.groupId = this.paramModalGroupId;
-
-    // Auto-compute reqSpec string
     this.paramModalData.reqSpec = this.formatParamReqSpec(this.paramModalData);
 
     if (this.isEditParamMode) {
@@ -493,233 +634,106 @@ export class MasterConfigComponent implements OnInit {
     this.autoSaveDraft();
   }
 
-  formatParamReqSpec(param: MasterConfigParameter): string {
-    if (param.reqSpec && param.reqSpec.trim()) return param.reqSpec;
-
-    if (param.inputType === 'number' || param.inputType === 'measurement') {
-      const unitStr = param.unit ? ` ${param.unit}` : '';
-      if (param.minValue !== undefined && param.maxValue !== undefined) {
-        return `${param.minValue} - ${param.maxValue}${unitStr}`;
-      } else if (param.minValue !== undefined) {
-        return `>= ${param.minValue}${unitStr}`;
-      } else if (param.maxValue !== undefined) {
-        return `<= ${param.maxValue}${unitStr}`;
-      }
-    }
-    if (param.inputType === 'checkbox' || param.inputType === 'yes_no' || param.inputType === 'visual') {
-      return `Expected: ${param.expectedValue || 'OK'}`;
-    }
-    if (param.inputType === 'dropdown') {
-      return `Options: ${(param.dropdownOptions || []).join(' / ')}`;
-    }
-    return param.expectedValue ? `Expected: ${param.expectedValue}` : 'Text Entry';
-  }
-
   onParamTypeChange(param: MasterConfigParameter): void {
     if (param.inputType === 'number' || param.inputType === 'measurement') {
       param.specificationType = 'range';
-    } else if (param.inputType === 'checkbox' || param.inputType === 'yes_no' || param.inputType === 'visual') {
+    } else if (param.inputType === 'dropdown') {
+      param.specificationType = 'selection';
+      if (!param.dropdownOptions || param.dropdownOptions.length === 0) {
+        param.dropdownOptions = ['OK', 'NOT OK'];
+      }
+    } else if (param.inputType === 'yes_no' || param.inputType === 'checkbox' || param.inputType === 'visual') {
       param.specificationType = 'checklist';
-      if (!param.expectedValue) param.expectedValue = 'OK';
-    } else {
-      param.specificationType = 'none';
+      param.expectedValue = 'OK';
     }
   }
 
-  handleImageUpload(event: Event, param: MasterConfigParameter): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
+  updateDropdownOptions(param: MasterConfigParameter, csvStr: string): void {
+    param.dropdownOptions = csvStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    param.allowedValues = param.dropdownOptions;
+  }
 
+  handleImageUpload(event: Event, targetObj: { referenceImage?: string; companyLogo?: string }): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
     const reader = new FileReader();
     reader.onload = () => {
-      param.referenceImage = String(reader.result);
+      targetObj.referenceImage = reader.result as string;
       this.autoSaveDraft();
     };
     reader.readAsDataURL(file);
   }
 
-  updateDropdownOptions(param: MasterConfigParameter, rawOptions: string): void {
-    if (!rawOptions) {
-      param.dropdownOptions = [];
-      return;
-    }
-    param.dropdownOptions = rawOptions.split(',').map(s => s.trim()).filter(Boolean);
-  }
-
-  exportMasterConfigToCSV(): void {
-    if (!this.config || !this.config.parameters || this.config.parameters.length === 0) {
-      alert('No parameters to export in this configuration.');
-      return;
-    }
-
-    const headers = ['Section', 'Group', 'Parameter Name', 'Scope', 'Input Type', 'Spec Type', 'Req Spec', 'Min Value', 'Max Value', 'Expected Value', 'Unit', 'Checking Method', 'Required'];
-    const rows: string[][] = [];
-
-    for (const param of this.config.parameters) {
-      const secName = this.config.sections.find(s => s.id === param.sectionId)?.name || '';
-      const grpName = this.config.groups.find(g => g.id === param.groupId)?.name || '';
-
-      rows.push([
-        secName,
-        grpName,
-        param.name || '',
-        param.scope || 'Both',
-        param.inputType || 'number',
-        param.specificationType || 'range',
-        this.formatParamReqSpec(param),
-        param.minValue !== undefined ? String(param.minValue) : '',
-        param.maxValue !== undefined ? String(param.maxValue) : '',
-        param.expectedValue || '',
-        param.unit || '',
-        param.checkingMethod || 'VISUAL',
-        param.required ? 'Yes' : 'No'
-      ]);
-    }
-
-    const csvLines = [
-      headers.join(','),
-      ...rows.map(e => e.map(cell => `"${(cell || '').replace(/"/g, '""')}"`).join(','))
-    ];
-    const csvBlob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(csvBlob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${(this.config.name || 'MasterConfig').replace(/\s+/g, '_')}_Parameters.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
-  importMasterConfigFromCSV(event: Event): void {
+  handleLogoUpload(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
+    if (!input.files || input.files.length === 0) return;
 
+    const file = input.files[0];
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = String(e.target?.result || '');
-      this.parseCSVAndPopulate(text);
-      input.value = '';
+    reader.onload = () => {
+      this.config.companyLogo = reader.result as string;
+      if (this.config.layoutConfig) {
+        this.config.layoutConfig.companyLogo = reader.result as string;
+      }
+      this.autoSaveDraft();
     };
-    reader.readAsText(file);
+    reader.readAsDataURL(file);
   }
 
-  private parseCSVAndPopulate(csvText: string): void {
-    const lines = csvText.split(/\r\n|\n/).filter(line => line.trim().length > 0);
-    if (lines.length <= 1) {
-      alert('CSV file is empty or missing data rows.');
-      return;
+  formatParamReqSpec(param: MasterConfigParameter): string {
+    if (param.reqSpec && param.reqSpec.trim() && param.specificationType !== 'range') {
+      return param.reqSpec;
     }
 
-    let importedCount = 0;
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      const cols = line.split(',');
-      const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
+    const unit = param.unit ? ` ${param.unit}` : '';
 
-      if (cleanCols.length < 3) continue;
-
-      const secName = cleanCols[0] || 'PRODUCT PARAMETERS';
-      const grpName = cleanCols[1] || 'GENERAL PARAMETERS';
-      const paramName = cleanCols[2];
-
-      if (!paramName) continue;
-
-      let sec = this.config.sections.find(s => s.name.toLowerCase() === secName.toLowerCase());
-      if (!sec) {
-        sec = {
-          id: 'sec_' + Date.now() + Math.floor(Math.random() * 1000),
-          name: secName,
-          scope: 'Both',
-          order: this.config.sections.length + 1
-        };
-        this.config.sections.push(sec);
-      }
-
-      let grp = this.config.groups.find(g => g.sectionId === sec.id && g.name.toLowerCase() === grpName.toLowerCase());
-      if (!grp) {
-        grp = {
-          id: 'grp_' + Date.now() + Math.floor(Math.random() * 1000),
-          sectionId: sec.id,
-          name: grpName,
-          order: this.getGroupsForSection(sec.id).length + 1
-        };
-        this.config.groups.push(grp);
-      }
-
-      const newParam: MasterConfigParameter = {
-        id: 'pm_' + Date.now() + Math.floor(Math.random() * 10000),
-        sectionId: sec.id,
-        groupId: grp.id,
-        name: paramName,
-        scope: (cleanCols[3] as any) || 'Both',
-        inputType: (cleanCols[4] as any) || 'number',
-        specificationType: (cleanCols[5] as any) || 'range',
-        reqSpec: cleanCols[6] || '',
-        minValue: cleanCols[7] ? Number(cleanCols[7]) : undefined,
-        maxValue: cleanCols[8] ? Number(cleanCols[8]) : undefined,
-        expectedValue: cleanCols[9] || undefined,
-        unit: cleanCols[10] || '',
-        checkingMethod: cleanCols[11] || 'VISUAL',
-        required: cleanCols[12]?.toLowerCase() === 'yes' || cleanCols[12]?.toLowerCase() === 'true',
-        order: this.config.parameters.length + 1
-      };
-
-      this.config.parameters.push(newParam);
-      importedCount++;
+    switch (param.specificationType) {
+      case 'range':
+        if (param.minValue !== undefined && param.maxValue !== undefined) {
+          return `${param.minValue} - ${param.maxValue}${unit}`;
+        }
+        return param.reqSpec || 'Range Spec';
+      case 'exact':
+        return `${param.expectedValue || param.nominalValue || ''}${unit}`;
+      case 'min':
+        return `>= ${param.minValue ?? ''}${unit}`;
+      case 'max':
+        return `<= ${param.maxValue ?? ''}${unit}`;
+      case 'selection':
+      case 'checklist':
+        return `Expected: ${param.expectedValue || 'OK'}`;
+      default:
+        return param.expectedValue ? `${param.expectedValue}${unit}` : (param.reqSpec || 'Visual Check');
     }
-
-    this.autoSaveDraft();
-    alert(`Successfully imported ${importedCount} parameters into Master Configuration!`);
   }
 
   saveMasterConfig(): void {
-    const errors = this.allConfigValidationErrors;
-    if (errors.length > 0) {
-      this.stepValidationErrors = errors;
-      alert(`Cannot save incomplete Master Configuration:\n\n• ${errors.join('\n• ')}`);
-      return;
-    }
-
-    this.stepValidationErrors = [];
+    this.config.status = 'Saved';
     const saved = this.masterConfigService.saveMasterConfig(this.config);
     this.config = structuredClone(saved);
-    this.selectedPresetId = saved.id;
     this.savedNotice = true;
     setTimeout(() => this.savedNotice = false, 3000);
   }
 
-  createTemplate(configToUse?: MasterConfig): void {
-    const targetConfig = configToUse || this.config;
-    const errors = this.allConfigValidationErrors;
-    if (errors.length > 0) {
-      this.stepValidationErrors = errors;
-      alert(`Cannot generate template from incomplete Master Configuration:\n\n• ${errors.join('\n• ')}`);
+  publishConfig(): void {
+    const validation = this.allConfigValidationErrors;
+    if (validation.length > 0) {
+      alert('Cannot publish configuration due to validation errors:\n- ' + validation.join('\n- '));
       return;
     }
 
-    this.stepValidationErrors = [];
-    const savedConfig = this.masterConfigService.publishMasterConfig(targetConfig);
-    const generatedTemplate = this.masterConfigService.generateTemplateFromMaster(savedConfig);
-
-    this.templateService.publish(
-      generatedTemplate.name,
-      generatedTemplate.items,
-      generatedTemplate.id,
-      generatedTemplate.checklistType,
-      generatedTemplate.generalDetailsRows,
-      generatedTemplate.tables
-    );
-
-    this.router.navigate(['/published-template', generatedTemplate.id]);
+    const published = this.masterConfigService.publishMasterConfig(this.config);
+    this.config = structuredClone(published);
+    this.publishedNotice = true;
+    alert(`Master Configuration "${published.name}" has been Published successfully! Digital Inspection template snapshot locked.`);
+    this.goToList();
   }
 
-
-  openReferencePreset(mcType: string): void {
-    const found = this.existingConfigs.find(c => c.name.toLowerCase().includes(mcType.toLowerCase())) || this.existingConfigs[0];
-    if (found) {
-      this.editConfig(found.id);
-    }
+  createTemplate(c?: MasterConfig): void {
+    const targetConfig = c || this.config;
+    const generated = this.masterConfigService.generateTemplateFromMaster(targetConfig);
+    this.router.navigate(['/published-template', generated.id]);
   }
 }

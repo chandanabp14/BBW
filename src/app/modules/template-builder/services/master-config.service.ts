@@ -97,12 +97,16 @@ export class MasterConfigService {
     const completeConfig: MasterConfig = {
       id: config.id || Date.now(),
       name: config.name || 'Untitled Master Configuration',
+      status: config.status || 'Saved',
       reportTitle: config.reportTitle || config.name || 'INPROCESS INSPECTION & SETUP REPORT',
-      companyName: config.companyName || 'BHARAT BALANCING WEIGHT & CO',
-      companySubtitle: config.companySubtitle || 'BBW GLOBAL Tek Pvt Ltd',
+      companyName: config.companyName || '',
+      companySubtitle: config.companySubtitle || '',
+      companyLogo: config.companyLogo || '',
       configType: config.configType || 'Both',
       mcType: config.mcType || 'Press',
-      documentCode: config.documentCode || 'BBW/QTY/R/283',
+      documentCode: config.documentCode || '',
+      revision: config.revision || '01',
+      effectiveDate: config.effectiveDate || now.split('T')[0],
       partName: config.partName || '',
       partType: config.partType || '',
       partNumber: config.partNumber || '',
@@ -111,20 +115,37 @@ export class MasterConfigService {
       sections: structuredClone(config.sections || []),
       groups: structuredClone(config.groups || []),
       parameters: structuredClone(config.parameters || []),
-      layoutConfig: structuredClone(config.layoutConfig || {
+      layoutConfig: config.layoutConfig ? structuredClone(config.layoutConfig) : {
         reportTitle: config.reportTitle || config.name,
-        companyName: config.companyName || 'BHARAT BALANCING WEIGHT & CO',
-        companySubtitle: config.companySubtitle || 'BBW GLOBAL Tek Pvt Ltd',
+        companyName: config.companyName || '',
+        companySubtitle: config.companySubtitle || '',
+        companyLogo: config.companyLogo || '',
+        documentRef: config.documentCode || '',
+        revision: config.revision || '01',
+        effectiveDate: config.effectiveDate || now.split('T')[0],
         showGroupHeaders: true,
         showPhotoRow: true,
         showMethodRow: true,
         showReqSpecRow: true,
         requiredReadingsCount: 12,
+        readingFrequency: 'Hourly',
+        readingColumns: 12,
         showStartupIssues: true,
+        showRemarks: true,
+        showCutSection: true,
+        showRefImage: true,
+        showDeviationDetails: true,
+        showCorrectiveAction: true,
         showApprovalBlock: true
+      },
+      approvalConfig: structuredClone(config.approvalConfig || {
+        preparedBy: { roleName: 'Prepared By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true },
+        checkedBy: { roleName: 'Checked By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true },
+        approvedBy: { roleName: 'Approved By', personName: '', employeeId: '', signatureRequired: true, dateRequired: true, mandatory: true }
       }),
       createdAt: config.createdAt || now,
       updatedAt: now,
+      publishedAt: config.publishedAt,
       publishedTemplateId: config.publishedTemplateId
     };
 
@@ -151,6 +172,8 @@ export class MasterConfigService {
   }
 
   publishMasterConfig(config: MasterConfig): MasterConfig {
+    config.status = 'Published';
+    config.publishedAt = new Date().toISOString();
     const savedConfig = this.saveMasterConfig(config);
 
     // Take complete snapshot for published state

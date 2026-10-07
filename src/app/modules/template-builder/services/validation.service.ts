@@ -7,17 +7,33 @@ import { MasterConfigParameter, ValidationResult, ValidationStatus } from '../mo
 export class ValidationService {
 
   formatSpecification(param: MasterConfigParameter): string {
+    if (!param) return '—';
+
+    if (param.reqSpec && param.reqSpec.trim()) {
+      return param.reqSpec.trim();
+    }
+
     const unitStr = param.unit ? ` ${param.unit}` : '';
+
+    if (param.nominalValue !== undefined && param.nominalValue !== null && param.tolerance) {
+      const tolStr = param.tolerance.toString().startsWith('±') ? param.tolerance : `±${param.tolerance}`;
+      if (param.minValue !== undefined && param.maxValue !== undefined) {
+        return `${param.minValue}–${param.maxValue}${unitStr}`;
+      }
+      return `${param.nominalValue} ${tolStr}${unitStr}`;
+    }
 
     switch (param.specificationType) {
       case 'range':
         if (param.minValue !== undefined && param.maxValue !== undefined) {
-          return `${param.minValue} - ${param.maxValue}${unitStr}`;
+          return `${param.minValue}–${param.maxValue}${unitStr}`;
         }
+        if (param.minValue !== undefined) return `>= ${param.minValue}${unitStr}`;
+        if (param.maxValue !== undefined) return `<= ${param.maxValue}${unitStr}`;
         return `Range Spec${unitStr}`;
 
       case 'exact':
-        return `${param.expectedValue ?? 'Exact'}${unitStr}`;
+        return `${param.expectedValue ?? param.nominalValue ?? 'Exact'}${unitStr}`;
 
       case 'min':
         return `>= ${param.minValue ?? 0}${unitStr}`;
@@ -29,7 +45,7 @@ export class ValidationService {
         return `Expected: ${param.expectedValue || 'OK'}`;
 
       case 'checklist':
-        return 'Required Check';
+        return param.expectedValue ? `Expected: ${param.expectedValue}` : 'Required Check';
 
       case 'none':
       default:

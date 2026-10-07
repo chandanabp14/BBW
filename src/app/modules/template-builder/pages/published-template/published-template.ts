@@ -86,6 +86,24 @@ export class PublishedTemplateComponent implements OnInit {
       }
     }
 
+    if (this.masterConfig && this.inspectionInstance?.parameterEntries) {
+      for (const param of this.masterConfig.parameters) {
+        const entry = this.inspectionInstance.parameterEntries[param.id];
+        if (entry) {
+          entry.sectionId = entry.sectionId || param.sectionId;
+          entry.groupId = entry.groupId || param.groupId;
+          entry.parameterCode = entry.parameterCode || param.parameterCode || param.id;
+          entry.referenceImage = entry.referenceImage || param.referenceImage;
+          entry.acceptanceCriteria = entry.acceptanceCriteria || param.acceptanceCriteria;
+          entry.operatorInstructions = entry.operatorInstructions || param.operatorInstructions || param.inspectionInstructions;
+          entry.checkingMethod = entry.checkingMethod || param.checkingMethod;
+          entry.instrumentId = entry.instrumentId || param.instrumentId;
+          entry.workInstructionRef = entry.workInstructionRef || param.workInstructionRef;
+          entry.referenceNumber = entry.referenceNumber || param.referenceNumber;
+        }
+      }
+    }
+
     if (this.route.snapshot.url.some(segment => segment.path === 'report')) {
       this.viewMode = 'report';
     }
@@ -104,10 +122,31 @@ export class PublishedTemplateComponent implements OnInit {
       const formattedSpec = this.validationService.formatSpecification(param);
       entries[param.id] = {
         parameterId: param.id,
+        sectionId: param.sectionId,
+        groupId: param.groupId,
         parameterName: param.name,
+        parameterCode: param.parameterCode || param.id,
+        description: param.description,
+        scope: param.scope,
         specificationText: formattedSpec,
         unit: param.unit,
         checkingMethod: param.checkingMethod || 'VISUAL',
+        checkingInstrument: param.checkingMethod || 'VISUAL',
+        instrumentId: param.instrumentId,
+        calibrationFrequency: param.calibrationFrequency,
+        calibrationCertNo: param.calibrationCertNo,
+        referenceType: param.referenceType,
+        referenceNumber: param.referenceNumber,
+        referenceRevision: param.referenceRevision,
+        workInstructionRef: param.workInstructionRef,
+        referenceImage: param.referenceImage,
+        imageDescription: param.imageDescription,
+        acceptanceCriteria: param.acceptanceCriteria,
+        passCondition: param.passCondition,
+        failCondition: param.failCondition,
+        operatorInstructions: param.operatorInstructions || param.inspectionInstructions,
+        safetyInstructions: param.safetyInstructions,
+        specialPrecautions: param.specialPrecautions,
         actualValue: '',
         samples: [
           { sampleCode: 'A', value: '', result: 'PENDING' },
@@ -143,9 +182,9 @@ export class PublishedTemplateComponent implements OnInit {
       startupIssues: [],
       cutSectionEntries: [],
       approval: {
-        preparedBy: '',
-        checkedBy: '',
-        approvedBy: '',
+        preparedBy: config.approvalConfig?.preparedBy?.personName || '',
+        checkedBy: config.approvalConfig?.checkedBy?.personName || '',
+        approvedBy: config.approvalConfig?.approvedBy?.personName || '',
         status: 'PENDING'
       },
       overallResult: 'PENDING',
@@ -247,11 +286,72 @@ export class PublishedTemplateComponent implements OnInit {
   }
 
   getValidationResult(paramId: string): ValidationStatus {
-    return this.inspectionInstance.parameterEntries[paramId]?.result ?? 'PENDING';
+    return this.inspectionInstance?.parameterEntries?.[paramId]?.result ?? 'PENDING';
   }
 
   getValidationMessage(paramId: string): string {
-    return this.inspectionInstance.parameterEntries[paramId]?.validationMessage ?? '';
+    return this.inspectionInstance?.parameterEntries?.[paramId]?.validationMessage ?? '';
+  }
+
+  getFormattedSpec(param: MasterConfigParameter): string {
+    if (!param) return '—';
+    return this.validationService.formatSpecification(param);
+  }
+
+  getParamActualValue(paramId: string): string {
+    return this.inspectionInstance?.parameterEntries?.[paramId]?.actualValue || '';
+  }
+
+  getParamResult(paramId: string): ValidationStatus {
+    return this.inspectionInstance?.parameterEntries?.[paramId]?.result || 'PENDING';
+  }
+
+  getParamRemark(paramId?: string): string {
+    if (!paramId) return '';
+    const entry = this.inspectionInstance?.parameterEntries?.[paramId];
+    if (entry && entry.remark && entry.remark.trim()) {
+      return entry.remark.trim();
+    }
+    return '';
+  }
+
+  hasAnyParameterImage(): boolean {
+    if (!this.masterConfig || !this.masterConfig.parameters) return false;
+    return this.masterConfig.parameters.some(p => !!p.referenceImage);
+  }
+
+  showImageColumn(): boolean {
+    if (this.masterConfig?.layoutConfig?.showRefImage === false) return false;
+    return this.hasAnyParameterImage();
+  }
+
+  getReportColSpan(): number {
+    let count = 5; // Time, Parameter, Actual Reading, Result, Remarks
+    if (this.masterConfig?.layoutConfig?.showReqSpecRow !== false) count++;
+    if (this.masterConfig?.layoutConfig?.showMethodRow !== false) count++;
+    if (this.showImageColumn()) count++;
+    return count;
+  }
+
+  getUngroupedParametersForSection(sectionId: string): MasterConfigParameter[] {
+    if (!this.masterConfig) return [];
+    return this.masterConfig.parameters
+      .filter(p => p.sectionId === sectionId && (!p.groupId || !this.masterConfig?.groups.some(g => g.id === p.groupId)))
+      .sort((a, b) => a.order - b.order);
+  }
+
+  shouldShowStartupIssues(): boolean {
+    if (this.masterConfig?.layoutConfig?.showStartupIssues === false) return false;
+    return !!(this.inspectionInstance?.startupIssues && this.inspectionInstance.startupIssues.length > 0);
+  }
+
+  shouldShowCutSection(): boolean {
+    if (this.masterConfig?.layoutConfig?.showCutSection === false) return false;
+    return !!(this.inspectionInstance?.cutSectionEntries && this.inspectionInstance.cutSectionEntries.length > 0);
+  }
+
+  shouldShowApprovalBlock(): boolean {
+    return this.masterConfig?.layoutConfig?.showApprovalBlock !== false;
   }
 
   getGroupsForSection(sectionId: string) {
@@ -262,6 +362,41 @@ export class PublishedTemplateComponent implements OnInit {
   getParametersForGroup(groupId: string): MasterConfigParameter[] {
     if (!this.masterConfig) return [];
     return this.masterConfig.parameters.filter(p => p.groupId === groupId).sort((a, b) => a.order - b.order);
+  }
+
+  getInspectionParameters(): MasterConfigParameter[] {
+    if (!this.masterConfig) return [];
+    return this.masterConfig.parameters
+      .filter(p => p.scope === 'Inspection' || p.scope === 'Both')
+      .sort((a, b) => a.order - b.order);
+  }
+
+  getSetupParameters(): MasterConfigParameter[] {
+    if (!this.masterConfig) return [];
+    return this.masterConfig.parameters
+      .filter(p => p.scope === 'Setup' || p.scope === 'Both')
+      .sort((a, b) => a.order - b.order);
+  }
+
+  getParameterChunks(params: MasterConfigParameter[], chunkSize = 10): MasterConfigParameter[][] {
+    if (!params || params.length === 0) return [];
+    const chunks: MasterConfigParameter[][] = [];
+    for (let i = 0; i < params.length; i += chunkSize) {
+      chunks.push(params.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
+  getGroupName(groupId?: string): string {
+    if (!groupId || !this.masterConfig || !this.masterConfig.groups) return '';
+    const grp = this.masterConfig.groups.find(g => g.id === groupId);
+    return grp ? grp.name : '';
+  }
+
+  getSectionName(sectionId: string): string {
+    if (!sectionId || !this.masterConfig || !this.masterConfig.sections) return '';
+    const sec = this.masterConfig.sections.find(s => s.id === sectionId);
+    return sec ? sec.name : '';
   }
 
   addInspectionReadingRow(): void {
@@ -383,9 +518,9 @@ export class PublishedTemplateComponent implements OnInit {
     }
 
     const approved = this.inspectionService.approveInspection(this.inspectionInstance.id, {
-      preparedBy: this.inspectionInstance.approval.preparedBy || this.inspectionInstance.operator,
-      checkedBy: this.inspectionInstance.approval.checkedBy || 'SELVAM',
-      approvedBy: this.inspectionInstance.approval.approvedBy || 'Sathig',
+      preparedBy: this.inspectionInstance.approval.preparedBy || this.masterConfig?.approvalConfig?.preparedBy?.personName || this.inspectionInstance.operator || '',
+      checkedBy: this.inspectionInstance.approval.checkedBy || this.masterConfig?.approvalConfig?.checkedBy?.personName || this.inspectionInstance.supervisor || '',
+      approvedBy: this.inspectionInstance.approval.approvedBy || this.masterConfig?.approvalConfig?.approvedBy?.personName || this.inspectionInstance.qcName || '',
       status: 'APPROVED'
     });
 
@@ -401,9 +536,9 @@ export class PublishedTemplateComponent implements OnInit {
     if (reason === null) return;
 
     const rejected = this.inspectionService.approveInspection(this.inspectionInstance.id, {
-      preparedBy: this.inspectionInstance.approval.preparedBy || this.inspectionInstance.operator,
-      checkedBy: this.inspectionInstance.approval.checkedBy || 'SELVAM',
-      approvedBy: this.inspectionInstance.approval.approvedBy || 'Sathig',
+      preparedBy: this.inspectionInstance.approval.preparedBy || this.masterConfig?.approvalConfig?.preparedBy?.personName || this.inspectionInstance.operator || '',
+      checkedBy: this.inspectionInstance.approval.checkedBy || this.masterConfig?.approvalConfig?.checkedBy?.personName || this.inspectionInstance.supervisor || '',
+      approvedBy: this.inspectionInstance.approval.approvedBy || this.masterConfig?.approvalConfig?.approvedBy?.personName || this.inspectionInstance.qcName || '',
       status: 'REJECTED',
       comments: reason
     });
@@ -473,3 +608,4 @@ export class PublishedTemplateComponent implements OnInit {
     this.router.navigate(['/master-config']);
   }
 }
+

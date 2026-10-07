@@ -6,10 +6,10 @@
   gap: 16px;
   margin-bottom: 20px;
   background-color: #ffffff;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color, #e2e8f0);
   padding: 12px 20px;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md, 6px);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(15, 23, 42, 0.05));
 }
 
 .top-bar-left {
@@ -22,13 +22,13 @@
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: var(--primary-navy);
+  color: var(--primary-navy, #0f172a);
 }
 
 .doc-code-tag {
   font-family: 'Roboto Mono', monospace;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-muted, #64748b);
 }
 
 .view-toggle-bar {
@@ -47,17 +47,17 @@
 }
 
 .save-toast {
-  background-color: var(--pass-bg);
-  color: var(--pass-green);
-  border: 1px solid var(--pass-border);
+  background-color: var(--pass-bg, #f0fdf4);
+  color: var(--pass-green, #16a34a);
+  border: 1px solid var(--pass-border, #bbf7d0);
   padding: 10px 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 6px);
   margin-bottom: 16px;
   font-size: 13px;
   font-weight: 600;
 }
 
-/* Metadata Grid */
+/* Digital View Metadata Grid */
 .meta-info-card {
   margin-bottom: 20px;
 }
@@ -67,18 +67,18 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
-
-  h2 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--primary-navy);
-  }
 }
 
-.meta-grid-5 {
+.meta-card-header h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-navy, #0f172a);
+}
+
+.meta-grid-4 {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px 16px;
 }
 
@@ -91,14 +91,14 @@
 .meta-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-muted, #64748b);
   text-transform: uppercase;
 }
 
 .meta-value-text {
   font-size: 13px;
   font-weight: 600;
-  color: var(--primary-navy);
+  color: var(--primary-navy, #0f172a);
 }
 
 .font-mono {
@@ -116,11 +116,11 @@
   align-items: center;
   justify-content: space-between;
   background-color: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 6px);
   padding: 12px 24px;
   margin-bottom: 20px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(15, 23, 42, 0.05));
 }
 
 .kpi-summary-item {
@@ -139,15 +139,15 @@
 .sum-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-muted, #64748b);
   text-transform: uppercase;
 }
 
-.green-text { color: var(--pass-green); }
-.red-text { color: var(--fail-red); }
-.amber-text { color: var(--pending-amber); }
+.green-text { color: var(--pass-green, #16a34a); }
+.red-text { color: var(--fail-red, #dc2626); }
+.amber-text { color: var(--pending-amber, #d97706); }
 
-/* Inspection Sections List */
+/* Digital Sections & Tables */
 .section-card {
   margin-bottom: 20px;
 }
@@ -157,27 +157,21 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
-
-  h3 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--primary-navy);
-    letter-spacing: 0.02em;
-  }
 }
 
-.sec-scope-pill {
-  font-size: 11px;
-  color: var(--text-muted);
-  background-color: #f1f5f9;
-  padding: 2px 8px;
-  border-radius: 4px;
+.section-banner h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-navy, #0f172a);
+  letter-spacing: 0.02em;
 }
 
-.req-star {
-  color: var(--fail-red);
-  margin-left: 2px;
+.group-table-heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-navy, #0f172a);
+  margin: 0 0 8px 0;
 }
 
 .range-badge {
@@ -186,7 +180,7 @@
   background-color: #f1f5f9;
   padding: 2px 6px;
   border-radius: 4px;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #334155);
 }
 
 .actual-entry-input {
@@ -194,15 +188,15 @@
 }
 
 .input-pass {
-  border-color: var(--pass-green) !important;
-  background-color: var(--pass-bg) !important;
-  color: var(--pass-green) !important;
+  border-color: var(--pass-green, #16a34a) !important;
+  background-color: var(--pass-bg, #f0fdf4) !important;
+  color: var(--pass-green, #16a34a) !important;
 }
 
 .input-fail {
-  border-color: var(--fail-red) !important;
-  background-color: var(--fail-bg) !important;
-  color: var(--fail-red) !important;
+  border-color: var(--fail-red, #dc2626) !important;
+  background-color: var(--fail-bg, #fef2f2) !important;
+  color: var(--fail-red, #dc2626) !important;
 }
 
 /* Approval Card */
@@ -210,13 +204,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
 
-  h3 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--primary-navy);
-  }
+.approval-card-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-navy, #0f172a);
 }
 
 .form-grid-3 {
@@ -231,132 +225,384 @@
   gap: 10px;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color, #e2e8f0);
 }
 
-/* Printable PDF Paper View */
+/* ========================================================================= */
+/* PRINTABLE A4 REPORT VIEW (DIGITAL PREVIEW & PDF PRINT) */
+/* ========================================================================= */
+
+/* ========================================================================= */
+/* PRINTABLE BBW A4 LANDSCAPE REPORT VIEW (DIGITAL PREVIEW & PDF PRINT) */
+/* ========================================================================= */
+
 .pdf-document-paper {
+  width: 297mm;
+  max-width: 100%;
+  margin: 0 auto 30px auto;
   background-color: #ffffff;
   border: 1px solid #cbd5e1;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  margin-bottom: 30px;
+  padding: 10mm;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  box-sizing: border-box;
   color: #0f172a;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: auto;
 }
 
-.pdf-hdr-table, .pdf-info-table, .pdf-matrix-table, .pdf-sig-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 16px;
+/* 1. REPORT HEADER BLOCK */
+.report-header-block {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid #0f172a;
+  margin-bottom: 12px;
 }
 
-.pdf-hdr-table td {
-  border: 1px solid #0f172a;
-  padding: 10px;
-  vertical-align: middle;
+.hdr-logo-cell {
+  width: 100px;
+  padding: 8px;
+  border-right: 1.5px solid #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
 }
 
-.pdf-logo-img {
-  width: 100%;
-  max-height: 48px;
+.report-logo-img {
+  max-width: 80px;
+  max-height: 50px;
+  width: auto;
+  height: auto;
   object-fit: contain;
 }
 
-.pdf-logo-fallback {
-  font-weight: 900;
+.report-logo-fallback {
+  font-weight: 800;
   font-size: 18px;
-  text-align: center;
+  color: #0f172a;
 }
 
-.pdf-co-name {
+.hdr-title-cell {
+  flex: 1;
+  padding: 10px 16px;
+  border-right: 1.5px solid #0f172a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.report-co-name {
   font-size: 16px;
   font-weight: 800;
-  margin: 0;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
 
-.pdf-co-sub {
+.report-co-sub {
   font-size: 11px;
   color: #475569;
+  font-weight: 500;
 }
 
-.pdf-report-title {
+.hdr-doc-cell {
+  width: 250px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #f8fafc;
+}
+
+.report-doc-title {
   font-size: 13px;
-  font-weight: 700;
-  margin: 4px 0 0 0;
-}
-
-.pdf-doc-code {
-  font-family: 'Roboto Mono', monospace;
-  font-weight: 700;
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-
-.pdf-info-table td {
-  border: 1px solid #cbd5e1;
-  padding: 8px 12px;
-  font-size: 12px;
-}
-
-.pdf-matrix-table th {
-  background-color: #f1f5f9;
-  border: 1px solid #0f172a;
-  padding: 8px;
-  font-size: 11px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 4px 0;
   text-transform: uppercase;
 }
 
-.pdf-matrix-table td {
-  border: 1px solid #cbd5e1;
-  padding: 8px;
-  font-size: 12px;
+.report-doc-code {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
 }
 
-.pdf-result-text {
+.report-doc-meta {
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* 2. DOCUMENT INFORMATION TABLE */
+.report-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid #0f172a;
+  margin-bottom: 16px;
+}
+
+.report-info-table td {
+  border: 1px solid #cbd5e1;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  color: #1e293b;
+  width: 25%;
+  vertical-align: middle;
+}
+
+.info-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  margin-right: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* 3. BBW LANDSCAPE MATRIX TABLES */
+.report-section-container {
+  margin-bottom: 24px;
+}
+
+.report-section-title-banner {
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 4px 4px 0 0;
+  margin-bottom: 6px;
+}
+
+.section-title-text {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.matrix-table-wrapper {
+  overflow-x: auto;
+  border: 1.5px solid #0f172a;
+}
+
+.report-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  table-layout: auto;
+}
+
+.report-matrix-table th, .report-matrix-table td {
+  border: 1px solid #cbd5e1;
+  padding: 6px 8px;
+  vertical-align: middle;
+}
+
+.matrix-hdr-group th {
+  background-color: #1e293b;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: 1px solid #0f172a;
+}
+
+.matrix-hdr-param th {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  font-size: 11px;
   font-weight: 700;
 }
-.text-pass { color: var(--pass-green); }
-.text-fail { color: var(--fail-red); }
 
-.pdf-sig-table td {
-  border: 1px solid #0f172a;
-  padding: 16px 12px;
-  vertical-align: bottom;
+.param-title {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.param-code {
+  font-size: 9.5px;
+  color: #64748b;
+}
+
+.matrix-hdr-photo th {
+  background-color: #ffffff;
+  height: 50px;
+  vertical-align: middle;
+}
+
+.matrix-ref-img {
+  max-width: 80px;
+  max-height: 45px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: 1px solid #e2e8f0;
+  border-radius: 3px;
+}
+
+.matrix-hdr-spec th {
+  background-color: #f8fafc;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.matrix-hdr-method th {
+  background-color: #f1f5f9;
+  font-size: 10px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.matrix-reading-row:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.matrix-time-cell {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+.matrix-sample-cell {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.matrix-cell-input {
+  width: 100%;
+  max-width: 90px;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Roboto Mono', monospace;
   text-align: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.matrix-cell-input:focus {
+  outline: 2px solid #2563eb;
+  border-color: #2563eb;
+}
+
+/* Status Badges */
+.report-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge-pass { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.badge-fail { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.badge-pending { background-color: #fffbe7; color: #d97706; border: 1px solid #fef08a; }
+
+/* 4. APPROVAL SECTION */
+.report-approval-container {
+  margin-top: 24px;
+}
+
+.report-approval-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid #0f172a;
+}
+
+.report-approval-table th {
+  background-color: #f1f5f9;
+  border: 1px solid #0f172a;
+  padding: 6px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.report-approval-table td {
+  border: 1px solid #cbd5e1;
+  padding: 10px;
+  vertical-align: top;
+  font-size: 11px;
+}
+
+.sig-role {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.sig-val-row {
+  margin-bottom: 4px;
 }
 
 .sig-label {
   font-size: 10px;
-  font-weight: 700;
   color: #64748b;
-  margin-bottom: 20px;
+  margin-right: 4px;
 }
 
-.sig-val {
-  font-size: 13px;
+.sig-status-badge {
+  font-size: 10px;
   font-weight: 700;
-  border-top: 1px dashed #cbd5e1;
-  padding-top: 4px;
+  color: #d97706;
 }
 
-.pdf-footer-note {
+.sig-status-badge.status-app {
+  color: #16a34a;
+}
+
+/* 5. FOOTER BLOCK */
+.report-footer-block {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  border-top: 1px solid #cbd5e1;
+  padding-top: 8px;
+  margin-top: 20px;
   font-size: 10px;
   color: #64748b;
-  margin-top: 20px;
 }
 
+/* ========================================================================= */
+/* PRINT MEDIA STYLES FOR A4 LANDSCAPE */
+/* ========================================================================= */
 @media print {
-  .no-print, app-navbar, .qa-navbar, .inspection-top-bar, .wizard-footer-actions, button {
-    display: none !important;
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
   }
 
   body {
     background-color: #ffffff !important;
     color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  .no-print,
+  app-navbar,
+  .qa-navbar,
+  .inspection-top-bar,
+  .view-toggle-bar,
+  .save-toast,
+  button {
+    display: none !important;
   }
 
   .qa-container {
@@ -365,12 +611,19 @@
     max-width: 100% !important;
   }
 
-  .pdf-document-paper, .qa-card {
-    border: 1px solid #cbd5e1 !important;
+  .pdf-document-paper {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
     box-shadow: none !important;
-    padding: 12px !important;
-    margin: 0 0 15px 0 !important;
-    page-break-inside: avoid;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  .setup-section-page {
+    page-break-before: always;
   }
 
   table {
@@ -390,14 +643,74 @@
   tfoot {
     display: table-footer-group;
   }
+
+  .matrix-cell-input {
+    border: none !important;
+    background: transparent !important;
+    font-size: 10px !important;
+  }
 }
 
-
-@media (max-width: 1024px) {
-  .meta-grid-5 {
-    grid-template-columns: repeat(3, 1fr);
+@media (max-width: 900px) {
+  .meta-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
   }
   .form-grid-3 {
     grid-template-columns: 1fr;
   }
+  .pdf-document-paper {
+    padding: 10px;
+    width: 100%;
+  }
 }
+
+.report-section-header-row td {
+  background-color: #e2e8f0 !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  color: #0f172a !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 6px 10px !important;
+  border: 1px solid #0f172a !important;
+}
+
+.report-group-header-row td {
+  background-color: #f1f5f9 !important;
+  font-weight: 700 !important;
+  font-size: 10.5px !important;
+  color: #1e293b !important;
+  padding: 5px 10px 5px 16px !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.param-name-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.param-code-badge {
+  font-size: 10px;
+  color: #64748b;
+}
+
+.param-sub-meta {
+  font-size: 9.5px;
+  color: #64748b;
+  margin-top: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.meta-criteria {
+  color: #334155;
+  font-style: italic;
+}
+
+.meta-instr {
+  color: #475569;
+}
+
+
