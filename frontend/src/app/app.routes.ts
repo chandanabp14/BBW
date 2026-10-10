@@ -2,23 +2,23 @@ import { Routes } from '@angular/router';
 
 import {
   BuilderComponent
-} from './modules/template-builder/pages/builder/builder';
+} from './pages/builder/builder';
 
 import {
   ChecklistsComponent
-} from './modules/template-builder/pages/checklists/checklists';
+} from './pages/checklists/checklists';
 
 import { PreviewComponent }
-from './modules/template-builder/pages/preview/preview';
+from './pages/preview/preview';
 
 import { InspectionComponent }
-from './modules/template-builder/pages/inspection/inspection';
+from './pages/inspection/inspection';
 
 import { MasterConfigComponent }
-from './modules/template-builder/pages/master-config/master-config';
+from './pages/master-config/master-config';
 
 import { PublishedTemplateComponent }
-from './modules/template-builder/pages/published-template/published-template';
+from './pages/published-template/published-template';
 
 export const routes: Routes = [
 

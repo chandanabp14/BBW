@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { MasterConfigService } from '../../services/master-config.service';
-import { ValidationService } from '../../services/validation.service';
-import { InspectionService } from '../../services/inspection.service';
+import { MasterConfigService } from '../../modules/template-builder/services/master-config.service';
+import { ValidationService } from '../../modules/template-builder/services/validation.service';
+import { InspectionService } from '../../modules/template-builder/services/inspection.service';
 
 import {
   CutSectionEntry,
@@ -16,9 +16,9 @@ import {
   MasterConfigParameter,
   ValidationResult,
   ValidationStatus
-} from '../../models/master-config.model';
+} from '../../modules/template-builder/models/master-config.model';
 
-import { NavbarComponent } from '../../components/navbar/navbar';
+import { NavbarComponent } from '../../modules/template-builder/components/navbar/navbar';
 
 export interface TimeSlotRow {
   timeLabel: string;

@@ -2,9 +2,9 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { MasterConfigService } from '../../services/master-config.service';
-import { MasterConfig } from '../../models/master-config.model';
-import { NavbarComponent } from '../../components/navbar/navbar';
+import { MasterConfigService } from '../../modules/template-builder/services/master-config.service';
+import { MasterConfig } from '../../modules/template-builder/models/master-config.model';
+import { NavbarComponent } from '../../modules/template-builder/components/navbar/navbar';
 
 @Component({
   selector: 'app-checklists',

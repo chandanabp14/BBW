@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { Template } from '../../models/template.model';
-import { TableCell } from '../../models/table.model';
-import { TemplateService } from '../../services/template.service';
+import { Template } from '../../modules/template-builder/models/template.model';
+import { TableCell } from '../../modules/template-builder/models/table.model';
+import { TemplateService } from '../../modules/template-builder/services/template.service';
 
 @Component({
   selector: 'app-inspection',

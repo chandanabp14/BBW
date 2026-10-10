@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { TableService } from '../../services/table.service';
-import { TemplateService } from '../../services/template.service';
-import { BuilderItem } from '../../models/builder-item.model';
-import { GeneralDetailsRow } from '../../models/general-details.model';
+import { TableService } from '../../modules/template-builder/services/table.service';
+import { TemplateService } from '../../modules/template-builder/services/template.service';
+import { BuilderItem } from '../../modules/template-builder/models/builder-item.model';
+import { GeneralDetailsRow } from '../../modules/template-builder/models/general-details.model';
 
 @Component({
   selector: 'app-preview',

@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 
-import { SidebarComponent } from '../../components/sidebar/sidebar';
-import { CanvasComponent } from '../../components/canvas/canvas';
-import { PropertiesComponent } from '../../components/properties/properties';
-import { NavbarComponent } from '../../components/navbar/navbar';
+import { SidebarComponent } from '../../modules/template-builder/components/sidebar/sidebar';
+import { CanvasComponent } from '../../modules/template-builder/components/canvas/canvas';
+import { PropertiesComponent } from '../../modules/template-builder/components/properties/properties';
+import { NavbarComponent } from '../../modules/template-builder/components/navbar/navbar';
 import { FormsModule } from '@angular/forms';
-import { TableCell } from '../../models/table.model';
-import { TemplateService } from '../../services/template.service';
-import { TableService } from '../../services/table.service';
+import { TableCell } from '../../modules/template-builder/models/table.model';
+import { TemplateService } from '../../modules/template-builder/services/template.service';
+import { TableService } from '../../modules/template-builder/services/table.service';
 
 @Component({
   selector: 'app-builder',

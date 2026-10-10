@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { MasterConfigService } from '../../services/master-config.service';
-import { TemplateService } from '../../services/template.service';
-import { NavbarComponent } from '../../components/navbar/navbar';
+import { MasterConfigService } from '../../modules/template-builder/services/master-config.service';
+import { TemplateService } from '../../modules/template-builder/services/template.service';
+import { NavbarComponent } from '../../modules/template-builder/components/navbar/navbar';
 import {
   ApprovalConfigRole,
   ConfigStatus,
@@ -20,7 +20,7 @@ import {
   ReferenceType,
   ReportLayoutConfig,
   ScopeType
-} from '../../models/master-config.model';
+} from '../../modules/template-builder/models/master-config.model';
 
 @Component({
   selector: 'app-master-config',
